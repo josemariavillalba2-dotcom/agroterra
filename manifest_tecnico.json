@@ -1,0 +1,24 @@
+{
+  "name": "Agroterra Horas",
+  "short_name": "AT Horas",
+  "description": "Registro de horas técnicas - Agroterra",
+  "start_url": "./agroterra_tecnico.html",
+  "display": "standalone",
+  "background_color": "#0d1410",
+  "theme_color": "#0d1410",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon_tecnico.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon_tecnico.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

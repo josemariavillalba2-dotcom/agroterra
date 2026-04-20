@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AT Admin">
+<meta name="application-name" content="AT Admin">
+<link rel="manifest" href="manifest_admin.json">
+<link rel="apple-touch-icon" href="icon_admin.png">
 <title>Agroterra · Panel Administrativo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -1964,14 +1970,13 @@ function renderRegistros() {
     return;
   }
   tbody.innerHTML = rows.map(({j,item})=>{
-    const d = new Date(j.date+'T12:00:00');
     const ot = getOT(item.otId, db);
     const otLabel = getOTNum(item.otId, db);
-    const reg = (item.horasRegulares||item.horas).toFixed(2);
-    const ext = (item.horasExtra||0).toFixed(2);
+    const reg = (parseFloat(item.horasRegulares)||parseFloat(item.horas)||0).toFixed(2);
+    const ext = (parseFloat(item.horasExtra)||0).toFixed(2);
     return `<tr onclick="openJornadaById('${j.id}')" style="cursor:pointer">
       <td><div style="display:flex;align-items:center;gap:8px"><div class="tech-avatar" style="width:28px;height:28px;font-size:10px">${getInitials(getTechName(j.techId))}</div>${getTechName(j.techId)}</div></td>
-      <td>${d.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short'})}</td>
+      <td>${formatDateShort(j.date)}</td>
       <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700">${otLabel}${ot?`<div style="font-size:11px;color:var(--text3);font-family:'Barlow',sans-serif;font-weight:400">${ot.desc.substring(0,35)}</div>`:''}</td>
       <td><span class="tag ${tipoTagClass(item.tipo)}">${item.tipo}</span>${item.motivo?`<div style="font-size:10px;color:var(--text3);margin-top:3px">${item.motivo}</div>`:''}</td>
       <td style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text2)">${item.desde||'—'}–${item.hasta||'—'}</td>
@@ -2059,12 +2064,11 @@ function renderExtras() {
     return;
   }
   tbody.innerHTML = extraRows.map(({j,item})=>{
-    const d = new Date(j.date+'T12:00:00');
     const otLabel = getOTNum(item.otId, db);
-    const motivo  = item.desde < '08:00' ? 'Antes del turno' : item.hasta > '17:00' ? 'Después del turno' : item.hasta > '16:30' && new Date(j.date+'T12:00:00').getDay()===5 ? 'Después del turno (viernes)' : 'Fuera de horario';
+    const motivo  = (item.desde||'') < '08:00' ? 'Antes del turno' : (item.hasta||'') > '17:00' ? 'Después del turno' : 'Fuera de horario';
     return `<tr>
       <td>${getTechName(j.techId)}</td>
-      <td>${d.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short'})}</td>
+      <td>${formatDateShort(j.date)}</td>
       <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700">${otLabel}</td>
       <td style="font-family:'Barlow Condensed',sans-serif;color:var(--text2)">${item.desde}–${item.hasta}</td>
       <td style="color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-weight:700">${(item.horasRegulares||0).toFixed(2)}h</td>
@@ -2486,29 +2490,65 @@ function openJornadaById(id) {
   if (j) showJornadaDetail(j);
 }
 
+// Safe date parser — handles both '2026-04-17' and other formats from Sheets
+function parseDate(dateStr) {
+  if (!dateStr) return new Date('invalid');
+  // Already ISO format
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(dateStr))) return new Date(dateStr + 'T12:00:00');
+  // Try direct parse
+  const d = new Date(dateStr);
+  return isNaN(d) ? new Date('invalid') : d;
+}
+
+function formatDate(dateStr) {
+  const d = parseDate(dateStr);
+  if (isNaN(d)) return String(dateStr).substring(0,10) || '—';
+  return d.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
+}
+function formatDateShort(dateStr) {
+  const d = parseDate(dateStr);
+  if (isNaN(d)) return String(dateStr).substring(0,10) || '—';
+  return d.toLocaleDateString('es-AR', { weekday:'short', day:'numeric', month:'short' });
+}
+
 function showJornadaDetail(j) {
   if (typeof j === 'string') j = JSON.parse(j);
   const db = getDB();
-  const d  = new Date(j.date+'T12:00:00');
-  document.getElementById('modal-title').textContent =
-    getTechName(j.techId) + ' · ' + d.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
 
-  const totalH = j.items.reduce((s,i)=>s+i.horas,0);
-  const extraH = j.items.reduce((s,i)=>s+(i.horasExtra||0),0);
-  const prodH  = j.items.filter(i=>i.tipo==='Productiva').reduce((s,i)=>s+i.horas,0);
+  document.getElementById('modal-title').innerHTML =
+    `${getTechName(j.techId)} · ${formatDate(j.date)}
+    <span style="font-size:11px;color:var(--text3);font-family:'Barlow',sans-serif;font-weight:400;display:block;margin-top:2px">Jornada ${j.status==='sent'?'enviada':'borrador'}</span>`;
 
-  let html = `<div class="jd-summary">
+  renderJornadaDetail(j, db);
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function renderJornadaDetail(j, db) {
+  if (!db) db = getDB();
+  const totalH = j.items.reduce((s,i)=>s+(parseFloat(i.horas)||0),0);
+  const extraH = j.items.reduce((s,i)=>s+(parseFloat(i.horasExtra)||0),0);
+  const prodH  = j.items.filter(i=>i.tipo==='Productiva').reduce((s,i)=>s+(parseFloat(i.horas)||0),0);
+
+  let html = `
+  <div class="jd-summary">
     <div><div class="jds-val">${totalH.toFixed(1)}h</div><div class="jds-label">Total</div></div>
     <div><div class="jds-val" style="color:var(--lime)">${prodH.toFixed(1)}h</div><div class="jds-label">Prod.</div></div>
     <div><div class="jds-val" style="color:var(--amber)">${extraH.toFixed(1)}h</div><div class="jds-label">Extra</div></div>
   </div>
-  <div class="jd-section-label">Registros</div>`;
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px">
+    <div class="jd-section-label" style="margin:0">Registros</div>
+    <button onclick="addItemToJornada('${j.id}')"
+      style="background:var(--cyan-dim2);border:1px solid var(--border2);border-radius:6px;padding:5px 12px;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
+      + Agregar item
+    </button>
+  </div>`;
 
-  j.items.forEach(item=>{
-    const ot = getOT(item.otId, db);
+  j.items.forEach((item, idx) => {
+    const ot  = getOT(item.otId, db);
     const otLabel = getOTNum(item.otId, db);
-    const ext = item.horasExtra||0;
-    html += `<div class="jd-row">
+    const ext = parseFloat(item.horasExtra)||0;
+    html += `
+    <div class="jd-row" id="jd-item-${item.id}" style="position:relative">
       <div class="jd-left">
         <div class="jd-num">${otLabel}</div>
         <div class="jd-meta">${ot?ot.desc:(item.motivo||'')} · ${item.desde||''}–${item.hasta||''}</div>
@@ -2517,21 +2557,227 @@ function showJornadaDetail(j) {
           ${ot?`<span class="tag ${typeTagClass(ot.type)}">${ot.type}</span>`:''}
           ${ext>0?`<span class="tag tag-extra">+${ext.toFixed(2)}h extra</span>`:''}
         </div>
-        ${item.obs?`<div style="font-size:12px;color:var(--text2);margin-top:6px;font-style:italic">"${item.obs}"</div>`:''}
+        ${item.obs?`<div style="font-size:12px;color:var(--text2);margin-top:4px;font-style:italic">"${item.obs}"</div>`:''}
       </div>
-      <div>
-        <div class="jd-hours">${item.horas.toFixed(1)}h</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div class="jd-hours">${parseFloat(item.horas).toFixed(1)}h</div>
         ${ext>0?`<div class="jd-extra-badge">+${ext.toFixed(2)}h extra</div>`:''}
+        <div style="display:flex;gap:4px;margin-top:4px">
+          <button onclick="editItemInJornada('${j.id}','${item.id}')"
+            style="background:var(--surface3);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;font-family:'Barlow',sans-serif">
+            ✏️ Editar
+          </button>
+          <button onclick="deleteItemFromJornada('${j.id}','${item.id}')"
+            style="background:var(--red-dim);border:1px solid rgba(240,72,72,0.25);border-radius:5px;padding:4px 8px;color:var(--red);font-size:11px;cursor:pointer;font-family:'Barlow',sans-serif">
+            ✕
+          </button>
+        </div>
       </div>
     </div>`;
   });
 
   document.getElementById('modal-body').innerHTML = html;
-  document.getElementById('modal-overlay').classList.add('open');
 }
 
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
+// ── EDIT ITEM IN JORNADA ──
+function editItemInJornada(jornadaId, itemId) {
+  const db = getDB();
+  const j  = db.jornadas.find(j => j.id === jornadaId);
+  if (!j) return;
+  const item = j.items.find(i => i.id === itemId);
+  if (!item) return;
+  showItemEditDialog(jornadaId, item, db);
+}
+
+function addItemToJornada(jornadaId) {
+  const newItem = {
+    id: 'item_admin_' + Date.now(),
+    otId: '', tipo: '', horas: 0,
+    desde: '08:00', hasta: '09:00',
+    obs: '', motivo: '', horasRegulares: 0, horasExtra: 0
+  };
+  showItemEditDialog(jornadaId, newItem, getDB(), true);
+}
+
+function showItemEditDialog(jornadaId, item, db, isNew = false) {
+  const existing = document.getElementById('item-edit-dialog');
+  if (existing) existing.remove();
+
+  const orders = (db.orders || []).filter(o => o.status === 'active');
+  const timeSlots = [];
+  for (let h = 6; h <= 22; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      if (h === 22 && m > 0) break;
+      timeSlots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
+    }
+  }
+  const timeOpts = timeSlots.map(s => `<option value="${s}" ${s===item.desde||s===item.hasta?'selected':''}>${s}</option>`).join('');
+  const desdeOpts = timeSlots.map(s=>`<option value="${s}" ${s===item.desde?'selected':''}>${s}</option>`).join('');
+  const hastaOpts = timeSlots.map(s=>`<option value="${s}" ${s===item.hasta?'selected':''}>${s}</option>`).join('');
+
+  const tipos = ['Productiva','Improductiva','Capacitación','Viaje','Refrigerio'];
+  const tipoOpts = tipos.map(t => `<option value="${t}" ${t===item.tipo?'selected':''}>${t}</option>`).join('');
+
+  const isNoOT = item.otId === '__REFRIGERIO__' || item.otId === '__IMPRODUCTIVA__';
+  const otOpts = `<option value="">— Seleccioná la OT —</option>
+    <option value="__REFRIGERIO__" ${item.otId==='__REFRIGERIO__'?'selected':''}>☕ Refrigerio</option>
+    <option value="__IMPRODUCTIVA__" ${item.otId==='__IMPRODUCTIVA__'?'selected':''}>⏸ Improductiva</option>
+    ${orders.map(o=>`<option value="${o.id}" ${o.id===item.otId?'selected':''}>${o.num} · ${o.desc.substring(0,30)}</option>`).join('')}`;
+
+  const motivoOpts = ['Espera de repuesto','Espera de autorización','Sin trabajo asignado','Falla de herramienta/equipo','Reunión interna','Otros']
+    .map(m=>`<option value="${m}" ${m===item.motivo?'selected':''}>${m}</option>`).join('');
+
+  const dialog = document.createElement('div');
+  dialog.id = 'item-edit-dialog';
+  dialog.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px';
+  dialog.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800">${isNew?'Agregar registro':'Editar registro'}</div>
+        <button onclick="document.getElementById('item-edit-dialog').remove()" style="background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:28px;height:28px;color:var(--text2);cursor:pointer;font-size:14px">✕</button>
+      </div>
+
+      <div class="fi-field" style="margin-bottom:14px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">OT / Tipo</label>
+        <select id="edit-otid" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;-webkit-appearance:none" onchange="toggleEditMotivoField()">
+          ${otOpts}
+        </select>
+      </div>
+
+      <div id="edit-motivo-field" style="margin-bottom:14px;${item.tipo!=='Improductiva'?'display:none':''}">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Motivo</label>
+        <select id="edit-motivo" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;-webkit-appearance:none">
+          <option value="">— Seleccioná el motivo —</option>
+          ${motivoOpts}
+        </select>
+      </div>
+
+      <div class="fi-field" style="margin-bottom:14px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Tipo de hora</label>
+        <select id="edit-tipo" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;-webkit-appearance:none">
+          ${tipoOpts}
+        </select>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Desde</label>
+          <select id="edit-desde" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;outline:none;-webkit-appearance:none;text-align:center">${desdeOpts}</select>
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Hasta</label>
+          <select id="edit-hasta" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;outline:none;-webkit-appearance:none;text-align:center">${hastaOpts}</select>
+        </div>
+      </div>
+
+      <div class="fi-field" style="margin-bottom:20px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Observaciones</label>
+        <input type="text" id="edit-obs" value="${item.obs||''}" placeholder="Observaciones..."
+          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none" />
+      </div>
+
+      <div style="display:flex;gap:8px">
+        <button onclick="document.getElementById('item-edit-dialog').remove()"
+          style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:12px;color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-transform:uppercase">
+          Cancelar
+        </button>
+        <button onclick="saveItemEdit('${jornadaId}','${item.id}',${isNew})"
+          style="flex:2;background:var(--cyan);border:none;border-radius:var(--r3);padding:12px;color:var(--bg);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px">
+          ✅ Guardar cambios
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(dialog);
+}
+
+function toggleEditMotivoField() {
+  const otId = document.getElementById('edit-otid').value;
+  const f = document.getElementById('edit-motivo-field');
+  if (f) f.style.display = otId === '__IMPRODUCTIVA__' ? '' : 'none';
+}
+
+async function saveItemEdit(jornadaId, itemId, isNew) {
+  const db     = getDB();
+  const j      = db.jornadas.find(j => j.id === jornadaId);
+  if (!j) return;
+
+  const otId  = document.getElementById('edit-otid').value;
+  const tipo  = document.getElementById('edit-tipo').value;
+  const desde = document.getElementById('edit-desde').value;
+  const hasta = document.getElementById('edit-hasta').value;
+  const obs   = document.getElementById('edit-obs').value.trim();
+  const motivo= document.getElementById('edit-motivo')?.value || '';
+
+  if (!otId)  { showToast('Seleccioná una OT o tipo', 'error'); return; }
+  if (!tipo)  { showToast('Seleccioná el tipo de hora', 'error'); return; }
+
+  const startM = toMin(desde), endM = toMin(hasta);
+  if (endM <= startM) { showToast('El horario de fin debe ser posterior al inicio', 'error'); return; }
+
+  const horas = (endM - startM) / 60;
+  // Calc overtime based on jornada date
+  const j_date = String(j.date).substring(0,10);
+  const d = new Date(j_date + 'T12:00:00');
+  const dow = d.getDay();
+  let regEnd = dow === 5 ? 16*60+30 : 17*60;
+  const overlapStart = Math.max(startM, 8*60);
+  const overlapEnd   = Math.min(endM, regEnd);
+  const regMin = Math.max(0, overlapEnd - overlapStart);
+  const extMin = (endM - startM) - regMin;
+
+  const updatedItem = {
+    id: itemId, otId, tipo, horas,
+    desde, hasta, obs, motivo,
+    horasRegulares: regMin/60,
+    horasExtra: extMin/60
+  };
+
+  if (isNew) {
+    j.items.push(updatedItem);
+  } else {
+    const idx = j.items.findIndex(i => i.id === itemId);
+    if (idx >= 0) j.items[idx] = updatedItem;
+  }
+
+  saveDB(db);
+
+  // Push to server
+  showToast('Guardando...', 'default');
+  const pushed = await pushJornada(j);
+  showToast(pushed ? 'Cambios guardados ✓' : 'Guardado local (sin conexión)', pushed ? 'success' : 'default');
+
+  document.getElementById('item-edit-dialog').remove();
+
+  // Re-render modal with updated data
+  renderJornadaDetail(j, db);
+  // Refresh tables
+  renderRegistros();
+  renderDashboard();
+}
+
+async function deleteItemFromJornada(jornadaId, itemId) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  const db = getDB();
+  const j  = db.jornadas.find(j => j.id === jornadaId);
+  if (!j) return;
+  j.items = j.items.filter(i => i.id !== itemId);
+  saveDB(db);
+  const pushed = await pushJornada(j);
+  showToast(pushed ? 'Registro eliminado ✓' : 'Eliminado local (sin conexión)', pushed ? 'success' : 'default');
+  renderJornadaDetail(j, db);
+  renderRegistros();
+  renderDashboard();
+}
+
+async function pushJornada(jornada) {
+  try {
+    const res  = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveJornada', jornada })
+    });
+    const json = await res.json();
+    return json.ok;
+  } catch(e) { return false; }
 }
 
 // ════════════════════════════════════════════
@@ -2620,6 +2866,15 @@ function showToast(msg, type='default') {
   t.textContent = msg;
   t.className = 'toast '+type+' show';
   setTimeout(()=>t.classList.remove('show'), 2400);
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      console.log('SW registered:', reg.scope);
+    }).catch(err => console.warn('SW error:', err));
+  });
 }
 </script>
 </body>
