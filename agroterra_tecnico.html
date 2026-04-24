@@ -6,43 +6,39 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0d1410">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#002060">
 <meta name="apple-mobile-web-app-title" content="AT Horas">
-<meta name="application-name" content="AT Horas">
 <link rel="manifest" href="manifest_tecnico.json">
 <link rel="apple-touch-icon" href="icon_tecnico.png">
 <title>Agroterra · Técnico</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #0d1410;
-  --bg2:      #121a15;
-  --surface:  #182018;
-  --surface2: #1e2a1e;
-  --surface3: #243024;
-  --border:   rgba(100,200,80,0.10);
-  --border2:  rgba(100,200,80,0.22);
-  --border3:  rgba(100,200,80,0.35);
-  --lime:     #a8e040;
-  --lime2:    #7ab830;
-  --lime-dim: rgba(168,224,64,0.12);
-  --lime-dim2:rgba(168,224,64,0.20);
-  --amber:    #f5b830;
-  --amber-dim:rgba(245,184,48,0.12);
-  --red:      #f04848;
-  --red-dim:  rgba(240,72,72,0.12);
-  --blue:     #50b0ff;
-  --blue-dim: rgba(80,176,255,0.12);
-  --purple:   #b080ff;
-  --purple-dim:rgba(176,128,255,0.12);
-  --text:     #ddeedd;
-  --text2:    #7a9e82;
-  --text3:    #3d5440;
-  --r:        16px;
-  --r2:       12px;
-  --r3:       8px;
+  /* ── NEW HOLLAND PALETTE ── */
+  --bg:        #001840;
+  --bg2:       #002060;
+  --surface:   #00297a;
+  --surface2:  #003090;
+  --surface3:  #0038a8;
+  --border:    rgba(255,204,0,0.15);
+  --border2:   rgba(255,204,0,0.30);
+  --border3:   rgba(255,204,0,0.50);
+  --nh-yellow: #FFCC00;
+  --nh-yellow2:#E6B800;
+  --nh-dim:    rgba(255,204,0,0.12);
+  --nh-dim2:   rgba(255,204,0,0.22);
+  --amber:     #FFB020;
+  --amber-dim: rgba(255,176,32,0.12);
+  --red:       #FF4444;
+  --red-dim:   rgba(255,68,68,0.12);
+  --blue:      #60C8FF;
+  --blue-dim:  rgba(96,200,255,0.12);
+  --purple:    #C090FF;
+  --purple-dim:rgba(192,144,255,0.12);
+  --text:      #EEF4FF;
+  --text2:     #7090C0;
+  --text3:     #304870;
+  --r:  16px; --r2: 12px; --r3: 8px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
@@ -52,974 +48,257 @@ html, body {
   color: var(--text);
   overflow: hidden;
 }
-
-/* ── SCREENS ── */
 .screen { position: absolute; inset: 0; display: none; flex-direction: column; }
 .screen.active { display: flex; }
 
-/* ════════════════════════════════════════
-   LOGIN
-════════════════════════════════════════ */
+/* ── LOGIN ── */
 #s-login {
-  align-items: center;
-  justify-content: center;
+  align-items: center; justify-content: center;
   padding: 32px 24px;
-  background:
-    radial-gradient(ellipse 120% 50% at 50% -10%, rgba(168,224,64,0.08) 0%, transparent 60%),
-    var(--bg);
-  gap: 0;
+  background: radial-gradient(ellipse 120% 50% at 50% -10%, rgba(255,204,0,0.10) 0%, transparent 60%), var(--bg);
 }
-.login-brand {
-  text-align: center;
-  margin-bottom: 48px;
-}
-.brand-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
+.login-brand { text-align: center; margin-bottom: 48px; }
+.brand-logo { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .brand-icon {
   width: 44px; height: 44px;
-  background: var(--lime-dim2);
-  border: 1px solid var(--border3);
+  background: var(--nh-yellow);
   border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
+  font-size: 24px;
 }
-.brand-name {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: var(--text);
-}
-.brand-name em { color: var(--lime); font-style: normal; }
-.brand-sub {
-  font-size: 12px;
-  color: var(--text3);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-top: 6px;
-}
+.brand-name { font-family:'Barlow Condensed',sans-serif; font-size:32px; font-weight:800; letter-spacing:1px; color:var(--text); }
+.brand-name em { color: var(--nh-yellow); font-style: normal; }
+.brand-sub { font-size:12px; color:var(--text3); letter-spacing:3px; text-transform:uppercase; margin-top:6px; }
 
 .login-card {
-  width: 100%;
-  max-width: 360px;
+  width:100%; max-width:360px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 28px 24px;
 }
-.login-card h2 {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 22px;
-  letter-spacing: 0.3px;
-}
-.lfield { margin-bottom: 16px; }
-.lfield label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
+.login-card h2 { font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:700; margin-bottom:22px; }
+.lfield { margin-bottom:16px; }
+.lfield label { display:block; font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
 .lfield select, .lfield input {
-  width: 100%;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r3);
-  padding: 13px 14px;
-  color: var(--text);
-  font-family: 'Barlow', sans-serif;
-  font-size: 16px;
-  outline: none;
-  -webkit-appearance: none;
-  transition: border-color 0.2s;
+  width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:var(--r3);
+  padding:13px 14px; color:var(--text); font-family:'Barlow',sans-serif; font-size:16px;
+  outline:none; -webkit-appearance:none; transition:border-color 0.2s;
 }
-.lfield select:focus, .lfield input:focus { border-color: var(--lime2); }
-.lfield select option { background: #141e14; }
-
-/* PIN pad */
-.pin-display {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-.pin-dot {
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  border: 2px solid var(--border2);
-  background: transparent;
-  transition: all 0.15s;
-}
-.pin-dot.filled {
-  background: var(--lime);
-  border-color: var(--lime);
-  box-shadow: 0 0 8px rgba(168,224,64,0.4);
-}
-.pin-pad {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.pin-key {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--r3);
-  padding: 16px;
-  text-align: center;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  cursor: pointer;
-  color: var(--text);
-  transition: all 0.1s;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-.pin-key:active {
-  background: var(--lime-dim2);
-  border-color: var(--border3);
-  transform: scale(0.95);
-}
-.pin-key.del { font-size: 18px; }
-
+.lfield select:focus, .lfield input:focus { border-color: var(--nh-yellow2); }
+.lfield select option { background: #002060; }
 .btn-login {
-  width: 100%;
-  background: var(--lime);
-  color: var(--bg);
-  border: none;
-  border-radius: var(--r2);
-  padding: 15px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-transform: uppercase;
+  width:100%; background:var(--nh-yellow); color:#001840;
+  border:none; border-radius:var(--r2); padding:15px;
+  font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; letter-spacing:1px;
+  cursor:pointer; transition:all 0.15s; text-transform:uppercase;
 }
-.btn-login:active { transform: scale(0.98); opacity: 0.85; }
-.btn-login:disabled { opacity: 0.4; }
-.login-error {
-  text-align: center;
-  color: var(--red);
-  font-size: 13px;
-  margin-top: 12px;
-  min-height: 20px;
-}
+.btn-login:active { transform:scale(0.98); opacity:0.85; }
+.btn-login:disabled { opacity:0.4; }
+.login-error { text-align:center; color:var(--red); font-size:13px; margin-top:12px; min-height:20px; }
 
-/* ════════════════════════════════════════
-   MAIN APP SHELL
-════════════════════════════════════════ */
-#s-app {
-  background: var(--bg);
-  overflow: hidden;
-}
-
-/* Header */
+/* ── APP SHELL ── */
+#s-app { background:var(--bg); overflow:hidden; }
 .app-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 50;
+  background:var(--surface); border-bottom:1px solid var(--border);
+  padding:12px 16px; display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0; position:relative; z-index:50;
 }
-.header-left {}
-.header-brand {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-.header-brand em { color: var(--lime); font-style: normal; }
-.header-tech {
-  font-size: 12px;
-  color: var(--text2);
-  margin-top: 1px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.tech-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--lime);
-  flex-shrink: 0;
-}
-.header-right { display: flex; align-items: center; gap: 8px; }
+.header-brand { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; letter-spacing:0.5px; }
+.header-brand em { color:var(--nh-yellow); font-style:normal; }
+.header-tech { font-size:12px; color:var(--text2); margin-top:1px; display:flex; align-items:center; gap:6px; }
+.tech-dot { width:7px; height:7px; border-radius:50%; background:var(--nh-yellow); flex-shrink:0; }
+.header-right { display:flex; align-items:center; gap:8px; }
 
-/* Sync badge */
-.sync-badge {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  border: 1px solid;
-  transition: all 0.3s;
-}
-.sync-badge.online {
-  background: var(--lime-dim);
-  border-color: var(--border2);
-  color: var(--lime);
-}
-.sync-badge.offline {
-  background: var(--amber-dim);
-  border-color: rgba(245,184,48,0.3);
-  color: var(--amber);
-}
-.sync-badge.pending {
-  background: var(--amber-dim);
-  border-color: rgba(245,184,48,0.3);
-  color: var(--amber);
-}
-.sync-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-}
-.sync-dot.pulse {
-  animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.7); }
-}
+.sync-badge { display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; font-size:11px; font-weight:600; border:1px solid; transition:all 0.3s; }
+.sync-badge.online  { background:var(--nh-dim);   border-color:var(--border2); color:var(--nh-yellow); }
+.sync-badge.offline { background:var(--amber-dim); border-color:rgba(255,176,32,0.3); color:var(--amber); }
+.sync-badge.pending { background:var(--amber-dim); border-color:rgba(255,176,32,0.3); color:var(--amber); }
+.sync-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+.sync-dot.pulse { animation:pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
 
-.btn-logout {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text3);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 12px;
-  cursor: pointer;
-  font-family: 'Barlow', sans-serif;
-  transition: all 0.2s;
-}
+.btn-logout { background:none; border:1px solid var(--border); color:var(--text3); border-radius:8px; padding:6px 10px; font-size:12px; cursor:pointer; font-family:'Barlow',sans-serif; transition:all 0.2s; }
 
-/* Bottom nav */
 .bottom-nav {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  display: flex;
-  z-index: 50;
-  padding: 0 0 env(safe-area-inset-bottom, 0);
-  flex-shrink: 0;
+  position:absolute; bottom:0; left:0; right:0;
+  background:var(--surface); border-top:1px solid var(--border);
+  display:flex; z-index:50;
+  padding:0 0 env(safe-area-inset-bottom,0);
 }
-.nav-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px 4px 8px;
-  cursor: pointer;
-  gap: 3px;
-  -webkit-tap-highlight-color: transparent;
-  position: relative;
-}
-.nav-btn::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 28px; height: 2px;
-  background: var(--lime);
-  border-radius: 0 0 3px 3px;
-  transition: transform 0.2s;
-}
-.nav-btn.active::before { transform: translateX(-50%) scaleX(1); }
-.nav-btn .ni { font-size: 20px; line-height: 1; }
-.nav-btn .nl {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: color 0.2s;
-}
-.nav-btn.active .nl { color: var(--lime); }
-.nav-badge {
-  position: absolute;
-  top: 6px; right: calc(50% - 18px);
-  background: var(--red);
-  color: white;
-  font-size: 9px;
-  font-weight: 700;
-  min-width: 15px; height: 15px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  padding: 0 3px;
-}
+.nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px 4px 8px; cursor:pointer; gap:3px; -webkit-tap-highlight-color:transparent; position:relative; }
+.nav-btn::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%) scaleX(0); width:28px; height:2px; background:var(--nh-yellow); border-radius:0 0 3px 3px; transition:transform 0.2s; }
+.nav-btn.active::before { transform:translateX(-50%) scaleX(1); }
+.nav-btn .ni { font-size:20px; line-height:1; }
+.nav-btn .nl { font-size:10px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; transition:color 0.2s; }
+.nav-btn.active .nl { color:var(--nh-yellow); }
+.nav-badge { position:absolute; top:6px; right:calc(50% - 18px); background:var(--red); color:white; font-size:9px; font-weight:700; min-width:15px; height:15px; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 3px; }
 
-/* Scrollable content */
-.app-content {
-  position: absolute;
-  top: 65px;
-  bottom: 58px;
-  left: 0; right: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
+.app-content { position:absolute; top:65px; bottom:58px; left:0; right:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 
-/* ════════════════════════════════════════
-   VIEWS
-════════════════════════════════════════ */
-.view { display: none; padding: 16px 16px 24px; min-height: 100%; }
-.view.active { display: block; }
+/* ── VIEWS ── */
+.view { display:none; padding:16px 16px 24px; min-height:100%; }
+.view.active { display:block; }
 
-/* ── HOY VIEW ── */
+/* ── DAY HERO ── */
 .day-hero {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 18px 20px;
-  margin-bottom: 16px;
-  position: relative;
-  overflow: hidden;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
+  padding:18px 20px; margin-bottom:16px; position:relative; overflow:hidden;
 }
 .day-hero::before {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
-  width: 120px; height: 120px;
-  background: radial-gradient(circle, rgba(168,224,64,0.06) 0%, transparent 70%);
-  border-radius: 50%;
+  content:''; position:absolute; top:0; right:0; width:120px; height:120px;
+  background:radial-gradient(circle, rgba(255,204,0,0.07) 0%, transparent 70%); border-radius:50%;
 }
-.day-hero-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.day-date-big {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--lime);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 2px;
-}
-.day-name-big {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1;
-}
-.jornada-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.status-draft {
-  background: var(--amber-dim);
-  border: 1px solid rgba(245,184,48,0.25);
-  color: var(--amber);
-}
-.status-sent {
-  background: var(--lime-dim);
-  border: 1px solid var(--border2);
-  color: var(--lime);
-}
-.day-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-.day-metric {
-  background: var(--bg2);
-  border-radius: var(--r3);
-  padding: 10px 8px;
-  text-align: center;
-}
-.dm-val {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--lime);
-  margin-bottom: 3px;
-}
-.dm-label {
-  font-size: 10px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+.day-hero-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; }
+.day-date-big { font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; color:var(--nh-yellow); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:2px; }
+.day-name-big { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; color:var(--text); line-height:1; }
+.jornada-status { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+.status-draft { background:var(--amber-dim); border:1px solid rgba(255,176,32,0.25); color:var(--amber); }
+.status-sent  { background:var(--nh-dim);    border:1px solid var(--border2); color:var(--nh-yellow); }
+.day-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.day-metric { background:var(--bg2); border-radius:var(--r3); padding:10px 8px; text-align:center; }
+.dm-val { font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; line-height:1; color:var(--nh-yellow); margin-bottom:3px; }
+.dm-label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; }
 
-/* OT list */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  margin-top: 4px;
-}
-.section-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
+/* ── OT CARDS ── */
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; margin-top:4px; }
+.section-title { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:1px; }
 
-.ot-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 14px 16px;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: border-color 0.2s;
-  animation: slideIn 0.2s ease;
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.ot-card:hover { border-color: var(--border2); }
-.ot-card.locked { opacity: 0.7; }
-.ot-card-left { flex: 1; min-width: 0; }
-.ot-card-num {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.ot-card-desc {
-  font-size: 12px;
-  color: var(--text2);
-  margin-bottom: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.ot-card-tags { display: flex; gap: 5px; flex-wrap: wrap; }
-.tag {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-.tag-prod    { background: var(--lime-dim);   color: var(--lime);   border: 1px solid rgba(168,224,64,0.2); }
-.tag-improd  { background: var(--amber-dim);  color: var(--amber);  border: 1px solid rgba(245,184,48,0.2); }
-.tag-cap     { background: var(--blue-dim);   color: var(--blue);   border: 1px solid rgba(80,176,255,0.2); }
-.tag-viaje   { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(176,128,255,0.2); }
-.tag-refrig  { background: rgba(255,130,80,0.12); color: #ff8250; border: 1px solid rgba(255,130,80,0.2); }
-.tag-cli     { background: rgba(80,200,120,0.12); color: #50c880; border: 1px solid rgba(80,200,120,0.2); }
-.tag-gar     { background: var(--amber-dim);  color: var(--amber);  border: 1px solid rgba(245,184,48,0.2); }
-.tag-int     { background: var(--blue-dim);   color: var(--blue);   border: 1px solid rgba(80,176,255,0.2); }
-.ot-card-hours {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--lime);
-  white-space: nowrap;
-  line-height: 1;
-}
-.ot-card-hours small { font-size: 13px; font-weight: 600; color: var(--text2); }
-.btn-icon {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  width: 34px; height: 34px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  cursor: pointer;
-  color: var(--text3);
-  transition: all 0.15s;
-  flex-shrink: 0;
-}
-.btn-icon:hover { border-color: var(--border2); color: var(--text); }
-.btn-icon.del:hover { border-color: rgba(240,72,72,0.4); color: var(--red); background: var(--red-dim); }
+.ot-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r2); padding:14px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; transition:border-color 0.2s; animation:slideIn 0.2s ease; }
+@keyframes slideIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.ot-card:hover { border-color:var(--border2); }
+.ot-card.locked { opacity:0.7; }
+.ot-card-left { flex:1; min-width:0; }
+.ot-card-num { font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:700; color:var(--text); margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ot-card-desc { font-size:12px; color:var(--text2); margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ot-card-tags { display:flex; gap:5px; flex-wrap:wrap; }
+.tag { display:inline-block; padding:2px 7px; border-radius:4px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; }
+.tag-prod    { background:var(--nh-dim);   color:var(--nh-yellow); border:1px solid rgba(255,204,0,0.2); }
+.tag-improd  { background:var(--amber-dim); color:var(--amber);     border:1px solid rgba(255,176,32,0.2); }
+.tag-cap     { background:var(--blue-dim);  color:var(--blue);      border:1px solid rgba(96,200,255,0.2); }
+.tag-viaje   { background:var(--purple-dim);color:var(--purple);    border:1px solid rgba(192,144,255,0.2); }
+.tag-refrig  { background:rgba(255,130,80,0.12); color:#ff8250;     border:1px solid rgba(255,130,80,0.2); }
+.tag-cli     { background:rgba(80,200,120,0.12); color:#50c880;     border:1px solid rgba(80,200,120,0.2); }
+.tag-gar     { background:var(--amber-dim); color:var(--amber);     border:1px solid rgba(255,176,32,0.2); }
+.tag-int     { background:var(--blue-dim);  color:var(--blue);      border:1px solid rgba(96,200,255,0.2); }
+.ot-card-hours { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; color:var(--nh-yellow); white-space:nowrap; line-height:1; }
+.ot-card-hours small { font-size:13px; font-weight:600; color:var(--text2); }
+.btn-icon { background:none; border:1px solid var(--border); border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-size:15px; cursor:pointer; color:var(--text3); transition:all 0.15s; flex-shrink:0; }
+.btn-icon:hover { border-color:var(--border2); color:var(--text); }
+.btn-icon.del:hover { border-color:rgba(255,68,68,0.4); color:var(--red); background:var(--red-dim); }
 
-/* Empty state */
-.empty-state {
-  text-align: center;
-  padding: 32px 20px;
-  background: var(--surface);
-  border: 1px dashed var(--border2);
-  border-radius: var(--r2);
-  margin-bottom: 16px;
-}
-.empty-icon { font-size: 36px; margin-bottom: 10px; }
-.empty-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text2);
-  margin-bottom: 4px;
-}
-.empty-sub { font-size: 13px; color: var(--text3); }
+.empty-state { text-align:center; padding:32px 20px; background:var(--surface); border:1px dashed var(--border2); border-radius:var(--r2); margin-bottom:16px; }
+.empty-icon { font-size:36px; margin-bottom:10px; }
+.empty-title { font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:700; color:var(--text2); margin-bottom:4px; }
+.empty-sub { font-size:13px; color:var(--text3); }
 
-/* Add OT button */
-.btn-add-ot {
-  width: 100%;
-  background: var(--lime-dim);
-  border: 1px dashed var(--border3);
-  border-radius: var(--r2);
-  padding: 15px;
-  color: var(--lime);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.15s;
-  margin-bottom: 12px;
-  -webkit-tap-highlight-color: transparent;
-}
-.btn-add-ot:active { transform: scale(0.98); }
-.btn-add-ot:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-add-ot { width:100%; background:var(--nh-dim); border:1px dashed var(--border3); border-radius:var(--r2); padding:15px; color:var(--nh-yellow); font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.15s; margin-bottom:12px; -webkit-tap-highlight-color:transparent; }
+.btn-add-ot:active { transform:scale(0.98); }
+.btn-add-ot:disabled { opacity:0.3; cursor:not-allowed; }
 
-/* Submit jornada */
-.btn-enviar {
-  width: 100%;
-  background: var(--lime);
-  color: var(--bg);
-  border: none;
-  border-radius: var(--r2);
-  padding: 17px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.15s;
-  position: relative;
-  overflow: hidden;
-}
-.btn-enviar:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-.btn-enviar:not(:disabled):active { transform: scale(0.98); }
-.btn-enviar-hint {
-  text-align: center;
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: 8px;
-}
+/* Save indicator */
+.save-indicator { text-align:center; font-size:11px; color:var(--text3); margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; min-height:18px; }
+.save-indicator.saving { color:var(--amber); }
+.save-indicator.saved  { color:var(--nh-yellow); }
 
-/* ── HISTORIAL VIEW ── */
-.hist-week-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-  padding-left: 4px;
-}
-.hist-day-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 14px 16px;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  transition: border-color 0.2s;
-  -webkit-tap-highlight-color: transparent;
-}
-.hist-day-card:hover { border-color: var(--border2); }
-.hist-date-col {
-  text-align: center;
-  min-width: 38px;
-}
-.hist-day-num {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1;
-}
-.hist-day-mon {
-  font-size: 10px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.hist-info { flex: 1; min-width: 0; }
-.hist-ots {
-  font-size: 13px;
-  color: var(--text2);
-  margin-bottom: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.hist-tags { display: flex; gap: 5px; }
-.hist-hours-col { text-align: right; }
-.hist-hours {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1;
-}
-.hist-hours-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.hist-sync-pending {
-  font-size: 10px;
-  color: var(--amber);
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  margin-top: 3px;
-}
+.btn-enviar { width:100%; background:var(--nh-yellow); color:#001840; border:none; border-radius:var(--r2); padding:17px; font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:all 0.15s; }
+.btn-enviar:disabled { opacity:0.3; cursor:not-allowed; }
+.btn-enviar:not(:disabled):active { transform:scale(0.98); }
+.btn-enviar-hint { text-align:center; font-size:11px; color:var(--text3); margin-top:8px; }
 
-/* ── FORM BOTTOM SHEET ── */
-.sheet-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.75);
-  z-index: 200;
-  display: none;
-  align-items: flex-end;
-}
-.sheet-overlay.open { display: flex; }
-.sheet {
-  background: var(--surface);
-  border-radius: 20px 20px 0 0;
-  border-top: 1px solid var(--border);
-  width: 100%;
-  max-height: 92dvh;
-  display: flex;
-  flex-direction: column;
-  animation: sheetUp 0.3s cubic-bezier(0.34,1.2,0.64,1);
-}
-@keyframes sheetUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-.sheet-handle {
-  width: 36px; height: 4px;
-  background: var(--border2);
-  border-radius: 2px;
-  margin: 14px auto 0;
-  flex-shrink: 0;
-}
-.sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px 0;
-  flex-shrink: 0;
-}
-.sheet-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-}
-.btn-close-sheet {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  cursor: pointer;
-  color: var(--text2);
-  transition: all 0.2s;
-}
-.sheet-body {
-  padding: 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-.field {
-  margin-bottom: 18px;
-}
-.field label {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-.field input, .field select, .field textarea {
-  width: 100%;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r3);
-  padding: 13px 14px;
-  color: var(--text);
-  font-family: 'Barlow', sans-serif;
-  font-size: 16px;
-  outline: none;
-  -webkit-appearance: none;
-  transition: border-color 0.2s;
-}
-.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--lime2); }
-.field select option { background: #141e14; }
-.field textarea { resize: none; height: 80px; }
+/* ── HISTORIAL ── */
+.hist-week-label { font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; padding-left:4px; }
+.hist-day-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r2); padding:14px 16px; margin-bottom:8px; display:flex; align-items:center; gap:14px; cursor:pointer; transition:border-color 0.2s; -webkit-tap-highlight-color:transparent; }
+.hist-day-card:hover { border-color:var(--border2); }
+.hist-date-col { text-align:center; min-width:38px; }
+.hist-day-num { font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; color:var(--text); line-height:1; }
+.hist-day-mon { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; }
+.hist-info { flex:1; min-width:0; }
+.hist-ots { font-size:13px; color:var(--text2); margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hist-tags { display:flex; gap:5px; }
+.hist-hours-col { text-align:right; }
+.hist-hours { font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800; color:var(--text); line-height:1; }
+.hist-hours-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+.hist-sync-pending { font-size:10px; color:var(--amber); display:flex; align-items:center; gap:3px; margin-top:3px; }
 
-/* Tipo selector */
-.tipo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 7px;
-}
-.tipo-grid-bottom {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 7px;
-  margin-top: 7px;
-}
-.tipo-opt {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r3);
-  padding: 11px 6px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.tipo-opt .to-icon { font-size: 17px; margin-bottom: 4px; }
-.tipo-opt .to-label { font-size: 11px; font-weight: 600; color: var(--text2); }
-.tipo-opt.sel-prod    { background: var(--lime-dim);   border-color: var(--border3);              }
-.tipo-opt.sel-prod .to-label    { color: var(--lime);   }
-.tipo-opt.sel-improd  { background: var(--amber-dim);  border-color: rgba(245,184,48,0.35);       }
-.tipo-opt.sel-improd .to-label  { color: var(--amber);  }
-.tipo-opt.sel-cap     { background: var(--blue-dim);   border-color: rgba(80,176,255,0.35);       }
-.tipo-opt.sel-cap .to-label     { color: var(--blue);   }
-.tipo-opt.sel-viaje   { background: var(--purple-dim); border-color: rgba(176,128,255,0.35);      }
-.tipo-opt.sel-viaje .to-label   { color: var(--purple); }
-.tipo-opt.sel-refrig  { background: rgba(255,130,80,0.12); border-color: rgba(255,130,80,0.35);  }
-.tipo-opt.sel-refrig .to-label  { color: #ff8250; }
+/* ── SHEET ── */
+.sheet-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:200; display:none; align-items:flex-end; }
+.sheet-overlay.open { display:flex; }
+.sheet { background:var(--surface); border-radius:20px 20px 0 0; border-top:1px solid var(--border); width:100%; max-height:92dvh; display:flex; flex-direction:column; animation:sheetUp 0.3s cubic-bezier(0.34,1.2,0.64,1); }
+@keyframes sheetUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.sheet-handle { width:36px; height:4px; background:var(--border2); border-radius:2px; margin:14px auto 0; flex-shrink:0; }
+.sheet-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px 0; flex-shrink:0; }
+.sheet-title { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800; letter-spacing:0.3px; }
+.btn-close-sheet { background:var(--surface2); border:1px solid var(--border); border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:var(--text2); }
+.sheet-body { padding:20px; overflow-y:auto; flex:1; }
+.field { margin-bottom:18px; }
+.field label { display:block; font-size:11px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.field input, .field select, .field textarea { width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:var(--r3); padding:13px 14px; color:var(--text); font-family:'Barlow',sans-serif; font-size:16px; outline:none; -webkit-appearance:none; transition:border-color 0.2s; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color:var(--nh-yellow2); }
+.field select option { background:#002060; }
+.field textarea { resize:none; height:80px; }
 
-/* Time range picker */
-.time-range {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r3);
-  padding: 4px 8px;
-}
-.time-range-sep {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text3);
-  text-align: center;
-}
-.time-col { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.time-col-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.time-col select {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 8px;
-  color: var(--text);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  text-align: center;
-  outline: none;
-  -webkit-appearance: none;
-  transition: border-color 0.2s;
-  cursor: pointer;
-}
-.time-col select:focus { border-color: var(--lime2); }
-.time-col select option { background: #141e14; }
-.time-result {
-  margin-top: 10px;
-  text-align: center;
-  background: var(--lime-dim);
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  padding: 8px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--lime);
-  display: none;
-}
-.time-result.visible { display: block; }
-.time-result small { font-size: 13px; font-weight: 400; color: var(--text2); margin-left: 4px; }
+.tipo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+.tipo-grid-bottom { display:grid; grid-template-columns:repeat(2,1fr); gap:7px; margin-top:7px; }
+.tipo-opt { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r3); padding:11px 6px; text-align:center; cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent; }
+.tipo-opt .to-icon { font-size:17px; margin-bottom:4px; }
+.tipo-opt .to-label { font-size:11px; font-weight:600; color:var(--text2); }
+.tipo-opt.sel-prod   { background:var(--nh-dim);    border-color:var(--border3); }
+.tipo-opt.sel-prod .to-label { color:var(--nh-yellow); }
+.tipo-opt.sel-improd { background:var(--amber-dim); border-color:rgba(255,176,32,0.35); }
+.tipo-opt.sel-improd .to-label { color:var(--amber); }
+.tipo-opt.sel-cap    { background:var(--blue-dim);  border-color:rgba(96,200,255,0.35); }
+.tipo-opt.sel-cap .to-label { color:var(--blue); }
+.tipo-opt.sel-viaje  { background:var(--purple-dim);border-color:rgba(192,144,255,0.35); }
+.tipo-opt.sel-viaje .to-label { color:var(--purple); }
+.tipo-opt.sel-refrig { background:rgba(255,130,80,0.12);border-color:rgba(255,130,80,0.35); }
+.tipo-opt.sel-refrig .to-label { color:#ff8250; }
 
-.sheet-footer {
-  padding: 16px 20px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
-  border-top: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.btn-confirm {
-  width: 100%;
-  background: var(--lime);
-  color: var(--bg);
-  border: none;
-  border-radius: var(--r2);
-  padding: 16px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.btn-confirm:active { transform: scale(0.98); }
+.time-range { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--r3); padding:4px 8px; }
+.time-range-sep { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:700; color:var(--text3); text-align:center; }
+.time-col { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.time-col-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; }
+.time-col select { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:10px 8px; color:var(--text); font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:700; text-align:center; outline:none; -webkit-appearance:none; transition:border-color 0.2s; cursor:pointer; }
+.time-col select:focus { border-color:var(--nh-yellow2); }
+.time-col select option { background:#002060; }
+.time-result { margin-top:10px; text-align:center; background:var(--nh-dim); border:1px solid var(--border2); border-radius:6px; padding:8px; font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800; color:var(--nh-yellow); display:none; }
+.time-result.visible { display:block; }
+.time-result small { font-size:13px; font-weight:400; color:var(--text2); margin-left:4px; }
 
-/* Detail sheet */
-#sheet-detail .sheet-body { padding-bottom: 8px; }
-.detail-ot-row {
-  background: var(--bg2);
-  border-radius: var(--r3);
-  padding: 14px;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.detail-ot-left { flex: 1; }
-.detail-ot-num { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 3px; }
-.detail-ot-desc { font-size: 12px; color: var(--text2); margin-bottom: 5px; }
-.detail-hours { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; color: var(--lime); }
+.sheet-footer { padding:16px 20px; padding-bottom:calc(16px + env(safe-area-inset-bottom,0)); border-top:1px solid var(--border); flex-shrink:0; }
+.btn-confirm { width:100%; background:var(--nh-yellow); color:#001840; border:none; border-radius:var(--r2); padding:16px; font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; text-transform:uppercase; letter-spacing:1px; cursor:pointer; transition:all 0.15s; }
+.btn-confirm:active { transform:scale(0.98); }
 
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 70px; left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  padding: 11px 22px;
-  border-radius: 30px;
-  font-size: 13px;
-  font-weight: 600;
-  opacity: 0;
-  transition: all 0.25s;
-  z-index: 999;
-  pointer-events: none;
-  white-space: nowrap;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast.success { background: var(--lime-dim2); border-color: var(--border3); color: var(--lime); }
-.toast.error   { background: var(--red-dim);   border-color: rgba(240,72,72,0.3); color: var(--red); }
+#sheet-detail .sheet-body { padding-bottom:8px; }
+.detail-ot-row { background:var(--bg2); border-radius:var(--r3); padding:14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+.detail-ot-left { flex:1; }
+.detail-ot-num { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; margin-bottom:3px; }
+.detail-ot-desc { font-size:12px; color:var(--text2); margin-bottom:5px; }
+.detail-hours { font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:800; color:var(--nh-yellow); }
 
-/* Confirm dialog */
-.confirm-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.8);
-  z-index: 300;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-.confirm-overlay.open { display: flex; }
-.confirm-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 28px 24px;
-  width: 100%;
-  max-width: 340px;
-  text-align: center;
-}
-.confirm-icon { font-size: 40px; margin-bottom: 14px; }
-.confirm-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-.confirm-msg { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.5; }
-.confirm-btns { display: flex; gap: 10px; }
-.btn-cancel {
-  flex: 1;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--r3);
-  padding: 13px;
-  color: var(--text2);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-transform: uppercase;
-}
-.btn-confirm-ok {
-  flex: 1;
-  background: var(--lime);
-  border: none;
-  border-radius: var(--r3);
-  padding: 13px;
-  color: var(--bg);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-transform: uppercase;
-}
+.toast { position:fixed; bottom:70px; left:50%; transform:translateX(-50%) translateY(10px); background:var(--surface2); border:1px solid var(--border2); color:var(--text); padding:11px 22px; border-radius:30px; font-size:13px; font-weight:600; opacity:0; transition:all 0.25s; z-index:999; pointer-events:none; white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.toast.success { background:var(--nh-dim2); border-color:var(--border3); color:var(--nh-yellow); }
+.toast.error   { background:var(--red-dim);  border-color:rgba(255,68,68,0.3); color:var(--red); }
+
+.confirm-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:300; display:none; align-items:center; justify-content:center; padding:24px; }
+.confirm-overlay.open { display:flex; }
+.confirm-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:28px 24px; width:100%; max-width:340px; text-align:center; }
+.confirm-icon { font-size:40px; margin-bottom:14px; }
+.confirm-title { font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800; margin-bottom:8px; }
+.confirm-msg { font-size:14px; color:var(--text2); margin-bottom:24px; line-height:1.5; }
+.confirm-btns { display:flex; gap:10px; }
+.btn-cancel { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:var(--r3); padding:13px; color:var(--text2); font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; cursor:pointer; text-transform:uppercase; }
+.btn-confirm-ok { flex:1; background:var(--nh-yellow); border:none; border-radius:var(--r3); padding:13px; color:#001840; font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:800; cursor:pointer; text-transform:uppercase; }
 </style>
 </head>
 <body>
 
-<!-- ══════════ LOGIN ══════════ -->
+<!-- LOGIN -->
 <div class="screen active" id="s-login">
   <div class="login-brand">
     <div class="brand-logo">
-      <div class="brand-icon">🌾</div>
+      <div class="brand-icon">🚜</div>
       <div class="brand-name">Agro<em>terra</em></div>
     </div>
     <div class="brand-sub">Sistema de horas técnicas</div>
@@ -1039,16 +318,13 @@ html, body {
         <option value="t7">Ricardo Castillo</option>
       </select>
     </div>
-    <div class="pin-display" id="pin-display" style="display:none"></div>
-    <div class="pin-pad" id="pin-pad" style="display:none"></div>
     <button class="btn-login" id="btn-login" onclick="doLogin()">Ingresar →</button>
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
-<!-- ══════════ APP ══════════ -->
+<!-- APP -->
 <div class="screen" id="s-app">
-  <!-- Header -->
   <div class="app-header">
     <div class="header-left">
       <div class="header-brand">Agro<em>terra</em></div>
@@ -1063,61 +339,41 @@ html, body {
     </div>
   </div>
 
-  <!-- Scrollable content -->
   <div class="app-content" id="app-content">
     <!-- HOY -->
     <div class="view active" id="view-hoy">
-      <!-- Saturday alert banner -->
-      <div id="sabado-banner" style="display:none;background:rgba(245,184,48,0.12);border:1px solid rgba(245,184,48,0.3);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">
+      <div id="sabado-banner" style="display:none;background:rgba(255,176,32,0.12);border:1px solid rgba(255,176,32,0.3);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;color:var(--amber);margin-bottom:6px">📅 Hoy es sábado</div>
         <div style="font-size:13px;color:var(--text2);margin-bottom:12px">¿Este sábado te corresponde trabajar?</div>
         <div style="display:flex;gap:8px">
-          <button onclick="setSabadoGuardia(true)" id="btn-sab-si" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(245,184,48,0.3);background:transparent;color:var(--amber);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer">✅ Sí, me toca</button>
+          <button onclick="setSabadoGuardia(true)"  id="btn-sab-si" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,176,32,0.3);background:transparent;color:var(--amber);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer">✅ Sí, me toca</button>
           <button onclick="setSabadoGuardia(false)" id="btn-sab-no" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🏖 Es mi sábado libre</button>
         </div>
       </div>
-      <!-- Day hero -->
+
       <div class="day-hero">
         <div class="day-hero-top">
           <div>
             <div class="day-date-big" id="hero-date">—</div>
             <div class="day-name-big" id="hero-weekday">—</div>
           </div>
-          <div class="jornada-status status-draft" id="jornada-status-badge">
-            ✏️ Borrador
-          </div>
+          <div class="jornada-status status-draft" id="jornada-status-badge">✏️ Borrador</div>
         </div>
         <div class="day-metrics">
-          <div class="day-metric">
-            <div class="dm-val" id="dm-total">0.0</div>
-            <div class="dm-label">Hs. Total</div>
-          </div>
-          <div class="day-metric">
-            <div class="dm-val" id="dm-prod">0.0</div>
-            <div class="dm-label">Hs. Prod.</div>
-          </div>
-          <div class="day-metric">
-            <div class="dm-val" id="dm-extra" style="color:var(--amber)">0.0</div>
-            <div class="dm-label">Hs. Extra</div>
-          </div>
+          <div class="day-metric"><div class="dm-val" id="dm-total">0.0</div><div class="dm-label">Hs. Total</div></div>
+          <div class="day-metric"><div class="dm-val" id="dm-prod">0.0</div><div class="dm-label">Hs. Prod.</div></div>
+          <div class="day-metric"><div class="dm-val" id="dm-extra" style="color:var(--amber)">0.0</div><div class="dm-label">Hs. Extra</div></div>
         </div>
       </div>
 
-      <!-- OT list -->
-      <div class="section-header">
-        <div class="section-title">OTs del día</div>
-      </div>
+      <div class="section-header"><div class="section-title">OTs del día</div></div>
       <div id="ot-list-container"></div>
 
-      <!-- Add OT btn -->
-      <button class="btn-add-ot" id="btn-add-ot" onclick="openOTForm()">
-        ＋ Agregar OT
-      </button>
+      <!-- Save indicator -->
+      <div class="save-indicator" id="save-indicator"></div>
 
-      <!-- Send jornada -->
-      <button class="btn-enviar" id="btn-enviar" onclick="confirmEnviar()" disabled>
-        ✅ Enviar jornada
-      </button>
+      <button class="btn-add-ot" id="btn-add-ot" onclick="openOTForm()">＋ Agregar OT</button>
+      <button class="btn-enviar" id="btn-enviar" onclick="confirmEnviar()" disabled>✅ Enviar jornada</button>
       <div class="btn-enviar-hint" id="enviar-hint">Agregá al menos una OT para enviar</div>
     </div>
 
@@ -1129,19 +385,13 @@ html, body {
     </div>
   </div>
 
-  <!-- Bottom nav -->
   <nav class="bottom-nav">
-    <div class="nav-btn active" id="nav-hoy" onclick="goView('hoy')">
-      <div class="ni">⏱</div><div class="nl">Hoy</div>
-    </div>
-    <div class="nav-btn" id="nav-hist" onclick="goView('hist')">
-      <div class="ni">📅</div><div class="nl">Historial</div>
-      <div class="nav-badge" id="pending-badge" style="display:none">!</div>
-    </div>
+    <div class="nav-btn active" id="nav-hoy"  onclick="goView('hoy')"><div class="ni">⏱</div><div class="nl">Hoy</div></div>
+    <div class="nav-btn" id="nav-hist" onclick="goView('hist')"><div class="ni">📅</div><div class="nl">Historial</div><div class="nav-badge" id="pending-badge" style="display:none">!</div></div>
   </nav>
 </div>
 
-<!-- ══════════ SHEET: OT FORM ══════════ -->
+<!-- SHEET: OT FORM -->
 <div class="sheet-overlay" id="sheet-form-overlay" onclick="closeSheet('sheet-form-overlay')">
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sheet-handle"></div>
@@ -1152,9 +402,7 @@ html, body {
     <div class="sheet-body">
       <div class="field" id="field-ot-sel">
         <label>Orden de Trabajo</label>
-        <select id="inp-ot-sel">
-          <option value="">— Seleccioná la OT —</option>
-        </select>
+        <select id="inp-ot-sel"><option value="">— Seleccioná la OT —</option></select>
       </div>
       <div class="field" id="ot-info-box" style="display:none">
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:12px">
@@ -1165,23 +413,13 @@ html, body {
       <div class="field">
         <label>Tipo de hora</label>
         <div class="tipo-grid">
-          <div class="tipo-opt" data-tipo="Productiva" onclick="selTipo(this)">
-            <div class="to-icon">✅</div><div class="to-label">Productiva</div>
-          </div>
-          <div class="tipo-opt" data-tipo="Improductiva" onclick="selTipo(this)">
-            <div class="to-icon">⏸</div><div class="to-label">Improductiva</div>
-          </div>
-          <div class="tipo-opt" data-tipo="Capacitación" onclick="selTipo(this)">
-            <div class="to-icon">📚</div><div class="to-label">Capacitación</div>
-          </div>
+          <div class="tipo-opt" data-tipo="Productiva"   onclick="selTipo(this)"><div class="to-icon">✅</div><div class="to-label">Productiva</div></div>
+          <div class="tipo-opt" data-tipo="Improductiva" onclick="selTipo(this)"><div class="to-icon">⏸</div><div class="to-label">Improductiva</div></div>
+          <div class="tipo-opt" data-tipo="Capacitación" onclick="selTipo(this)"><div class="to-icon">📚</div><div class="to-label">Capacitación</div></div>
         </div>
         <div class="tipo-grid-bottom">
-          <div class="tipo-opt" data-tipo="Viaje" onclick="selTipo(this)">
-            <div class="to-icon">🚗</div><div class="to-label">Viaje</div>
-          </div>
-          <div class="tipo-opt" data-tipo="Refrigerio" onclick="selTipo(this)">
-            <div class="to-icon">☕</div><div class="to-label">Refrigerio</div>
-          </div>
+          <div class="tipo-opt" data-tipo="Viaje"      onclick="selTipo(this)"><div class="to-icon">🚗</div><div class="to-label">Viaje</div></div>
+          <div class="tipo-opt" data-tipo="Refrigerio" onclick="selTipo(this)"><div class="to-icon">☕</div><div class="to-label">Refrigerio</div></div>
         </div>
       </div>
       <div class="field" id="field-motivo" style="display:none">
@@ -1199,15 +437,9 @@ html, body {
       <div class="field">
         <label>Horario</label>
         <div class="time-range">
-          <div class="time-col">
-            <div class="time-col-label">Desde</div>
-            <select id="inp-desde" onchange="recalcHours()"></select>
-          </div>
+          <div class="time-col"><div class="time-col-label">Desde</div><select id="inp-desde" onchange="recalcHours()"></select></div>
           <div class="time-range-sep">→</div>
-          <div class="time-col">
-            <div class="time-col-label">Hasta</div>
-            <select id="inp-hasta" onchange="recalcHours()"></select>
-          </div>
+          <div class="time-col"><div class="time-col-label">Hasta</div><select id="inp-hasta" onchange="recalcHours()"></select></div>
         </div>
         <div class="time-result" id="time-result">
           <span id="time-result-val">0.0 h</span><small id="time-result-range"></small>
@@ -1224,7 +456,7 @@ html, body {
   </div>
 </div>
 
-<!-- ══════════ SHEET: DETAIL ══════════ -->
+<!-- SHEET: DETAIL -->
 <div class="sheet-overlay" id="sheet-detail-overlay" onclick="closeSheet('sheet-detail-overlay')">
   <div class="sheet" onclick="event.stopPropagation()" id="sheet-detail">
     <div class="sheet-handle"></div>
@@ -1236,7 +468,7 @@ html, body {
   </div>
 </div>
 
-<!-- ══════════ CONFIRM DIALOG ══════════ -->
+<!-- CONFIRM -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-icon" id="conf-icon">✅</div>
@@ -1244,7 +476,7 @@ html, body {
     <div class="confirm-msg" id="conf-msg">—</div>
     <div class="confirm-btns">
       <button class="btn-cancel" onclick="closeConfirm()">Cancelar</button>
-      <button class="btn-confirm-ok" id="conf-ok-btn" onclick="">Confirmar</button>
+      <button class="btn-confirm-ok" id="conf-ok-btn">Confirmar</button>
     </div>
   </div>
 </div>
@@ -1253,13 +485,10 @@ html, body {
 
 <script>
 // ═══════════════════════════════════════════════════
-// DATA & STORAGE
-// ═══════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════
-// API — Google Sheets backend
+// API & STORAGE
 // ═══════════════════════════════════════════════════
 const API_URL = 'https://script.google.com/macros/s/AKfycbwGiT4ZMPpumGbMmWz0tynvjYeE4R77Fz1VjNQmff7JS4UidL3BQ5fRbrBMoiCvfRo4/exec';
-const DB_KEY  = 'agroterra_cache'; // local cache only
+const DB_KEY  = 'agroterra_cache';
 
 function getDB() {
   try { return JSON.parse(localStorage.getItem(DB_KEY) || 'null') || defaultDB(); }
@@ -1290,7 +519,10 @@ async function syncFromServer() {
       const db = getDB();
       db.technicians  = json.data.technicians  || db.technicians;
       db.orders       = json.data.orders       || [];
-      db.jornadas     = json.data.jornadas     || [];
+      // Merge jornadas: keep local drafts, replace sent ones from server
+      const serverSent = (json.data.jornadas || []).filter(j=>j.status==='sent');
+      const localDrafts = db.jornadas.filter(j=>j.status==='draft');
+      db.jornadas = [...serverSent, ...localDrafts];
       db.billingStatus= json.data.billingStatus|| {};
       saveDB(db);
       return true;
@@ -1307,95 +539,86 @@ async function pushJornada(jornada) {
     });
     const json = await res.json();
     return json.ok;
-  } catch(e) {
-    console.warn('Push failed:', e);
-    return false;
+  } catch(e) { console.warn('Push failed:', e); return false; }
+}
+
+// ═══════════════════════════════════════════════════
+// AUTO-SAVE: push draft to server after every change
+// This is the fix: the draft lives on the server, not
+// just in localStorage, so closing the app doesn't lose it
+// ═══════════════════════════════════════════════════
+let autoSaveTimer = null;
+
+async function autoSaveDraft() {
+  if (!currentTech || draftItems.length === 0) return;
+  setSaveIndicator('saving');
+  saveDraft(); // always save locally first
+  const db = getDB();
+  const todayStr = TODAY();
+  const draft = db.jornadas.find(j => j.techId === currentTech.id && j.date === todayStr && j.status === 'draft');
+  if (draft && navigator.onLine) {
+    const ok = await pushJornada(draft);
+    setSaveIndicator(ok ? 'saved' : 'local');
+  } else {
+    setSaveIndicator('local');
   }
 }
 
-// Seed removed — all data comes from server
-function seedHistory(db) { return; }
+function scheduleAutoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(autoSaveDraft, 800);
+}
+
+function setSaveIndicator(state) {
+  const el = document.getElementById('save-indicator');
+  if (!el) return;
+  if (state === 'saving') {
+    el.className = 'save-indicator saving';
+    el.innerHTML = '⏳ Guardando borrador...';
+  } else if (state === 'saved') {
+    el.className = 'save-indicator saved';
+    el.innerHTML = '✓ Borrador guardado en la nube';
+    setTimeout(() => { el.innerHTML = ''; el.className = 'save-indicator'; }, 3000);
+  } else if (state === 'local') {
+    el.className = 'save-indicator';
+    el.innerHTML = '💾 Guardado localmente';
+    setTimeout(() => { el.innerHTML = ''; }, 2000);
+  } else {
+    el.innerHTML = '';
+    el.className = 'save-indicator';
+  }
+}
 
 // ═══════════════════════════════════════════════════
 // APP STATE
 // ═══════════════════════════════════════════════════
 let currentTech = null;
-let currentPin  = '';
-let draftItems  = [];   // [{id, otId, tipo, horas, obs}]
+let draftItems  = [];
 let editingItemId = null;
-let formHours   = 0.5;
+let formHours   = 0;
 let formTipo    = '';
 let isOnline    = navigator.onLine;
+let sabadoGuardia = null;
 
 const TODAY = () => new Date().toISOString().split('T')[0];
 
-// ═══════════════════════════════════════════════════
-// CONNECTIVITY
-// ═══════════════════════════════════════════════════
-function updateConnectivity(online) {
-  isOnline = online;
-  const badge  = document.getElementById('sync-badge');
-  const dot    = document.getElementById('sync-dot');
-  const label  = document.getElementById('sync-label');
-  const db     = getDB();
-  const hasPending = db.pendingSync && db.pendingSync.length > 0;
+window.addEventListener('online',  () => { isOnline = true;  updateConnectivity(true); });
+window.addEventListener('offline', () => { isOnline = false; updateConnectivity(false); });
 
+function updateConnectivity(online) {
+  const badge = document.getElementById('sync-badge');
+  const dot   = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
   if (!online) {
-    badge.className = 'sync-badge offline';
-    dot.className   = 'sync-dot pulse';
-    label.textContent = 'Sin señal';
-  } else if (hasPending) {
-    badge.className = 'sync-badge pending';
-    dot.className   = 'sync-dot pulse';
-    label.textContent = 'Sincronizando...';
-    setTimeout(() => {
-      // Simulate sync completion
-      const db2 = getDB();
-      db2.jornadas.forEach(j => { if (j.syncStatus === 'pending') j.syncStatus = 'synced'; });
-      db2.pendingSync = [];
-      saveDB(db2);
-      badge.className = 'sync-badge online';
-      dot.className   = 'sync-dot';
-      label.textContent = 'Sincronizado ✓';
-      renderHistory();
-    }, 2200);
+    badge.className = 'sync-badge offline'; dot.className = 'sync-dot pulse'; label.textContent = 'Sin señal';
   } else {
-    badge.className = 'sync-badge online';
-    dot.className   = 'sync-dot';
-    label.textContent = 'Online';
+    badge.className = 'sync-badge online'; dot.className = 'sync-dot'; label.textContent = 'Online';
   }
 }
-window.addEventListener('online',  () => updateConnectivity(true));
-window.addEventListener('offline', () => updateConnectivity(false));
 
 // ═══════════════════════════════════════════════════
 // LOGIN
 // ═══════════════════════════════════════════════════
-function initLogin() {
-  const db = getDB();
-  // selector already populated in HTML
-}
-
-function pinPress(digit) {
-  if (currentPin.length >= 4) return;
-  currentPin += digit;
-  updatePinDisplay();
-  if (currentPin.length === 4) {
-    document.getElementById('btn-login').disabled = false;
-  }
-}
-function pinDel() {
-  currentPin = currentPin.slice(0, -1);
-  document.getElementById('btn-login').disabled = true;
-  document.getElementById('login-error').textContent = '';
-  updatePinDisplay();
-}
-function updatePinDisplay() {
-  for (let i = 0; i < 4; i++) {
-    document.getElementById('pd' + i).classList.toggle('filled', i < currentPin.length);
-  }
-}
-
 function doLogin() {
   const techId = document.getElementById('sel-tech').value;
   if (!techId) { document.getElementById('login-error').textContent = 'Seleccioná tu nombre.'; return; }
@@ -1406,62 +629,40 @@ function doLogin() {
   launchApp();
 }
 
-// ═══════════════════════════════════════════════════
-// APP LAUNCH
-// ═══════════════════════════════════════════════════
 async function launchApp() {
   document.getElementById('s-login').classList.remove('active');
   document.getElementById('s-app').classList.add('active');
   document.getElementById('hdr-name').textContent = currentTech.name;
 
-  // Saturday banner
   sabadoGuardia = null;
-  const todayDow = new Date().getDay();
-  document.getElementById('sabado-banner').style.display = todayDow === 6 ? '' : 'none';
+  document.getElementById('sabado-banner').style.display = new Date().getDay() === 6 ? '' : 'none';
 
-  // Show syncing indicator
+  setBadge('pending', true);
+  const synced = await syncFromServer();
+  setBadge('pending', false);
+
+  const db = getDB();
+  // ─ KEY FIX: recover draft from server or localStorage ─
+  // First try from server jornadas (synced)
+  const serverDraft = db.jornadas.find(j => j.techId === currentTech.id && j.date === TODAY() && j.status === 'draft');
+  draftItems = serverDraft ? [...serverDraft.items] : [];
+
+  populateOTSelector(db);
+  renderToday();
+  renderHistory();
+  updateConnectivity(synced);
+
+  if (synced && draftItems.length > 0) {
+    showToast('Borrador recuperado ✓', 'success');
+  }
+}
+
+function setBadge(id, loading) {
   const badge = document.getElementById('sync-badge');
   const dot   = document.getElementById('sync-dot');
   const label = document.getElementById('sync-label');
-  badge.className = 'sync-badge pending';
-  dot.className   = 'sync-dot pulse';
-  label.textContent = 'Sincronizando...';
-
-  // Sync from server
-  const synced = await syncFromServer();
-
-  // Load draft from local cache
-  const db = getDB();
-  const existingJornada = db.jornadas.find(j => j.techId === currentTech.id && j.date === TODAY() && j.status === 'draft');
-  draftItems = existingJornada ? [...existingJornada.items] : [];
-
-  // Populate OT selector
-  populateOTSelector(db);
-
-  // Render
-  renderToday();
-  renderHistory();
-
-  // Update sync badge
-  if (synced) {
-    badge.className = 'sync-badge online';
-    dot.className   = 'sync-dot';
-    label.textContent = 'Sincronizado ✓';
-  } else {
-    badge.className = 'sync-badge offline';
-    dot.className   = 'sync-dot pulse';
-    label.textContent = 'Sin señal';
-  }
-
-  // Push any pending jornadas
-  const pending = db.pendingSync || [];
-  if (pending.length > 0 && navigator.onLine) {
-    for (const jId of pending) {
-      const j = db.jornadas.find(j => j.id === jId);
-      if (j) await pushJornada(j);
-    }
-    db.pendingSync = [];
-    saveDB(db);
+  if (loading) {
+    badge.className = 'sync-badge pending'; dot.className = 'sync-dot pulse'; label.textContent = 'Sincronizando...';
   }
 }
 
@@ -1470,8 +671,7 @@ function populateOTSelector(db) {
   sel.innerHTML = '<option value="">— Seleccioná la OT —</option>';
   db.orders.forEach(o => {
     const opt = document.createElement('option');
-    opt.value = o.id;
-    opt.textContent = `${o.num} · ${o.type}`;
+    opt.value = o.id; opt.textContent = `${o.num} · ${o.type}`;
     sel.appendChild(opt);
   });
   sel.addEventListener('change', () => {
@@ -1484,9 +684,7 @@ function populateOTSelector(db) {
         `<span class="tag ${typeTag(ot.type)}">${ot.type}</span>` +
         (ot.ratePerHour > 0 ? `<span class="tag tag-prod">$ ${ot.ratePerHour}/h</span>` : '<span class="tag tag-int">Sin facturar</span>');
       box.style.display = '';
-    } else {
-      box.style.display = 'none';
-    }
+    } else { box.style.display = 'none'; }
   });
 }
 
@@ -1494,33 +692,23 @@ function populateOTSelector(db) {
 // RENDER TODAY
 // ═══════════════════════════════════════════════════
 function renderToday() {
-  const db   = getDB();
-  const today = new Date();
+  const db = getDB();
   const todayStr = TODAY();
   const sent = db.jornadas.find(j => j.techId === currentTech.id && j.date === todayStr && j.status === 'sent');
   const isLocked = !!sent;
   const items = isLocked ? sent.items : draftItems;
 
-  // Date display
-  document.getElementById('hero-date').textContent =
-    today.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
-  document.getElementById('hero-weekday').textContent =
-    today.toLocaleDateString('es-AR', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase());
+  const today = new Date();
+  document.getElementById('hero-date').textContent = today.toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('hero-weekday').textContent = today.toLocaleDateString('es-AR', { weekday:'long' }).replace(/^\w/, c => c.toUpperCase());
 
-  // Status badge
   const badge = document.getElementById('jornada-status-badge');
-  if (isLocked) {
-    badge.className = 'jornada-status status-sent';
-    badge.textContent = '✅ Enviada';
-  } else {
-    badge.className = 'jornada-status status-draft';
-    badge.textContent = '✏️ Borrador';
-  }
+  badge.className = isLocked ? 'jornada-status status-sent' : 'jornada-status status-draft';
+  badge.textContent = isLocked ? '✅ Enviada' : '✏️ Borrador';
 
-  // Metrics — recalculate breakdown for each item
   let totalH = 0, prodH = 0, extraH = 0;
   items.forEach(item => {
-    const bd = calcHoursBreakdown(item.desde || '08:00', item.hasta || '08:00', TODAY());
+    const bd = calcHoursBreakdown(item.desde || '08:00', item.hasta || '08:00', todayStr);
     totalH += item.horas;
     if (item.tipo === 'Productiva') prodH += item.horas;
     extraH += bd.extra;
@@ -1529,55 +717,44 @@ function renderToday() {
   document.getElementById('dm-prod').textContent  = prodH.toFixed(1);
   document.getElementById('dm-extra').textContent = extraH.toFixed(1);
 
-  // OT list
   const container = document.getElementById('ot-list-container');
   if (items.length === 0) {
-    container.innerHTML = `<div class="empty-state">
-      <div class="empty-icon">📋</div>
-      <div class="empty-title">Sin OTs cargadas</div>
-      <div class="empty-sub">Agregá las órdenes en las que trabajaste hoy</div>
-    </div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Sin OTs cargadas</div><div class="empty-sub">Agregá las órdenes en las que trabajaste hoy</div></div>`;
   } else {
-    container.innerHTML = items.map((item, idx) => {
-      const ot = item.otId === '__REFRIGERIO__' || item.otId === '__IMPRODUCTIVA__' ? null : db.orders.find(o => o.id === item.otId);
-      const isRefrig  = item.otId === '__REFRIGERIO__';
-      const isImprod  = item.otId === '__IMPRODUCTIVA__';
+    container.innerHTML = items.map(item => {
+      const ot = (item.otId === '__REFRIGERIO__' || item.otId === '__IMPRODUCTIVA__') ? null : db.orders.find(o => o.id === item.otId);
+      const isRefrig = item.otId === '__REFRIGERIO__';
+      const isImprod = item.otId === '__IMPRODUCTIVA__';
       const otNum  = ot ? ot.num  : (isRefrig ? '☕ Refrigerio' : isImprod ? '⏸ Improductiva' : item.otId);
       const otDesc = ot ? ot.desc : (isRefrig ? 'Tiempo de descanso' : isImprod ? (item.motivo || '') : '');
-      const otType = ot ? ot.type : '';
+      const bd = calcHoursBreakdown(item.desde||'08:00', item.hasta||'08:00', todayStr);
       return `<div class="ot-card ${isLocked ? 'locked' : ''}">
         <div class="ot-card-left">
           <div class="ot-card-num">${otNum}</div>
           <div class="ot-card-desc">${otDesc}</div>
           <div class="ot-card-tags">
             <span class="tag ${tipoTag(item.tipo)}">${item.tipo}</span>
-            ${otType ? `<span class="tag ${typeTag(otType)}">${otType}</span>` : ''}
+            ${ot ? `<span class="tag ${typeTag(ot.type)}">${ot.type}</span>` : ''}
             ${item.desde && item.hasta ? `<span style="font-size:10px;color:var(--text3);padding:2px 4px">${item.desde}–${item.hasta}</span>` : ''}
-            ${(() => { const bd = calcHoursBreakdown(item.desde||'08:00', item.hasta||'08:00', TODAY()); return bd.extra > 0 ? `<span class="tag" style="background:rgba(245,184,48,0.15);color:var(--amber);border:1px solid rgba(245,184,48,0.25)">+${bd.extra.toFixed(2)}h extra</span>` : ''; })()}
+            ${bd.extra > 0 ? `<span class="tag" style="background:rgba(255,176,32,0.15);color:var(--amber);border:1px solid rgba(255,176,32,0.25)">+${bd.extra.toFixed(2)}h extra</span>` : ''}
           </div>
         </div>
         <div class="ot-card-hours">${item.horas}<small>h</small></div>
         ${!isLocked ? `
-          <button class="btn-icon" onclick="editItem('${item.id}')" title="Editar">✏️</button>
-          <button class="btn-icon del" onclick="deleteItem('${item.id}')" title="Eliminar">✕</button>
+          <button class="btn-icon" onclick="editItem('${item.id}')">✏️</button>
+          <button class="btn-icon del" onclick="deleteItem('${item.id}')">✕</button>
         ` : ''}
       </div>`;
     }).join('');
   }
 
-  // Buttons
-  const btnAdd   = document.getElementById('btn-add-ot');
+  const btnAdd    = document.getElementById('btn-add-ot');
   const btnEnviar = document.getElementById('btn-enviar');
   const hint      = document.getElementById('enviar-hint');
-
   if (isLocked) {
-    btnAdd.style.display    = 'none';
-    btnEnviar.style.display = 'none';
-    hint.style.display      = 'none';
+    btnAdd.style.display = btnEnviar.style.display = hint.style.display = 'none';
   } else {
-    btnAdd.style.display    = '';
-    btnEnviar.style.display = '';
-    hint.style.display      = '';
+    btnAdd.style.display = btnEnviar.style.display = hint.style.display = '';
     btnEnviar.disabled = items.length === 0;
     hint.textContent = items.length === 0
       ? 'Agregá al menos una OT para enviar'
@@ -1589,10 +766,7 @@ function renderToday() {
 // OT FORM
 // ═══════════════════════════════════════════════════
 function openOTForm(itemId = null) {
-  editingItemId = itemId;
-  formHours = 0;
-  formTipo  = '';
-
+  editingItemId = itemId; formHours = 0; formTipo = '';
   document.getElementById('form-sheet-title').textContent = itemId ? 'Editar OT' : 'Nueva OT';
   document.getElementById('inp-ot-sel').value = '';
   document.getElementById('ot-info-box').style.display = 'none';
@@ -1614,21 +788,17 @@ function openOTForm(itemId = null) {
       const tipoEl = document.querySelector(`.tipo-opt[data-tipo="${item.tipo}"]`);
       if (tipoEl) selTipo(tipoEl);
       populateTimeSelects(item.desde || '08:00', item.hasta || '17:00');
-    } else {
-      populateTimeSelects();
-    }
-  } else {
-    populateTimeSelects();
-  }
+    } else { populateTimeSelects(); }
+  } else { populateTimeSelects(); }
 
   document.getElementById('sheet-form-overlay').classList.add('open');
 }
 
-function editItem(id) { openOTForm(id); }
-
+function editItem(id)  { openOTForm(id); }
 function deleteItem(id) {
   draftItems = draftItems.filter(i => i.id !== id);
   saveDraft();
+  scheduleAutoSave();
   renderToday();
   showToast('OT eliminada', 'default');
 }
@@ -1638,173 +808,87 @@ function selTipo(el) {
   formTipo = el.dataset.tipo;
   const cls = { Productiva:'sel-prod', Improductiva:'sel-improd', Capacitación:'sel-cap', Viaje:'sel-viaje', Refrigerio:'sel-refrig' };
   el.classList.add(cls[formTipo] || '');
-
-  const otField    = document.getElementById('field-ot-sel');
-  const otInfo     = document.getElementById('ot-info-box');
-  const motivoField= document.getElementById('field-motivo');
-  const sheetTitle = document.getElementById('form-sheet-title');
   const noOT = formTipo === 'Refrigerio' || formTipo === 'Improductiva';
-
-  if (noOT) {
-    otField.style.display    = 'none';
-    otInfo.style.display     = 'none';
-    document.getElementById('inp-ot-sel').value = `__${formTipo.toUpperCase()}__`;
-  } else {
-    otField.style.display = '';
-    if (['__REFRIGERIO__','__IMPRODUCTIVA__'].includes(document.getElementById('inp-ot-sel').value)) {
-      document.getElementById('inp-ot-sel').value = '';
-      otInfo.style.display = 'none';
-    }
+  document.getElementById('field-ot-sel').style.display = noOT ? 'none' : '';
+  if (noOT) document.getElementById('inp-ot-sel').value = `__${formTipo.toUpperCase()}__`;
+  else if (['__REFRIGERIO__','__IMPRODUCTIVA__'].includes(document.getElementById('inp-ot-sel').value)) {
+    document.getElementById('inp-ot-sel').value = '';
+    document.getElementById('ot-info-box').style.display = 'none';
   }
-
-  motivoField.style.display = formTipo === 'Improductiva' ? '' : 'none';
+  document.getElementById('field-motivo').style.display = formTipo === 'Improductiva' ? '' : 'none';
   if (formTipo !== 'Improductiva') document.getElementById('inp-motivo').value = '';
-
-  sheetTitle.textContent = noOT
-    ? (formTipo === 'Refrigerio' ? 'Refrigerio' : 'Hora Improductiva')
-    : (editingItemId ? 'Editar OT' : 'Nueva OT');
+  document.getElementById('form-sheet-title').textContent = noOT ? (formTipo === 'Refrigerio' ? 'Refrigerio' : 'Hora Improductiva') : (editingItemId ? 'Editar OT' : 'Nueva OT');
 }
 
-// ═══════════════════════════════════════════════════
-// SCHEDULE & OVERTIME LOGIC
-// ═══════════════════════════════════════════════════
-
-// sabadoGuardia: null=not answered, true=working saturday, false=free saturday
-let sabadoGuardia = null;
-
-// Regular end time per weekday (0=Sun,1=Mon,...,6=Sat)
-// Returns {start, end} in minutes from midnight, or null if non-working
+// ─ TIME ─
 function getRegularSchedule(dateStr) {
-  const d = new Date(dateStr + 'T12:00:00');
-  const dow = d.getDay(); // 0=Sun,1=Mon,...,6=Sat
-  if (dow === 0) return null; // Sunday always off
-  if (dow === 6) {
-    // Saturday: only working if sabadoGuardia===true
-    if (sabadoGuardia === true) return { start: 8*60, end: 12*60 };
-    return null; // free saturday — everything is extra (handled separately)
-  }
-  if (dow === 5) return { start: 8*60, end: 16*60+30 }; // Friday 08:00-16:30
-  return { start: 8*60, end: 17*60 }; // Mon-Thu 08:00-17:00
+  const dow = new Date(dateStr + 'T12:00:00').getDay();
+  if (dow === 0) return null;
+  if (dow === 6) return sabadoGuardia === true ? { start:8*60, end:12*60 } : null;
+  if (dow === 5) return { start:8*60, end:16*60+30 };
+  return { start:8*60, end:17*60 };
 }
 
-// Calculate regular and extra minutes for a given desde-hasta on a date
 function calcHoursBreakdown(desde, hasta, dateStr) {
-  const startMin = toMinutes(desde);
-  const endMin   = toMinutes(hasta);
-  const total    = endMin - startMin;
-  if (total <= 0) return { total: 0, regular: 0, extra: 0 };
-
+  const startMin = toMinutes(desde), endMin = toMinutes(hasta), total = endMin - startMin;
+  if (total <= 0) return { total:0, regular:0, extra:0 };
+  const dow = new Date(dateStr + 'T12:00:00').getDay();
+  if (dow === 0 || (dow === 6 && sabadoGuardia === false)) return { total:total/60, regular:0, extra:total/60 };
   const sched = getRegularSchedule(dateStr);
-
-  // Free saturday or Sunday — all extra
-  const d = new Date(dateStr + 'T12:00:00');
-  const dow = d.getDay();
-  if (dow === 0 || (dow === 6 && sabadoGuardia === false)) {
-    return { total: total/60, regular: 0, extra: total/60 };
-  }
-  if (!sched) return { total: total/60, regular: 0, extra: total/60 };
-
-  // Calculate overlap with regular schedule
-  const overlapStart = Math.max(startMin, sched.start);
-  const overlapEnd   = Math.min(endMin,   sched.end);
-  const regularMin   = Math.max(0, overlapEnd - overlapStart);
-  const extraMin     = total - regularMin;
-
-  return {
-    total:   total/60,
-    regular: regularMin/60,
-    extra:   extraMin/60
-  };
+  if (!sched) return { total:total/60, regular:0, extra:total/60 };
+  const regularMin = Math.max(0, Math.min(endMin, sched.end) - Math.max(startMin, sched.start));
+  return { total:total/60, regular:regularMin/60, extra:(total-regularMin)/60 };
 }
 
 function setSabadoGuardia(val) {
   sabadoGuardia = val;
-  // Update button styles
-  document.getElementById('btn-sab-si').style.background  = val ? 'rgba(245,184,48,0.2)' : 'transparent';
-  document.getElementById('btn-sab-no').style.background  = !val ? 'rgba(100,200,80,0.12)' : 'transparent';
-  document.getElementById('btn-sab-no').style.borderColor = !val ? 'var(--border2)' : 'var(--border)';
-  document.getElementById('btn-sab-no').style.color       = !val ? 'var(--lime)' : 'var(--text2)';
-  // If free saturday, show info
-  if (!val) {
-    showToast('Sábado libre — tus horas serán extra', 'default');
-  }
+  document.getElementById('btn-sab-si').style.background = val ? 'rgba(255,176,32,0.2)' : 'transparent';
+  document.getElementById('btn-sab-no').style.background = !val ? 'rgba(255,204,0,0.12)' : 'transparent';
+  if (!val) showToast('Sábado libre — tus horas serán extra', 'default');
   renderToday();
 }
 
-// Time range: slots every 15min from 06:00 to 22:00
 function buildTimeSlots() {
   const slots = [];
-  for (let h = 6; h <= 22; h++) {
-    for (let m = 0; m < 60; m += 15) {
-      if (h === 22 && m > 0) break;
-      slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
-    }
-  }
+  for (let h = 6; h <= 22; h++) for (let m = 0; m < 60; m += 15) { if (h===22&&m>0) break; slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`); }
   return slots;
 }
 
 function getDefaultTimes() {
-  // Smart default: suggest next available slot based on already-loaded items
-  if (draftItems.length === 0) return { desde: '08:00', hasta: '17:00' };
-  const lastItem = draftItems[draftItems.length - 1];
-  if (lastItem && lastItem.hasta) return { desde: lastItem.hasta, hasta: '' };
-  return { desde: '08:00', hasta: '17:00' };
+  if (draftItems.length === 0) return { desde:'08:00', hasta:'17:00' };
+  const last = draftItems[draftItems.length - 1];
+  return last?.hasta ? { desde:last.hasta, hasta:last.hasta } : { desde:'08:00', hasta:'17:00' };
 }
 
-function populateTimeSelects(desdeVal = null, hastaVal = null) {
-  if (!desdeVal) {
-    const def = getDefaultTimes();
-    desdeVal = def.desde;
-    hastaVal = def.hasta || def.desde;
-  }
+function populateTimeSelects(desdeVal=null, hastaVal=null) {
+  if (!desdeVal) { const d = getDefaultTimes(); desdeVal = d.desde; hastaVal = d.hasta; }
   const slots = buildTimeSlots();
-  ['inp-desde','inp-hasta'].forEach((id, idx) => {
-    const sel = document.getElementById(id);
-    const val = idx === 0 ? desdeVal : hastaVal;
-    sel.innerHTML = slots.map(s => `<option value="${s}" ${s === val ? 'selected' : ''}>${s}</option>`).join('');
+  ['inp-desde','inp-hasta'].forEach((id,idx) => {
+    const sel = document.getElementById(id), val = idx===0?desdeVal:hastaVal;
+    sel.innerHTML = slots.map(s=>`<option value="${s}" ${s===val?'selected':''}>${s}</option>`).join('');
   });
   recalcHours();
 }
 
 function recalcHours() {
-  const desde = document.getElementById('inp-desde').value;
-  const hasta = document.getElementById('inp-hasta').value;
-  if (!desde || !hasta) return;
-
+  const desde = document.getElementById('inp-desde').value, hasta = document.getElementById('inp-hasta').value;
   const totalMin = toMinutes(hasta) - toMinutes(desde);
   const resultEl = document.getElementById('time-result');
-  resultEl.style.background = '';
-  resultEl.style.borderColor = '';
-  resultEl.style.color = '';
-
-  if (totalMin <= 0) {
-    formHours = 0;
-    resultEl.classList.remove('visible');
-    return;
-  }
+  resultEl.style.background = resultEl.style.borderColor = resultEl.style.color = '';
+  if (totalMin <= 0) { formHours = 0; resultEl.classList.remove('visible'); return; }
   formHours = totalMin / 60;
-
-  // Overlap check
   const conflict = checkOverlap(desde, hasta, editingItemId);
   if (conflict) {
-    resultEl.style.background  = 'rgba(240,72,72,0.12)';
-    resultEl.style.borderColor = 'rgba(240,72,72,0.35)';
-    resultEl.style.color = 'var(--red)';
+    resultEl.style.background='rgba(255,68,68,0.12)'; resultEl.style.borderColor='rgba(255,68,68,0.35)'; resultEl.style.color='var(--red)';
     document.getElementById('time-result-val').textContent = `⚠️ Conflicto con ${conflict}`;
     document.getElementById('time-result-range').textContent = '';
-    resultEl.classList.add('visible');
-    return;
+    resultEl.classList.add('visible'); return;
   }
-
-  // Overtime breakdown
-  const breakdown = calcHoursBreakdown(desde, hasta, TODAY());
-  if (breakdown.extra > 0) {
-    document.getElementById('time-result-val').textContent = breakdown.total.toFixed(2) + ' h';
-    document.getElementById('time-result-range').textContent =
-      ` · ${breakdown.regular.toFixed(2)}h reg + ${breakdown.extra.toFixed(2)}h extra`;
-    resultEl.style.background  = 'rgba(245,184,48,0.08)';
-    resultEl.style.borderColor = 'rgba(245,184,48,0.3)';
-    resultEl.style.color = 'var(--amber)';
+  const bd = calcHoursBreakdown(desde, hasta, TODAY());
+  if (bd.extra > 0) {
+    document.getElementById('time-result-val').textContent = bd.total.toFixed(2) + ' h';
+    document.getElementById('time-result-range').textContent = ` · ${bd.regular.toFixed(2)}h reg + ${bd.extra.toFixed(2)}h extra`;
+    resultEl.style.background='rgba(255,176,32,0.08)'; resultEl.style.borderColor='rgba(255,176,32,0.3)'; resultEl.style.color='var(--amber)';
   } else {
     document.getElementById('time-result-val').textContent = formHours.toFixed(2) + ' h';
     document.getElementById('time-result-range').textContent = ` (${desde} a ${hasta})`;
@@ -1812,68 +896,42 @@ function recalcHours() {
   resultEl.classList.add('visible');
 }
 
-function toMinutes(t) {
-  const [h, m] = t.split(':').map(Number);
-  return h * 60 + m;
-}
+function toMinutes(t) { const [h,m]=t.split(':').map(Number); return h*60+m; }
 
-function checkOverlap(desde, hasta, excludeId = null) {
-  const newStart = toMinutes(desde);
-  const newEnd   = toMinutes(hasta);
+function checkOverlap(desde, hasta, excludeId=null) {
+  const ns=toMinutes(desde), ne=toMinutes(hasta);
   for (const item of draftItems) {
-    if (item.id === excludeId) continue;
-    if (!item.desde || !item.hasta) continue;
-    const s = toMinutes(item.desde);
-    const e = toMinutes(item.hasta);
-    // Overlap if ranges intersect (not just touch)
-    if (newStart < e && newEnd > s) {
-      const db = getDB();
-      const ot = db.orders.find(o => o.id === item.otId);
-      return ot ? ot.num : item.otId;
-    }
+    if (item.id===excludeId||!item.desde||!item.hasta) continue;
+    const s=toMinutes(item.desde), e=toMinutes(item.hasta);
+    if (ns<e&&ne>s) { const db=getDB(); const ot=db.orders.find(o=>o.id===item.otId); return ot?ot.num:item.otId; }
   }
   return null;
 }
 
 function saveOTEntry() {
-  const otId  = document.getElementById('inp-ot-sel').value;
-  const obs   = document.getElementById('inp-obs').value.trim();
-  const desde = document.getElementById('inp-desde').value;
-  const hasta = document.getElementById('inp-hasta').value;
+  const otId   = document.getElementById('inp-ot-sel').value;
+  const obs    = document.getElementById('inp-obs').value.trim();
+  const desde  = document.getElementById('inp-desde').value;
+  const hasta  = document.getElementById('inp-hasta').value;
   const motivo = document.getElementById('inp-motivo').value;
 
   if (!otId && formTipo !== 'Refrigerio' && formTipo !== 'Improductiva') { showToast('Seleccioná una OT', 'error'); return; }
-  if (!formTipo) { showToast('Seleccioná el tipo de hora', 'error'); return; }
+  if (!formTipo)    { showToast('Seleccioná el tipo de hora', 'error'); return; }
   if (formTipo === 'Improductiva' && !motivo) { showToast('Seleccioná el motivo', 'error'); return; }
   if (formHours <= 0) { showToast('El horario de fin debe ser posterior al de inicio', 'error'); return; }
+  if (checkOverlap(desde, hasta, editingItemId)) { showToast('⚠️ Superposición de horario', 'error'); return; }
 
-  // Overlap check
-  const conflictOT = checkOverlap(desde, hasta, editingItemId);
-  if (conflictOT) {
-    showToast(`⚠️ Se superpone con ${conflictOT}`, 'error');
-    // Highlight the conflict visually in the result
-    const resultEl = document.getElementById('time-result');
-    resultEl.style.background = 'rgba(240,72,72,0.15)';
-    resultEl.style.borderColor = 'rgba(240,72,72,0.4)';
-    resultEl.style.color = 'var(--red)';
-    setTimeout(() => {
-      resultEl.style.background = '';
-      resultEl.style.borderColor = '';
-      resultEl.style.color = '';
-    }, 2000);
-    return;
-  }
-
-  const breakdown = calcHoursBreakdown(desde, hasta, TODAY());
+  const bd = calcHoursBreakdown(desde, hasta, TODAY());
 
   if (editingItemId) {
     const idx = draftItems.findIndex(i => i.id === editingItemId);
-    if (idx >= 0) draftItems[idx] = { ...draftItems[idx], otId, tipo: formTipo, horas: formHours, desde, hasta, obs, motivo, horasRegulares: breakdown.regular, horasExtra: breakdown.extra };
+    if (idx >= 0) draftItems[idx] = { ...draftItems[idx], otId, tipo:formTipo, horas:formHours, desde, hasta, obs, motivo, horasRegulares:bd.regular, horasExtra:bd.extra };
   } else {
-    draftItems.push({ id: 'item_' + Date.now(), otId, tipo: formTipo, horas: formHours, desde, hasta, obs, motivo, horasRegulares: breakdown.regular, horasExtra: breakdown.extra });
+    draftItems.push({ id:'item_'+Date.now(), otId, tipo:formTipo, horas:formHours, desde, hasta, obs, motivo, horasRegulares:bd.regular, horasExtra:bd.extra });
   }
 
   saveDraft();
+  scheduleAutoSave(); // ← auto-save al servidor después de cada OT
   closeSheet('sheet-form-overlay');
   renderToday();
   showToast(editingItemId ? 'OT actualizada ✓' : 'OT agregada ✓', 'success');
@@ -1881,75 +939,56 @@ function saveOTEntry() {
 }
 
 function saveDraft() {
+  if (!currentTech) return;
   const db = getDB();
   const todayStr = TODAY();
-  const idx = db.jornadas.findIndex(j => j.techId === currentTech.id && j.date === todayStr && j.status === 'draft');
-  const draft = { id: 'draft_' + currentTech.id + '_' + todayStr, techId: currentTech.id, date: todayStr, items: [...draftItems], status: 'draft', syncStatus: 'local' };
-  if (idx >= 0) db.jornadas[idx] = draft;
-  else db.jornadas.push(draft);
+  const draft = { id:'draft_'+currentTech.id+'_'+todayStr, techId:currentTech.id, date:todayStr, items:[...draftItems], status:'draft', syncStatus:'local' };
+  const idx = db.jornadas.findIndex(j => j.techId===currentTech.id && j.date===todayStr && j.status==='draft');
+  if (idx >= 0) db.jornadas[idx] = draft; else db.jornadas.push(draft);
   saveDB(db);
 }
 
 // ═══════════════════════════════════════════════════
-// SEND JORNADA
+// SEND
 // ═══════════════════════════════════════════════════
 function confirmEnviar() {
-  const total = draftItems.reduce((s, i) => s + i.horas, 0);
-  showConfirm(
-    '✅',
-    '¿Confirmás la jornada?',
-    `${draftItems.length} OT${draftItems.length > 1 ? 's' : ''} · ${total.toFixed(1)} horas en total.\n\nUna vez enviada no podrás modificarla.`,
-    doEnviar
-  );
+  const total = draftItems.reduce((s,i) => s+i.horas, 0);
+  showConfirm('✅', '¿Confirmás la jornada?',
+    `${draftItems.length} OT${draftItems.length>1?'s':''} · ${total.toFixed(1)} horas en total.\n\nUna vez enviada no podrás modificarla.`,
+    doEnviar);
 }
 
 async function doEnviar() {
   closeConfirm();
   const db = getDB();
   const todayStr = TODAY();
-  const jornada = {
-    id: 'j_' + currentTech.id + '_' + todayStr,
-    techId: currentTech.id,
-    date: todayStr,
-    items: [...draftItems],
-    status: 'sent',
-    syncStatus: 'pending',
-    sentAt: new Date().toISOString()
-  };
-  const idx = db.jornadas.findIndex(j => j.techId === currentTech.id && j.date === todayStr);
-  if (idx >= 0) db.jornadas[idx] = jornada;
-  else db.jornadas.push(jornada);
+  const jornada = { id:'j_'+currentTech.id+'_'+todayStr, techId:currentTech.id, date:todayStr, items:[...draftItems], status:'sent', syncStatus:'pending', sentAt:new Date().toISOString() };
+  const idx = db.jornadas.findIndex(j => j.techId===currentTech.id && j.date===todayStr);
+  if (idx >= 0) db.jornadas[idx] = jornada; else db.jornadas.push(jornada);
   saveDB(db);
 
   const badge = document.getElementById('sync-badge');
   const dot   = document.getElementById('sync-dot');
   const label = document.getElementById('sync-label');
-  badge.className = 'sync-badge pending';
-  dot.className   = 'sync-dot pulse';
-  label.textContent = 'Enviando...';
+  badge.className = 'sync-badge pending'; dot.className = 'sync-dot pulse'; label.textContent = 'Enviando...';
 
   const pushed = isOnline ? await pushJornada(jornada) : false;
   if (pushed) {
     jornada.syncStatus = 'synced';
     const db2 = getDB();
-    const i2 = db2.jornadas.findIndex(j => j.id === jornada.id);
-    if (i2 >= 0) db2.jornadas[i2].syncStatus = 'synced';
+    const i2 = db2.jornadas.findIndex(j => j.id===jornada.id);
+    if (i2>=0) db2.jornadas[i2].syncStatus = 'synced';
     saveDB(db2);
-    badge.className = 'sync-badge online';
-    dot.className   = 'sync-dot';
-    label.textContent = 'Enviado ✓';
+    badge.className = 'sync-badge online'; dot.className = 'sync-dot'; label.textContent = 'Enviado ✓';
   } else {
     if (!db.pendingSync) db.pendingSync = [];
     if (!db.pendingSync.includes(jornada.id)) db.pendingSync.push(jornada.id);
     saveDB(db);
-    badge.className = 'sync-badge offline';
-    dot.className   = 'sync-dot pulse';
-    label.textContent = isOnline ? 'Error de red' : 'Sin señal';
+    badge.className = 'sync-badge offline'; dot.className = 'sync-dot pulse'; label.textContent = isOnline ? 'Error de red' : 'Sin señal';
   }
-
   draftItems = [];
-  renderToday();
-  renderHistory();
+  setSaveIndicator('');
+  renderToday(); renderHistory();
   showToast('Jornada enviada ✓✓', 'success');
 }
 
@@ -1958,55 +997,38 @@ async function doEnviar() {
 // ═══════════════════════════════════════════════════
 function renderHistory() {
   const db = getDB();
-  const mine = db.jornadas
-    .filter(j => j.techId === currentTech.id && j.status === 'sent')
-    .sort((a, b) => b.date.localeCompare(a.date));
-
+  const mine = db.jornadas.filter(j => j.techId===currentTech.id && j.status==='sent').sort((a,b) => b.date.localeCompare(a.date));
   const el = document.getElementById('hist-list');
   if (mine.length === 0) {
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">Sin historial</div><div class="empty-sub">Tus jornadas enviadas aparecen acá</div></div>';
     return;
   }
-
-  let html = '';
-  let lastGroup = '';
+  let html = '', lastGroup = '';
   mine.forEach(j => {
-    const d = new Date(j.date + 'T12:00:00');
+    const d = new Date(j.date+'T12:00:00');
     const group = getGroupLabel(d);
-    if (group !== lastGroup) {
-      html += `<div class="hist-week-label">${group}</div>`;
-      lastGroup = group;
-    }
-    const total = j.items.reduce((s, i) => s + i.horas, 0);
+    if (group !== lastGroup) { html += `<div class="hist-week-label">${group}</div>`; lastGroup = group; }
+    const total = j.items.reduce((s,i) => s+i.horas, 0);
     const tipos = [...new Set(j.items.map(i => i.tipo))];
     const otNums = [...new Set(j.items.map(i => {
-      if (i.otId === '__REFRIGERIO__') return '☕';
-      if (i.otId === '__IMPRODUCTIVA__') return '⏸';
-      const ot = db.orders.find(o => o.id === i.otId);
+      if (i.otId==='__REFRIGERIO__') return '☕';
+      if (i.otId==='__IMPRODUCTIVA__') return '⏸';
+      const ot = db.orders.find(o => o.id===i.otId);
       return ot ? ot.num : i.otId;
     }))];
     const isPending = j.syncStatus === 'pending';
-
     html += `<div class="hist-day-card" onclick='showDayDetail(${JSON.stringify(j)})'>
-      <div class="hist-date-col">
-        <div class="hist-day-num">${d.getDate()}</div>
-        <div class="hist-day-mon">${d.toLocaleDateString('es-AR',{month:'short'})}</div>
-      </div>
+      <div class="hist-date-col"><div class="hist-day-num">${d.getDate()}</div><div class="hist-day-mon">${d.toLocaleDateString('es-AR',{month:'short'})}</div></div>
       <div class="hist-info">
         <div class="hist-ots">${otNums.join(', ')}</div>
-        <div class="hist-tags">${tipos.map(t => `<span class="tag ${tipoTag(t)}">${t}</span>`).join('')}</div>
-        ${isPending ? `<div class="hist-sync-pending">⏳ Pendiente de sync</div>` : ''}
+        <div class="hist-tags">${tipos.map(t=>`<span class="tag ${tipoTag(t)}">${t}</span>`).join('')}</div>
+        ${isPending?`<div class="hist-sync-pending">⏳ Pendiente de sync</div>`:''}
       </div>
-      <div class="hist-hours-col">
-        <div class="hist-hours">${total.toFixed(1)}h</div>
-        <div class="hist-hours-sub">${j.items.length} OT${j.items.length > 1 ? 's' : ''}</div>
-      </div>
+      <div class="hist-hours-col"><div class="hist-hours">${total.toFixed(1)}h</div><div class="hist-hours-sub">${j.items.length} OT${j.items.length>1?'s':''}</div></div>
     </div>`;
   });
   el.innerHTML = html;
-
-  // Pending badge
-  const pendingCount = mine.filter(j => j.syncStatus === 'pending').length;
+  const pendingCount = mine.filter(j => j.syncStatus==='pending').length;
   const badge = document.getElementById('pending-badge');
   badge.style.display = pendingCount > 0 ? 'flex' : 'none';
 }
@@ -2014,129 +1036,88 @@ function renderHistory() {
 function showDayDetail(j) {
   if (typeof j === 'string') j = JSON.parse(j);
   const db = getDB();
-  const d  = new Date(j.date + 'T12:00:00');
-  const total = j.items.reduce((s, i) => s + i.horas, 0);
-
-  document.getElementById('detail-title').textContent =
-    d.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
-
+  const d = new Date(j.date+'T12:00:00');
+  const total = j.items.reduce((s,i) => s+i.horas, 0);
+  document.getElementById('detail-title').textContent = d.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
   let html = '';
   j.items.forEach(item => {
-    const ot = (item.otId === '__REFRIGERIO__' || item.otId === '__IMPRODUCTIVA__') ? null : db.orders.find(o => o.id === item.otId);
-    const isRefrig = item.otId === '__REFRIGERIO__';
-    const isImprod = item.otId === '__IMPRODUCTIVA__';
+    const ot = (item.otId==='__REFRIGERIO__'||item.otId==='__IMPRODUCTIVA__') ? null : db.orders.find(o => o.id===item.otId);
+    const isRefrig = item.otId==='__REFRIGERIO__';
     html += `<div class="detail-ot-row">
       <div class="detail-ot-left">
-        <div class="detail-ot-num">${ot ? ot.num : isRefrig ? '☕ Refrigerio' : '⏸ Improductiva'}</div>
-        <div class="detail-ot-desc">${ot ? ot.desc : isRefrig ? 'Tiempo de descanso' : (item.motivo || '')}</div>
+        <div class="detail-ot-num">${ot?ot.num:isRefrig?'☕ Refrigerio':'⏸ Improductiva'}</div>
+        <div class="detail-ot-desc">${ot?ot.desc:isRefrig?'Tiempo de descanso':(item.motivo||'')}</div>
         <div style="display:flex;gap:5px;margin-top:5px">
           <span class="tag ${tipoTag(item.tipo)}">${item.tipo}</span>
-          ${ot ? `<span class="tag ${typeTag(ot.type)}">${ot.type}</span>` : ''}
-          ${item.desde && item.hasta ? `<span style="font-size:10px;color:var(--text3);padding:2px 4px;border:1px solid var(--border);border-radius:4px">${item.desde}–${item.hasta}</span>` : ''}
+          ${ot?`<span class="tag ${typeTag(ot.type)}">${ot.type}</span>`:''}
+          ${item.desde&&item.hasta?`<span style="font-size:10px;color:var(--text3);padding:2px 4px;border:1px solid var(--border);border-radius:4px">${item.desde}–${item.hasta}</span>`:''}
         </div>
-        ${item.obs ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;font-style:italic">"${item.obs}"</div>` : ''}
+        ${item.obs?`<div style="font-size:12px;color:var(--text2);margin-top:6px;font-style:italic">"${item.obs}"</div>`:''}
       </div>
       <div class="detail-hours">${item.horas}h</div>
     </div>`;
   });
   html += `<div style="background:var(--bg2);border-radius:var(--r3);padding:14px;margin-top:8px;text-align:center">
     <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Total jornada</div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;color:var(--lime)">${total.toFixed(1)} h</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;color:var(--nh-yellow)">${total.toFixed(1)} h</div>
   </div>`;
-
   document.getElementById('detail-body').innerHTML = html;
   document.getElementById('sheet-detail-overlay').classList.add('open');
 }
 
 function getGroupLabel(d) {
-  const today = new Date();
-  const diff  = Math.floor((today - d) / 86400000);
+  const today = new Date(), diff = Math.floor((today - d) / 86400000);
   if (diff < 7)  return 'Esta semana';
   if (diff < 14) return 'Semana pasada';
-  return d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).replace(/^\w/, c => c.toUpperCase());
+  return d.toLocaleDateString('es-AR',{month:'long',year:'numeric'}).replace(/^\w/,c=>c.toUpperCase());
 }
 
 // ═══════════════════════════════════════════════════
-// NAV & SHEETS
+// UTILS
 // ═══════════════════════════════════════════════════
 function goView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('view-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-' + name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
 }
+function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
 
-function closeSheet(id) {
-  document.getElementById(id).classList.remove('open');
-}
-
-// ═══════════════════════════════════════════════════
-// CONFIRM DIALOG
-// ═══════════════════════════════════════════════════
 let confirmCallback = null;
 function showConfirm(icon, title, msg, cb) {
-  document.getElementById('conf-icon').textContent  = icon;
+  document.getElementById('conf-icon').textContent = icon;
   document.getElementById('conf-title').textContent = title;
-  document.getElementById('conf-msg').textContent   = msg;
+  document.getElementById('conf-msg').textContent = msg;
   confirmCallback = cb;
   document.getElementById('conf-ok-btn').onclick = () => { if(confirmCallback) confirmCallback(); };
   document.getElementById('confirm-overlay').classList.add('open');
 }
-function closeConfirm() {
-  document.getElementById('confirm-overlay').classList.remove('open');
-}
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
 
 function confirmLogout() {
   showConfirm('👋', '¿Salir?', 'Se guardará tu borrador si tenés cambios sin enviar.', () => {
     closeConfirm();
-    doLogout();
+    if (draftItems.length > 0) saveDraft();
+    currentTech = null; draftItems = [];
+    document.getElementById('s-app').classList.remove('active');
+    document.getElementById('s-login').classList.add('active');
+    document.getElementById('sel-tech').value = '';
+    document.getElementById('login-error').textContent = '';
   });
 }
-function doLogout() {
-  if (draftItems.length > 0) saveDraft();
-  currentTech = null;
-  currentPin  = '';
-  draftItems  = [];
-  updatePinDisplay();
-  document.getElementById('btn-login').disabled = true;
-  document.getElementById('login-error').textContent = '';
-  document.getElementById('sel-tech').value = '';
-  document.getElementById('s-app').classList.remove('active');
-  document.getElementById('s-login').classList.add('active');
-}
 
-// ═══════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════
-function showToast(msg, type = 'default') {
+function showToast(msg, type='default') {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className   = 'toast ' + type + ' show';
+  t.textContent = msg; t.className = 'toast '+type+' show';
   setTimeout(() => t.classList.remove('show'), 2400);
 }
 
-// ═══════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════
-function tipoTag(tipo) {
-  return { Productiva:'tag-prod', Improductiva:'tag-improd', Capacitación:'tag-cap', Viaje:'tag-viaje', Refrigerio:'tag-refrig' }[tipo] || '';
-}
-function typeTag(type) {
-  return { 'Cliente Final':'tag-cli', 'Garantía':'tag-gar', 'Interno':'tag-int' }[type] || '';
-}
-
-// ═══════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════
-initLogin();
+function tipoTag(tipo) { return {Productiva:'tag-prod',Improductiva:'tag-improd',Capacitación:'tag-cap',Viaje:'tag-viaje',Refrigerio:'tag-refrig'}[tipo]||''; }
+function typeTag(type) { return {'Cliente Final':'tag-cli','Garantía':'tag-gar','Interno':'tag-int','Interno Taller':'tag-int','Interno Ventas':'tag-int'}[type]||''; }
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
-      console.log('SW registered:', reg.scope);
-    }).catch(err => console.warn('SW error:', err));
-  });
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(()=>{}); });
 }
 </script>
 </body>
