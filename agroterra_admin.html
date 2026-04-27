@@ -266,6 +266,24 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 .jds-val { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 900; color: var(--cyan); line-height: 1; margin-bottom: 4px; }
 .jds-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
 
+/* CALENDARIO */
+.cal-table { border-collapse: collapse; min-width: 100%; }
+.cal-table th { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; padding: 8px 6px; text-align: center; border-bottom: 2px solid var(--border2); white-space: nowrap; position: sticky; top: 0; background: var(--bg); z-index: 2; }
+.cal-table th.cal-tech-col { text-align: left; padding-left: 12px; min-width: 130px; position: sticky; left: 0; background: var(--bg); z-index: 3; }
+.cal-table td { padding: 3px 4px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.cal-table td.cal-tech-name { font-size: 13px; font-weight: 600; color: var(--text); padding: 8px 12px; white-space: nowrap; position: sticky; left: 0; background: var(--surface); z-index: 1; border-right: 1px solid var(--border2); }
+.cal-table tr:hover td { background: rgba(255,204,0,0.03); }
+.cal-table tr:hover td.cal-tech-name { background: var(--surface2); }
+.cal-cell { width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; cursor: default; transition: all 0.15s; margin: 0 auto; }
+.cal-cell.has-jornada { background: rgba(255,204,0,0.20); border: 1px solid rgba(255,204,0,0.35); color: var(--cyan); cursor: pointer; }
+.cal-cell.has-jornada:hover { background: rgba(255,204,0,0.30); transform: scale(1.08); }
+.cal-cell.missing { background: rgba(255,68,68,0.15); border: 1px solid rgba(255,68,68,0.30); color: var(--red); }
+.cal-cell.nonworking { background: transparent; color: var(--text3); opacity: 0.4; cursor: default; }
+.cal-cell.future { background: transparent; color: var(--text3); opacity: 0.25; }
+.cal-cell.today-col { outline: 2px solid var(--cyan); outline-offset: 1px; }
+.cal-day-header { font-size: 10px; font-weight: 700; color: var(--text3); }
+.cal-day-header.is-today { color: var(--cyan); }
+
 /* TOAST */
 .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--surface2); border: 1px solid var(--border2); color: var(--text); padding: 11px 22px; border-radius: 30px; font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.25s; z-index: 999; pointer-events: none; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -359,6 +377,7 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
         <div class="nav-item" id="nav-extras"      onclick="goView('extras')"><span class="nav-icon">⚡</span> Horas Extra</div>
         <div class="nav-item" id="nav-facturacion" onclick="goView('facturacion')"><span class="nav-icon">💰</span> Facturación</div>
         <div class="nav-item" id="nav-ordenes"     onclick="goView('ordenes')"><span class="nav-icon">📋</span> Órdenes de Trabajo</div>
+        <div class="nav-item" id="nav-calendario"  onclick="goView('calendario')"><span class="nav-icon">🗓</span> Calendario</div>
       </nav>
       <div class="sidebar-footer">
         <button class="btn-logout-sidebar" onclick="doAdminLogout()">← Cerrar sesión</button>
@@ -411,6 +430,31 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
           <div class="full-col card">
             <div class="card-header"><div class="card-title">👷 Performance técnicos · semana</div><span style="font-size:11px;color:var(--text3)">Regular · Extra</span></div>
             <div id="tech-perf-table"></div>
+          </div>
+        </div>
+
+        <!-- CALENDARIO -->
+        <div class="view" id="view-calendario">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:2px">🗓 Calendario</div>
+              <div style="font-size:13px;color:var(--text2)">Jornadas por técnico · vista mensual</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <button onclick="calPrevMonth()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:8px 14px;color:var(--text);font-size:16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700">‹</button>
+              <div id="cal-month-label" style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;min-width:160px;text-align:center;color:var(--cyan)">—</div>
+              <button onclick="calNextMonth()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:8px 14px;color:var(--text);font-size:16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700">›</button>
+              <button onclick="calGoToday()" style="background:var(--cyan-dim2);border:1px solid var(--border2);border-radius:var(--r3);padding:8px 14px;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Hoy</button>
+            </div>
+          </div>
+          <!-- Legend -->
+          <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:12px;height:12px;border-radius:3px;background:var(--cyan);opacity:0.8"></div>Cargó jornada</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:12px;height:12px;border-radius:3px;background:var(--red);opacity:0.7"></div>Faltó (día hábil sin jornada)</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:12px;height:12px;border-radius:3px;background:var(--surface3)"></div>No laboral / futuro</div>
+          </div>
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+            <div id="cal-container"></div>
           </div>
         </div>
 
@@ -552,6 +596,7 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
       <div class="mbn-item" id="mbn-extras"      onclick="goView('extras')"><div class="mbn-icon">⚡</div><div class="mbn-label">Extras</div></div>
       <div class="mbn-item" id="mbn-facturacion" onclick="goView('facturacion')"><div class="mbn-icon">💰</div><div class="mbn-label">Facturación</div></div>
       <div class="mbn-item" id="mbn-ordenes"     onclick="goView('ordenes')"><div class="mbn-icon">📋</div><div class="mbn-label">Órdenes</div></div>
+      <div class="mbn-item" id="mbn-calendario"  onclick="goView('calendario')"><div class="mbn-icon">🗓</div><div class="mbn-label">Calendario</div></div>
     </div>
   </nav>
 </div>
@@ -613,7 +658,7 @@ async function refreshAdmin(){
   const btn=document.getElementById('btn-refresh'),lbl=document.getElementById('sync-status-label');
   btn.textContent='⏳ Actualizando...'; btn.disabled=true; lbl.textContent='Sincronizando...';
   const ok=await syncFromServer();
-  if(ok){ lbl.textContent='Actualizado ✓'; renderDashboard();renderAlertas();renderRegistros();renderExtras();renderFacturacion();renderOrdenes();showToast('Datos actualizados ✓','success'); }
+  if(ok){ lbl.textContent='Actualizado ✓'; renderDashboard();renderAlertas();renderRegistros();renderExtras();renderFacturacion();renderOrdenes();renderCalendario();showToast('Datos actualizados ✓','success'); }
   else { lbl.textContent='Sin conexión'; showToast('No se pudo conectar al servidor','error'); }
   btn.textContent='🔄 Actualizar'; btn.disabled=false;
   setTimeout(()=>{lbl.textContent='En línea';},3000);
@@ -665,14 +710,14 @@ function initAdmin(){
   const db=getDB();
   const sel=document.getElementById('filt-tech');
   db.technicians.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.name;sel.appendChild(o);});
-  renderDashboard();renderAlertas();renderRegistros();renderExtras();renderFacturacion();renderOrdenes();
+  renderDashboard();renderAlertas();renderRegistros();renderExtras();renderFacturacion();renderOrdenes();renderCalendario();
   goView('dashboard');
 }
 
 // ════════════════════════════════════════════
 // NAV
 // ════════════════════════════════════════════
-const VIEW_TITLES={dashboard:'Dashboard',alertas:'🔔 Alertas',registros:'🗂 Registros',extras:'⚡ Horas Extra',facturacion:'💰 Facturación',ordenes:'📋 Órdenes de Trabajo'};
+const VIEW_TITLES={dashboard:'Dashboard',alertas:'🔔 Alertas',registros:'🗂 Registros',extras:'⚡ Horas Extra',facturacion:'💰 Facturación',ordenes:'📋 Órdenes de Trabajo',calendario:'🗓 Calendario'};
 function goView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
@@ -1110,6 +1155,99 @@ function downloadCSV(content,filename){
   const blob=new Blob([content],{type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════════════════
+// CALENDARIO
+// ════════════════════════════════════════════
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-indexed
+
+function calGoToday() { calYear = new Date().getFullYear(); calMonth = new Date().getMonth(); renderCalendario(); }
+function calPrevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendario(); }
+function calNextMonth() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendario(); }
+
+function isWorkday(dateStr) {
+  // Mon(1)-Thu(4): yes. Fri(5): yes. Sat(6): could be (tech decides). Sun(0): no.
+  const dow = new Date(dateStr+'T12:00:00').getDay();
+  return dow >= 1 && dow <= 6; // include Sat as potentially workday
+}
+
+function renderCalendario() {
+  const db = getDB();
+  const today = TODAY();
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('cal-month-label').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+  // Build array of days in month
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const days = [];
+  for(let d=1; d<=daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dow = new Date(dateStr+'T12:00:00').getDay();
+    days.push({ dateStr, d, dow });
+  }
+
+  // Filter to workdays only (Mon-Sat), skip Sundays
+  const workDays = days.filter(d => d.dow !== 0);
+
+  const dayLabels = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+  // Header row: tech name col + one col per workday
+  let html = '<table class="cal-table"><thead><tr>';
+  html += `<th class="cal-tech-col">Técnico</th>`;
+  workDays.forEach(({dateStr, d, dow}) => {
+    const isToday = dateStr === today;
+    const isSat = dow === 6;
+    html += `<th style="${isSat?'color:var(--amber);opacity:0.8':''} ${isToday?'color:var(--cyan)':''}">
+      <div class="cal-day-header ${isToday?'is-today':''}">${dayLabels[dow]}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:${isToday?'var(--cyan)':'var(--text)'}">${d}</div>
+    </th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  // One row per technician
+  db.technicians.forEach(tech => {
+    html += `<tr><td class="cal-tech-name"><div style="display:flex;align-items:center;gap:8px"><div class="tech-avatar" style="width:28px;height:28px;font-size:10px;flex-shrink:0">${getInitials(tech.name)}</div>${tech.name.split(' ')[0]}</div></td>`;
+
+    workDays.forEach(({dateStr, dow}) => {
+      const isFuture = dateStr > today;
+      const isSat = dow === 6;
+      const jornada = db.jornadas.find(j => j.techId===tech.id && j.date===dateStr && j.status==='sent');
+
+      let cellClass, cellContent, cellTitle = '';
+
+      if(isFuture) {
+        cellClass = 'future';
+        cellContent = '';
+      } else if(jornada) {
+        const totalH = jornada.items.reduce((s,i)=>s+i.horas,0);
+        cellClass = 'has-jornada';
+        cellContent = totalH.toFixed(1);
+        cellTitle = `${tech.name} · ${dateStr} · ${totalH.toFixed(1)}h`;
+      } else if(isSat) {
+        // Saturday: no jornada but it's optional — show neutral
+        cellClass = 'nonworking';
+        cellContent = '—';
+      } else {
+        // Weekday, past, no jornada → missing
+        cellClass = 'missing';
+        cellContent = '✗';
+        cellTitle = `${tech.name} · ${dateStr} · Sin jornada`;
+      }
+
+      const isToday = dateStr === today;
+      html += `<td><div class="cal-cell ${cellClass} ${isToday?'today-col':''}" 
+        title="${cellTitle}"
+        ${jornada ? `onclick="openJornadaById('${jornada.id}')"` : ''}
+      >${cellContent}</div></td>`;
+    });
+
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('cal-container').innerHTML = html;
 }
 
 // ════════════════════════════════════════════
