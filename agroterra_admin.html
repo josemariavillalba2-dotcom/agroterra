@@ -516,18 +516,58 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
         <!-- FACTURACIÓN -->
         <div class="view" id="view-facturacion">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:4px">💰 Facturación</div>
-          <div style="font-size:13px;color:var(--text2);margin-bottom:24px">Horas productivas de cliente final, listas para facturar</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:20px">Todas las OTs con horas productivas — análisis de rentabilidad</div>
+
+          <!-- Tarifas configurables -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">
+              <div class="card-title">⚙️ Tarifas</div>
+              <button onclick="saveTarifas()" style="background:var(--cyan);border:none;border-radius:var(--r3);padding:6px 14px;color:var(--bg);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;cursor:pointer">Guardar</button>
+            </div>
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+                <div class="fi-field"><label>Campo (USD/h)</label><input type="number" id="tar-campo"    placeholder="60" style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--cyan)"/></div>
+                <div class="fi-field"><label>Taller (USD/h)</label><input type="number" id="tar-taller"  placeholder="55" style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--cyan)"/></div>
+                <div class="fi-field"><label>Garantía (USD/h)</label><input type="number" id="tar-garantia" placeholder="50" style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--cyan)"/></div>
+                <div class="fi-field"><label>Costo interno (USD/h)</label><input type="number" id="tar-costo" placeholder="30" style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--amber)"/></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resumen por período -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header"><div class="card-title">📊 Resumen por período</div></div>
+            <div class="card-body">
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+                <input type="date" id="resumen-desde" class="filter-input" onchange="renderResumen()"/>
+                <span style="color:var(--text3)">→</span>
+                <input type="date" id="resumen-hasta" class="filter-input" onchange="renderResumen()"/>
+                <button onclick="setResumenMes()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:7px 14px;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Este mes</button>
+              </div>
+              <div id="resumen-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+            </div>
+          </div>
+
+          <!-- Filtros OTs -->
           <div class="filter-row">
             <div class="filter-chip active" id="fc-pend" onclick="setFactFilter('pending',this)">Pendientes</div>
-            <div class="filter-chip" id="fc-fact" onclick="setFactFilter('billed',this)">Facturadas</div>
-            <div class="filter-chip" id="fc-all"  onclick="setFactFilter('all',this)">Todas</div>
+            <div class="filter-chip" id="fc-fact"  onclick="setFactFilter('billed',this)">Facturadas</div>
+            <div class="filter-chip" id="fc-all"   onclick="setFactFilter('all',this)">Todas</div>
+            <select class="filter-select" id="fc-type" onchange="renderFacturacion()">
+              <option value="">Todos los tipos</option>
+              <option value="Cliente Final">Cliente Final</option>
+              <option value="Garantía">Garantía</option>
+              <option value="Interno Taller">Interno Taller</option>
+              <option value="Interno Ventas">Interno Ventas</option>
+            </select>
             <button class="btn-export" style="margin-left:auto" onclick="exportFactCSV()">⬇ Exportar CSV</button>
           </div>
+
           <div class="card">
             <div class="card-body no-pad"><div id="fact-list"></div></div>
             <div class="fact-total-bar">
-              <div class="fact-total-label">Total horas · <span id="fact-count-label">0 OTs</span></div>
-              <div class="fact-total-val" id="fact-total-val">0 h · $ 0</div>
+              <div class="fact-total-label">Total · <span id="fact-count-label">0 OTs</span></div>
+              <div class="fact-total-val" id="fact-total-val">0 h</div>
             </div>
           </div>
         </div>
@@ -557,8 +597,8 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
                 <div class="fi-field"><label>N° de Chasis *</label><input type="text" id="ot-inp-chasis" placeholder="Ej: ZBE123456789" /></div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-                <div class="fi-field" id="field-rate"><label>Tarifa (USD/hora)</label><input type="number" id="ot-inp-rate" placeholder="95" min="0" /></div>
-                <div class="fi-field"><label>Fecha apertura</label><input type="date" id="ot-inp-fecha" /></div>
+                <div class="fi-field" id="field-rate"><label>Tarifa (USD/hora)</label><input type="number" id="ot-inp-rate" placeholder="60" min="0" /></div>
+                <div class="fi-field" id="field-monto-tope" style="display:none"><label>Monto tope USD (presupuesto cerrado)</label><input type="number" id="ot-inp-tope" placeholder="Ej: 300" min="0" /></div>
               </div>
               <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:16px">
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;margin-bottom:12px">📐 Presupuesto de horas</div>
@@ -768,6 +808,7 @@ function initAdmin(){
   const sel=document.getElementById('filt-tech');
   db.technicians.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.name;sel.appendChild(o);});
   renderDashboard();renderAlertas();renderRegistros();renderExtras();renderFacturacion();renderOrdenes();renderCalendario();
+  loadTarifasUI(); setResumenMes();
   goView('dashboard');
 }
 
@@ -1000,53 +1041,229 @@ function renderExtras(){
 }
 
 // ════════════════════════════════════════════
-// FACTURACIÓN
+// FACTURACIÓN — nueva versión completa
 // ════════════════════════════════════════════
+
+// ── TARIFAS ──
+function getTarifas(){
+  try{ return JSON.parse(localStorage.getItem('agroterra_tarifas')||'null')||{campo:60,taller:55,garantia:50,costo:30}; }
+  catch(e){ return {campo:60,taller:55,garantia:50,costo:30}; }
+}
+function saveTarifas(){
+  const t={
+    campo:   parseFloat(document.getElementById('tar-campo').value)||60,
+    taller:  parseFloat(document.getElementById('tar-taller').value)||55,
+    garantia:parseFloat(document.getElementById('tar-garantia').value)||50,
+    costo:   parseFloat(document.getElementById('tar-costo').value)||30,
+  };
+  localStorage.setItem('agroterra_tarifas',JSON.stringify(t));
+  renderFacturacion(); renderResumen();
+  showToast('Tarifas guardadas ✓','success');
+}
+function loadTarifasUI(){
+  const t=getTarifas();
+  document.getElementById('tar-campo').value=t.campo;
+  document.getElementById('tar-taller').value=t.taller;
+  document.getElementById('tar-garantia').value=t.garantia;
+  document.getElementById('tar-costo').value=t.costo;
+}
+function getTarifaForOT(type){
+  const t=getTarifas();
+  if(type==='Garantía') return t.garantia;
+  if(type==='Interno Taller'||type==='Interno Ventas') return t.taller;
+  return t.campo; // Cliente Final
+}
+
+// ── RESUMEN ──
+function setResumenMes(){
+  const now=new Date();
+  document.getElementById('resumen-desde').value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+  const last=new Date(now.getFullYear(),now.getMonth()+1,0);
+  document.getElementById('resumen-hasta').value=last.toISOString().split('T')[0];
+  renderResumen();
+}
+
+function renderResumen(){
+  const desde=document.getElementById('resumen-desde').value;
+  const hasta=document.getElementById('resumen-hasta').value;
+  if(!desde||!hasta){ document.getElementById('resumen-kpis').innerHTML='<div style="color:var(--text3);font-size:13px">Seleccioná un período para ver el resumen.</div>'; return; }
+  const db=getDB(), t=getTarifas();
+  if(!db.billingStatus) db.billingStatus={};
+
+  // Build OT map for period
+  const otMap={};
+  db.jornadas.filter(j=>j.status==='sent'&&j.date>=desde&&j.date<=hasta).forEach(j=>{
+    j.items.filter(i=>i.tipo==='Productiva'&&!i.otId.startsWith('__')).forEach(item=>{
+      const ot=db.orders.find(o=>o.id===item.otId); if(!ot||ot.status==='deleted') return;
+      if(!otMap[item.otId]) otMap[item.otId]={ot,horas:0};
+      otMap[item.otId].horas+=item.horas;
+    });
+  });
+
+  let ingresoBilled=0, ingresoPending=0, costoTotal=0, hsTotal=0;
+  Object.entries(otMap).forEach(([otId,data])=>{
+    const tarifa=getTarifaForOT(data.ot.type);
+    const monto=data.horas*tarifa;
+    const costo=data.horas*t.costo;
+    const bs=db.billingStatus[otId]?.status||db.billingStatus[otId]||'pending';
+    if(bs==='billed') ingresoBilled+=monto; else ingresoPending+=monto;
+    costoTotal+=costo; hsTotal+=data.horas;
+  });
+  const ingresoTotal=ingresoBilled+ingresoPending;
+  const margen=ingresoTotal-costoTotal;
+  const margenPct=ingresoTotal>0?Math.round(margen/ingresoTotal*100):0;
+
+  document.getElementById('resumen-kpis').innerHTML=[
+    {label:'Facturado',    val:'USD '+ingresoBilled.toLocaleString('es-AR',{maximumFractionDigits:0}), sub:'Marcado como facturado', color:'var(--lime)'},
+    {label:'Pendiente',    val:'USD '+ingresoPending.toLocaleString('es-AR',{maximumFractionDigits:0}), sub:'Por facturar', color:'var(--amber)'},
+    {label:'Costo interno',val:'USD '+costoTotal.toLocaleString('es-AR',{maximumFractionDigits:0}), sub:`${hsTotal.toFixed(1)}h × USD ${t.costo}/h`, color:'var(--red)'},
+    {label:'Margen neto',  val:'USD '+margen.toLocaleString('es-AR',{maximumFractionDigits:0}), sub:`${margenPct}% sobre ingreso total`, color: margen>=0?'var(--cyan)':'var(--red)'},
+  ].map(k=>`<div class="stat-card" style="--accent:${k.color}"><div class="sc-label">${k.label}</div><div class="sc-val" style="color:${k.color};font-size:22px">${k.val}</div><div class="sc-sub">${k.sub}</div></div>`).join('');
+}
+
+// ── MAIN FACTURACIÓN ──
 let factFilter='pending';
-function setFactFilter(f,el){factFilter=f;document.querySelectorAll('#view-facturacion .filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderFacturacion();}
+function setFactFilter(f,el){
+  factFilter=f;
+  document.querySelectorAll('#view-facturacion .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderFacturacion();
+}
 
 function renderFacturacion(){
-  const db=getDB();if(!db.billingStatus)db.billingStatus={};
+  const db=getDB(); if(!db.billingStatus) db.billingStatus={};
+  const t=getTarifas();
+  const typeFilter=document.getElementById('fc-type')?.value||'';
+
+  // Build OT map — ALL productive types, all OT types
   const otMap={};
   db.jornadas.filter(j=>j.status==='sent').forEach(j=>{
     j.items.filter(i=>i.tipo==='Productiva'&&!i.otId.startsWith('__')).forEach(item=>{
       const ot=db.orders.find(o=>o.id===item.otId);
-      if(!ot||ot.type!=='Cliente Final')return;
-      if(!otMap[item.otId])otMap[item.otId]={ot,horas:0,techMap:{}};
+      if(!ot||ot.status==='deleted') return;
+      if(!otMap[item.otId]) otMap[item.otId]={ot,horas:0,techMap:{}};
       otMap[item.otId].horas+=item.horas;
       const tn=getTechName(j.techId);
-      if(!otMap[item.otId].techMap[tn])otMap[item.otId].techMap[tn]={horas:0,dates:[]};
+      if(!otMap[item.otId].techMap[tn]) otMap[item.otId].techMap[tn]={horas:0,dates:[]};
       otMap[item.otId].techMap[tn].horas+=item.horas;
-      if(!otMap[item.otId].techMap[tn].dates.includes(j.date))otMap[item.otId].techMap[tn].dates.push(j.date);
+      if(!otMap[item.otId].techMap[tn].dates.includes(j.date)) otMap[item.otId].techMap[tn].dates.push(j.date);
     });
   });
-  const allHoras=Object.values(otMap).map(v=>v.horas),maxHoras=Math.max(...allHoras,1);
-  let entries=Object.entries(otMap).map(([otId,data])=>({otId,ot:data.ot,horas:data.horas,techMap:data.techMap,status:db.billingStatus[otId]?.status||db.billingStatus[otId]||'pending',fechaCierre:db.billingStatus[otId]?.fechaCierre||null}));
-  if(factFilter!=='all')entries=entries.filter(e=>e.status===factFilter);
+
+  let entries=Object.entries(otMap).map(([otId,data])=>{
+    const bs=db.billingStatus[otId];
+    return {
+      otId, ot:data.ot, horas:data.horas, techMap:data.techMap,
+      status: bs?.status||bs||'pending',
+      fechaFactura: bs?.fechaFactura||null,
+      nroFactura:   bs?.nroFactura||null,
+    };
+  });
+
+  if(factFilter!=='all') entries=entries.filter(e=>e.status===factFilter);
+  if(typeFilter) entries=entries.filter(e=>e.ot.type===typeFilter);
   entries.sort((a,b)=>b.horas-a.horas);
-  const totalH=entries.reduce((s,e)=>s+e.horas,0),totalUSD=entries.reduce((s,e)=>s+e.horas*e.ot.ratePerHour,0);
+
+  const totalH=entries.reduce((s,e)=>s+e.horas,0);
+  const totalUSD=entries.reduce((s,e)=>s+e.horas*getTarifaForOT(e.ot.type),0);
+  const totalCosto=entries.reduce((s,e)=>s+e.horas*t.costo,0);
   document.getElementById('fact-count-label').textContent=`${entries.length} OT${entries.length!==1?'s':''}`;
-  document.getElementById('fact-total-val').textContent=`${totalH.toFixed(1)} h · USD ${totalUSD.toLocaleString('es-AR',{maximumFractionDigits:0})}`;
-  if(entries.length===0){document.getElementById('fact-list').innerHTML=`<div style="text-align:center;padding:40px;color:var(--text3)">Sin OTs en esta categoría</div>`;return;}
+  document.getElementById('fact-total-val').textContent=`${totalH.toFixed(1)}h · USD ${totalUSD.toLocaleString('es-AR',{maximumFractionDigits:0})} · Costo: USD ${totalCosto.toLocaleString('es-AR',{maximumFractionDigits:0})}`;
+
+  if(entries.length===0){ document.getElementById('fact-list').innerHTML=`<div style="text-align:center;padding:40px;color:var(--text3)">Sin OTs en esta categoría</div>`; return; }
+
   document.getElementById('fact-list').innerHTML=entries.map(e=>{
+    const tarifa=getTarifaForOT(e.ot.type);
+    const ingresoReal=e.horas*tarifa;
+    const costoReal=e.horas*t.costo;
+    const margen=ingresoReal-costoReal;
+    const margenPct=ingresoReal>0?Math.round(margen/ingresoReal*100):0;
+
+    // Monto tope (presupuesto cerrado o monto máximo facturable)
+    const montoTope=e.ot.montoTope||null;
+    const ingresoEfectivo=montoTope?Math.min(ingresoReal,montoTope):ingresoReal;
+    const horaEfectiva=e.horas>0?ingresoEfectivo/e.horas:0;
+    const costoEfectivo=e.horas>0?costoReal/e.horas:0;
+    const hayDesfase=montoTope&&ingresoReal>montoTope;
+
     const techRows=Object.entries(e.techMap).sort((a,b)=>b[1].horas-a[1].horas).map(([name,data])=>{
       const dl=data.dates.length===1?new Date(data.dates[0]+'T12:00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short'}):data.dates.length+' jornadas';
-      return `<div class="fact-tech-row"><div class="fact-tech-avatar">${getInitials(name)}</div><div class="fact-tech-name">${name}</div><div class="fact-tech-dates">${dl}</div><div class="fact-tech-hours">${data.horas.toFixed(1)}h</div><div class="fact-tech-amount">${e.ot.ratePerHour>0?'USD '+(data.horas*e.ot.ratePerHour).toFixed(0):'—'}</div></div>`;
+      return `<div class="fact-tech-row">
+        <div class="fact-tech-avatar">${getInitials(name)}</div>
+        <div class="fact-tech-name">${name}</div>
+        <div class="fact-tech-dates">${dl}</div>
+        <div class="fact-tech-hours">${data.horas.toFixed(1)}h</div>
+        <div class="fact-tech-amount">USD ${(data.horas*tarifa).toFixed(0)}</div>
+      </div>`;
     }).join('');
+
+    // Rentabilidad bar
+    const rentPct=Math.min(Math.max(margenPct,0),100);
+    const rentColor=margenPct>=40?'var(--lime)':margenPct>=20?'var(--amber)':'var(--red)';
+
     return `<div class="fact-card">
       <div class="fact-card-top">
-        <div class="fact-card-left"><div class="fact-card-num">${e.ot.num}</div><div class="fact-card-desc">${e.ot.desc}</div><span class="tag ${typeTagClass(e.ot.type)}">${e.ot.type}</span></div>
+        <div class="fact-card-left">
+          <div class="fact-card-num">${e.ot.num}</div>
+          <div class="fact-card-desc">${e.ot.desc}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+            <span class="tag ${typeTagClass(e.ot.type)}">${e.ot.type}</span>
+            <span style="font-size:11px;color:var(--text3);padding:2px 6px;border:1px solid var(--border);border-radius:4px">${e.ot.client||''}</span>
+          </div>
+        </div>
         <div class="fact-card-right">
           <div class="fact-card-hours-label">Hs. productivas</div>
           <div class="fact-card-hours">${e.horas.toFixed(1)}h</div>
-          <div class="fact-card-amount">${e.ot.ratePerHour>0?'USD '+(e.horas*e.ot.ratePerHour).toFixed(0):'—'}</div>
+          <div class="fact-card-amount">USD ${ingresoEfectivo.toFixed(0)}</div>
+          ${hayDesfase?`<div style="font-size:10px;color:var(--red);margin-top:2px">⚠ Tope: USD ${montoTope}</div>`:''}
         </div>
       </div>
+
+      <!-- Rentabilidad -->
+      <div style="background:var(--bg2);border-radius:var(--r3);padding:12px;margin-bottom:10px">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;text-align:center">
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--cyan)">USD ${tarifa}</div>
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px">Tarifa/h</div>
+          </div>
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:${hayDesfase?'var(--amber)':'var(--lime)'}">USD ${horaEfectiva.toFixed(2)}</div>
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px">H. efectiva</div>
+          </div>
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--red)">USD ${t.costo}</div>
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px">Costo/h</div>
+          </div>
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:${rentColor}">${margenPct}%</div>
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px">Margen</div>
+          </div>
+        </div>
+        <div style="background:var(--surface3);border-radius:4px;height:6px;overflow:hidden">
+          <div style="height:100%;border-radius:4px;background:${rentColor};width:${rentPct}%;transition:width 0.5s"></div>
+        </div>
+        ${hayDesfase?`<div style="font-size:11px;color:var(--red);margin-top:6px">⚠ Presupuesto cerrado: cotizaste USD ${montoTope} pero el costo real fue USD ${ingresoReal.toFixed(0)} — perdés USD ${(ingresoReal-montoTope).toFixed(0)}</div>`:''}
+      </div>
+
       <div class="fact-tech-list">${techRows}</div>
-      <div style="display:flex;justify-content:flex-end">
-        <span class="fact-status ${e.status}" onclick="toggleBilling('${e.otId}',event)">
-          ${e.status==='billed'?'✅ Facturada':'⏳ Pendiente'}
-        </span>
+
+      <!-- Número de factura + estado -->
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:4px">
+        ${e.status==='billed'?`
+          <div style="font-size:12px;color:var(--text2)">
+            ${e.nroFactura?`📄 Factura: <strong style="color:var(--text)">${e.nroFactura}</strong>`:''}
+            ${e.fechaFactura?` · ${new Date(e.fechaFactura).toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'})}`:''} 
+          </div>
+        `:''}
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          ${e.status==='pending'?`
+            <input id="nro-fact-${e.otId}" type="text" placeholder="Nro. factura (opcional)" 
+              style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-family:'Barlow',sans-serif;font-size:12px;outline:none;width:180px"/>
+          `:''}
+          <span class="fact-status ${e.status}" onclick="toggleBilling('${e.otId}',event)">
+            ${e.status==='billed'?'✅ Facturada':'⏳ Marcar facturada'}
+          </span>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -1054,13 +1271,19 @@ function renderFacturacion(){
 
 async function toggleBilling(otId,ev){
   ev.stopPropagation();
-  const db=getDB();if(!db.billingStatus)db.billingStatus={};
+  const db=getDB(); if(!db.billingStatus) db.billingStatus={};
   const cur=db.billingStatus[otId]?.status||db.billingStatus[otId]||'pending';
   const next=cur==='pending'?'billed':'pending';
-  db.billingStatus[otId]={status:next,fechaCierre:next==='billed'?new Date().toISOString():null};
+  const nroInput=document.getElementById('nro-fact-'+otId);
+  const nroFactura=nroInput?nroInput.value.trim():null;
+  db.billingStatus[otId]={
+    status:next,
+    fechaFactura: next==='billed'?new Date().toISOString():null,
+    nroFactura:   next==='billed'?(nroFactura||null):null,
+  };
   saveDB(db);
-  await apiPost('updateBilling',{otId,status:next});
-  renderFacturacion();
+  await apiPost('updateBilling',{otId,billingData:db.billingStatus[otId]});
+  renderFacturacion(); renderResumen();
   showToast(next==='billed'?'Marcada como facturada ✓':'Volvió a pendiente','success');
 }
 
@@ -1077,8 +1300,10 @@ function togglePresupuesto(val){
   no.style.background=!val?'var(--cyan-dim2)':'transparent';no.style.borderColor=!val?'var(--border2)':'var(--border)';no.style.color=!val?'var(--cyan)':'var(--text2)';
 }
 function toggleRateField(){
+  // Tarifa siempre visible — todos los tipos tienen tarifa ahora
+  // Monto tope solo para Cliente Final (presupuesto cerrado)
   const type=document.getElementById('ot-inp-type').value;
-  document.getElementById('field-rate').style.display=type==='Cliente Final'?'':'none';
+  document.getElementById('field-monto-tope').style.display=type==='Cliente Final'?'':'none';
 }
 
 async function addOT(){
@@ -1088,16 +1313,18 @@ async function addOT(){
   const client=document.getElementById('ot-inp-client').value.trim();
   const unidad=document.getElementById('ot-inp-unidad').value.trim();
   const chasis=document.getElementById('ot-inp-chasis').value.trim();
-  const rate=parseFloat(document.getElementById('ot-inp-rate').value)||0;
+  const rateInput=parseFloat(document.getElementById('ot-inp-rate').value)||0;
+  const rate=rateInput>0?rateInput:getTarifaForOT(type); // usa tarifa configurada si no se escribe
   const fecha=document.getElementById('ot-inp-fecha').value||TODAY();
   const obs=document.getElementById('ot-inp-obs').value.trim();
   const hsPresup=hasPresupuesto?parseFloat(document.getElementById('ot-inp-hs-presup').value)||0:null;
+  const montoTope=parseFloat(document.getElementById('ot-inp-tope')?.value)||null;
   if(!num||!desc||!client||!unidad){showToast('Completá los campos obligatorios','error');return;}
   const db=getDB();
-  const ot={id:'ot_'+Date.now(),num,desc,type,client,unidad,chasis,ratePerHour:rate,fechaApertura:fecha,obs,hsPresupuesto:hsPresup,status:'active'};
+  const ot={id:'ot_'+Date.now(),num,desc,type,client,unidad,chasis,ratePerHour:rate,fechaApertura:fecha,obs,hsPresupuesto:hsPresup,montoTope,status:'active'};
   db.orders.push(ot);saveDB(db);
   await apiPost('saveOrder',{order:ot});
-  ['ot-inp-num','ot-inp-desc','ot-inp-client','ot-inp-unidad','ot-inp-chasis','ot-inp-rate','ot-inp-obs'].forEach(id=>document.getElementById(id).value='');
+  ['ot-inp-num','ot-inp-desc','ot-inp-client','ot-inp-unidad','ot-inp-chasis','ot-inp-rate','ot-inp-obs','ot-inp-tope'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('ot-inp-fecha').value='';
   renderOrdenes();showToast('OT creada ✓','success');
 }
