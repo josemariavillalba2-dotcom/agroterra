@@ -486,7 +486,7 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
           <div class="card">
             <div class="card-body no-pad">
               <table class="log-table">
-                <thead><tr><th>Técnico</th><th>Fecha</th><th>OT</th><th>Tipo</th><th>Horario</th><th>Regular</th><th>Extra</th><th>Total</th></tr></thead>
+                <thead><tr><th>Técnico</th><th>Fecha</th><th>OT</th><th>Tipo</th><th>Horario</th><th>Regular</th><th>Extra</th><th>Total</th><th></th></tr></thead>
                 <tbody id="reg-tbody"></tbody>
               </table>
             </div>
@@ -599,6 +599,63 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
       <div class="mbn-item" id="mbn-calendario"  onclick="goView('calendario')"><div class="mbn-icon">🗓</div><div class="mbn-label">Calendario</div></div>
     </div>
   </nav>
+</div>
+
+<!-- Modal edición de item -->
+<div id="edit-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);width:100%;max-width:440px;max-height:90vh;overflow-y:auto">
+    <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800">✏️ Editar registro</div>
+      <button onclick="closeEditItem()" style="background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:16px">✕</button>
+    </div>
+    <div style="padding:20px 24px">
+      <div id="edit-item-info" style="background:var(--bg2);border-radius:var(--r3);padding:12px;margin-bottom:18px;font-size:13px;color:var(--text2)"></div>
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Tipo de hora</label>
+        <select id="edit-tipo" onchange="toggleEditMotivo()" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:11px 14px;color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;outline:none;-webkit-appearance:none">
+          <option value="Productiva">Productiva</option>
+          <option value="Improductiva">Improductiva</option>
+          <option value="Capacitación">Capacitación</option>
+          <option value="Viaje">Viaje</option>
+          <option value="Refrigerio">Refrigerio</option>
+        </select>
+      </div>
+      <div id="edit-motivo-field" style="display:none;margin-bottom:16px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Motivo improductividad</label>
+        <select id="edit-motivo" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:11px 14px;color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;outline:none;-webkit-appearance:none">
+          <option value="Espera de repuesto">⏳ Espera de repuesto</option>
+          <option value="Espera de autorización">📋 Espera de autorización</option>
+          <option value="Sin trabajo asignado">💤 Sin trabajo asignado</option>
+          <option value="Falla de herramienta/equipo">🔧 Falla de herramienta/equipo</option>
+          <option value="Reunión interna">🗣 Reunión interna</option>
+          <option value="Otros">📝 Otros</option>
+        </select>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Horario</label>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:6px 10px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Desde</div>
+            <select id="edit-desde" onchange="recalcEditHours()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 8px;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;text-align:center;outline:none;-webkit-appearance:none;cursor:pointer"></select>
+          </div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--text3)">→</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Hasta</div>
+            <select id="edit-hasta" onchange="recalcEditHours()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 8px;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;text-align:center;outline:none;-webkit-appearance:none;cursor:pointer"></select>
+          </div>
+        </div>
+        <div id="edit-hours-result" style="margin-top:8px;text-align:center;background:var(--cyan-dim2);border:1px solid var(--border2);border-radius:6px;padding:8px;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--cyan);display:none"></div>
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Observaciones</label>
+        <textarea id="edit-obs" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:11px 14px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;resize:none;height:72px;-webkit-appearance:none" placeholder="Observaciones opcionales..."></textarea>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="closeEditItem()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:13px;color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-transform:uppercase">Cancelar</button>
+        <button onclick="saveEditItem()" style="flex:2;background:var(--cyan);border:none;border-radius:var(--r3);padding:13px;color:var(--bg);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -880,15 +937,16 @@ function renderRegistros(){
   tbody.innerHTML=rows.map(({j,item})=>{
     const ot=getOT(item.otId,db),otLabel=getOTNum(item.otId,db);
     const reg=(parseFloat(item.horasRegulares)||parseFloat(item.horas)||0).toFixed(2),ext=(parseFloat(item.horasExtra)||0).toFixed(2);
-    return `<tr onclick="openJornadaById('${j.id}')" style="cursor:pointer">
-      <td><div style="display:flex;align-items:center;gap:8px"><div class="tech-avatar" style="width:28px;height:28px;font-size:10px">${getInitials(getTechName(j.techId))}</div>${getTechName(j.techId)}</div></td>
-      <td>${formatDateShort(j.date)}</td>
-      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700">${otLabel}${ot?`<div style="font-size:11px;color:var(--text3);font-family:'Barlow',sans-serif;font-weight:400">${ot.desc.substring(0,35)}</div>`:''}</td>
-      <td><span class="tag ${tipoTagClass(item.tipo)}">${item.tipo}</span>${item.motivo?`<div style="font-size:10px;color:var(--text3);margin-top:3px">${item.motivo}</div>`:''}</td>
-      <td style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text2)">${item.desde||'—'}–${item.hasta||'—'}</td>
-      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--cyan)">${reg}h</td>
-      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:${parseFloat(ext)>0?'var(--amber)':'var(--text3)'}">${parseFloat(ext)>0?ext+'h':'—'}</td>
-      <td style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800">${item.horas.toFixed(2)}h</td>
+    return `<tr>
+      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer"><div style="display:flex;align-items:center;gap:8px"><div class="tech-avatar" style="width:28px;height:28px;font-size:10px">${getInitials(getTechName(j.techId))}</div>${getTechName(j.techId)}</div></td>
+      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer">${formatDateShort(j.date)}</td>
+      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700">${otLabel}${ot?`<div style="font-size:11px;color:var(--text3);font-family:'Barlow',sans-serif;font-weight:400">${ot.desc.substring(0,35)}</div>`:''}</td>
+      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer"><span class="tag ${tipoTagClass(item.tipo)}">${item.tipo}</span>${item.motivo?`<div style="font-size:10px;color:var(--text3);margin-top:3px">${item.motivo}</div>`:''}</td>
+      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text2)">${item.desde||'—'}–${item.hasta||'—'}</td>
+      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--cyan)">${reg}h</td>
+      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:${parseFloat(ext)>0?'var(--amber)':'var(--text3)'}">${parseFloat(ext)>0?ext+'h':'—'}</td>
+      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800">${item.horas.toFixed(2)}h</td>
+      <td><button onclick="openEditItem('${j.id}','${item.id}')" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✏️ Editar</button></td>
     </tr>`;
   }).join('');
 }
@@ -1248,6 +1306,123 @@ function renderCalendario() {
 
   html += '</tbody></table>';
   document.getElementById('cal-container').innerHTML = html;
+}
+
+// ════════════════════════════════════════════
+// EDICIÓN DE REGISTROS (solo admin)
+// ════════════════════════════════════════════
+let editingJornadaId = null;
+let editingItemId    = null;
+
+function buildTimeSlots(){
+  const slots=[];
+  for(let h=6;h<=22;h++) for(let m=0;m<60;m+=15){if(h===22&&m>0)break;slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);}
+  return slots;
+}
+
+function openEditItem(jornadaId, itemId){
+  const db=getDB();
+  const jornada=db.jornadas.find(j=>j.id===jornadaId);
+  if(!jornada)return;
+  const item=jornada.items.find(i=>i.id===itemId);
+  if(!item)return;
+
+  editingJornadaId=jornadaId;
+  editingItemId=itemId;
+
+  // Info header
+  const ot=getOT(item.otId,db);
+  document.getElementById('edit-item-info').innerHTML=
+    `<strong style="color:var(--text)">${getTechName(jornada.techId)}</strong> · ${formatDateShort(jornada.date)}<br>
+     OT: <strong style="color:var(--cyan)">${getOTNum(item.otId,db)}</strong>${ot?` — ${ot.desc}`:''}`;
+
+  // Populate fields
+  document.getElementById('edit-tipo').value=item.tipo||'Productiva';
+  document.getElementById('edit-obs').value=item.obs||'';
+  toggleEditMotivo();
+  if(item.motivo) document.getElementById('edit-motivo').value=item.motivo;
+
+  // Time selects
+  const slots=buildTimeSlots();
+  ['edit-desde','edit-hasta'].forEach((id,idx)=>{
+    const val=idx===0?(item.desde||'08:00'):(item.hasta||'17:00');
+    document.getElementById(id).innerHTML=slots.map(s=>`<option value="${s}" ${s===val?'selected':''}>${s}</option>`).join('');
+  });
+  recalcEditHours();
+
+  const overlay=document.getElementById('edit-overlay');
+  overlay.style.display='flex';
+}
+
+function closeEditItem(){
+  document.getElementById('edit-overlay').style.display='none';
+  editingJornadaId=null; editingItemId=null;
+}
+
+function toggleEditMotivo(){
+  const tipo=document.getElementById('edit-tipo').value;
+  document.getElementById('edit-motivo-field').style.display=tipo==='Improductiva'?'':'none';
+}
+
+function recalcEditHours(){
+  const desde=document.getElementById('edit-desde').value;
+  const hasta=document.getElementById('edit-hasta').value;
+  const total=(toMin(hasta)-toMin(desde))/60;
+  const resultEl=document.getElementById('edit-hours-result');
+  if(total<=0){resultEl.style.display='none';return;}
+  resultEl.style.display='block';
+  resultEl.textContent=`${total.toFixed(2)} h (${desde} → ${hasta})`;
+}
+
+function toMin(t){const[h,m]=t.split(':').map(Number);return h*60+m;}
+
+async function saveEditItem(){
+  const db=getDB();
+  const jornada=db.jornadas.find(j=>j.id===editingJornadaId);
+  if(!jornada)return;
+  const idx=jornada.items.findIndex(i=>i.id===editingItemId);
+  if(idx<0)return;
+
+  const desde=document.getElementById('edit-desde').value;
+  const hasta=document.getElementById('edit-hasta').value;
+  const tipo=document.getElementById('edit-tipo').value;
+  const motivo=document.getElementById('edit-motivo').value;
+  const obs=document.getElementById('edit-obs').value.trim();
+  const totalMin=toMin(hasta)-toMin(desde);
+  if(totalMin<=0){showToast('El horario de fin debe ser posterior al de inicio','error');return;}
+  const horas=totalMin/60;
+
+  // Recalculate regular/extra breakdown using jornada date
+  const dateStr=jornada.date;
+  const dow=new Date(dateStr+'T12:00:00').getDay();
+  const schedules={1:{s:8*60,e:17*60},2:{s:8*60,e:17*60},3:{s:8*60,e:17*60},4:{s:8*60,e:17*60},5:{s:8*60,e:16*60+30},6:{s:8*60,e:12*60}};
+  const sched=schedules[dow];
+  let horasRegulares=horas, horasExtra=0;
+  if(sched){
+    const startM=toMin(desde),endM=toMin(hasta);
+    const regMin=Math.max(0,Math.min(endM,sched.e)-Math.max(startM,sched.s));
+    horasRegulares=regMin/60; horasExtra=(totalMin-regMin)/60;
+  }
+
+  jornada.items[idx]={...jornada.items[idx], desde, hasta, horas, tipo, motivo, obs, horasRegulares, horasExtra, editedBy:currentAdminName, editedAt:new Date().toISOString()};
+  saveDB(db);
+
+  // Push to server
+  const btn=document.querySelector('#edit-overlay button:last-child');
+  btn.textContent='Guardando...'; btn.disabled=true;
+  await pushJornada(jornada);
+  btn.textContent='Guardar cambios'; btn.disabled=false;
+
+  closeEditItem();
+  renderRegistros(); renderDashboard(); renderExtras(); renderCalendario();
+  showToast('Registro actualizado ✓','success');
+}
+
+async function pushJornada(jornada){
+  try{
+    const res=await fetch(API_URL,{method:'POST',body:JSON.stringify({action:'saveJornada',jornada})});
+    const json=await res.json(); return json.ok;
+  }catch(e){console.warn('Push failed:',e);return false;}
 }
 
 // ════════════════════════════════════════════
