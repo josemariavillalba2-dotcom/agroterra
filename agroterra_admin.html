@@ -486,7 +486,7 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
           <div class="card">
             <div class="card-body no-pad">
               <table class="log-table">
-                <thead><tr><th>Técnico</th><th>Fecha</th><th>OT</th><th>Tipo</th><th>Horario</th><th>Regular</th><th>Extra</th><th>Total</th><th></th></tr></thead>
+                <thead><tr><th>Técnico</th><th>Fecha</th><th>OT</th><th>Tipo</th><th>Horario</th><th>Regular</th><th>Extra</th><th>Total</th></tr></thead>
                 <tbody id="reg-tbody"></tbody>
               </table>
             </div>
@@ -942,11 +942,13 @@ function renderRegistros(){
       <td onclick="openJornadaById('${j.id}')" style="cursor:pointer">${formatDateShort(j.date)}</td>
       <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700">${otLabel}${ot?`<div style="font-size:11px;color:var(--text3);font-family:'Barlow',sans-serif;font-weight:400">${ot.desc.substring(0,35)}</div>`:''}</td>
       <td onclick="openJornadaById('${j.id}')" style="cursor:pointer"><span class="tag ${tipoTagClass(item.tipo)}">${item.tipo}</span>${item.motivo?`<div style="font-size:10px;color:var(--text3);margin-top:3px">${item.motivo}</div>`:''}</td>
-      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text2)">${item.desde||'—'}–${item.hasta||'—'}</td>
-      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--cyan)">${reg}h</td>
-      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:${parseFloat(ext)>0?'var(--amber)':'var(--text3)'}">${parseFloat(ext)>0?ext+'h':'—'}</td>
-      <td onclick="openJornadaById('${j.id}')" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800">${item.horas.toFixed(2)}h</td>
-      <td><button onclick="openEditItem('${j.id}','${item.id}')" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✏️ Editar</button></td>
+      <td>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text2);margin-bottom:5px">${item.desde||'—'}–${item.hasta||'—'}</div>
+        <button onclick="openEditItem('${j.id}','${item.id}')" style="background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:3px 9px;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.3px">✏️ Editar</button>
+      </td>
+      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--cyan)">${reg}h</td>
+      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:${parseFloat(ext)>0?'var(--amber)':'var(--text3)'}">${parseFloat(ext)>0?ext+'h':'—'}</td>
+      <td style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800">${item.horas.toFixed(2)}h</td>
     </tr>`;
   }).join('');
 }
