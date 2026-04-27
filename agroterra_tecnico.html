@@ -951,8 +951,43 @@ function saveDraft() {
 // ═══════════════════════════════════════════════════
 // SEND
 // ═══════════════════════════════════════════════════
+function getExpectedHours(dateStr) {
+  // Returns the expected regular hours for the day based on schedule
+  const sched = getRegularSchedule(dateStr);
+  if (!sched) return 0; // Sunday or free Saturday
+  return (sched.end - sched.start) / 60;
+}
+
 function confirmEnviar() {
+  const todayStr = TODAY();
   const total = draftItems.reduce((s,i) => s+i.horas, 0);
+
+  // Calculate total hours loaded (all types count toward covering the day)
+  const horasCargadas = total;
+  const horasEsperadas = getExpectedHours(todayStr);
+
+  // Only validate on workdays with an expected schedule
+  if (horasEsperadas > 0 && horasCargadas < horasEsperadas) {
+    const faltaN = (horasEsperadas - horasCargadas).toFixed(1);
+    const dow = new Date(todayStr + 'T12:00:00').getDay();
+    const schedLabels = { 1:'Lun–Jue: 8:00 a 17:00 (9h)', 2:'Lun–Jue: 8:00 a 17:00 (9h)', 3:'Lun–Jue: 8:00 a 17:00 (9h)', 4:'Lun–Jue: 8:00 a 17:00 (9h)', 5:'Viernes: 8:00 a 16:30 (8.5h)', 6:'Sábado: 8:00 a 12:00 (4h)' };
+    showConfirm(
+      '⚠️',
+      'Horas incompletas',
+      `Cargaste ${horasCargadas.toFixed(1)}h de ${horasEsperadas}h esperadas para hoy.\n\nFaltan ${faltaN}h para cubrir la jornada completa (${schedLabels[dow]||''}).\n\nAgregá las horas que faltan antes de enviar.`,
+      null
+    );
+    // Hide confirm button, only show cancel (which here acts as "volver")
+    const okBtn = document.getElementById('conf-ok-btn');
+    okBtn.style.display = 'none';
+    document.querySelector('.btn-cancel').textContent = 'Volver a cargar';
+    return;
+  }
+
+  // Restore confirm button in case it was hidden before
+  document.getElementById('conf-ok-btn').style.display = '';
+  document.querySelector('.btn-cancel').textContent = 'Cancelar';
+
   showConfirm('✅', '¿Confirmás la jornada?',
     `${draftItems.length} OT${draftItems.length>1?'s':''} · ${total.toFixed(1)} horas en total.\n\nUna vez enviada no podrás modificarla.`,
     doEnviar);
@@ -1092,7 +1127,11 @@ function showConfirm(icon, title, msg, cb) {
   document.getElementById('conf-ok-btn').onclick = () => { if(confirmCallback) confirmCallback(); };
   document.getElementById('confirm-overlay').classList.add('open');
 }
-function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  document.getElementById('conf-ok-btn').style.display = '';
+  document.querySelector('.btn-cancel').textContent = 'Cancelar';
+}
 
 function confirmLogout() {
   showConfirm('👋', '¿Salir?', 'Se guardará tu borrador si tenés cambios sin enviar.', () => {
