@@ -559,6 +559,9 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
               <option value="Cliente Taller">Cliente Taller</option>
               <option value="Garantía Normal">Garantía Normal</option>
               <option value="Garantía Más">Garantía Más</option>
+              <option value="Interno Ventas">Interno Ventas</option>
+              <option value="Interno Taller">Interno Taller</option>
+              <option value="Interno Repuestos">Interno Repuestos</option>
               <option value="Operaciones Generales">Operaciones Generales</option>
             </select>
             <button class="btn-export" style="margin-left:auto" onclick="exportFactCSV()">⬇ Exportar CSV</button>
@@ -588,6 +591,9 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
                     <option value="Cliente Taller">Cliente Taller</option>
                     <option value="Garantía Normal">Garantía Normal</option>
                     <option value="Garantía Más">Garantía Más</option>
+                    <option value="Interno Ventas">Interno Ventas</option>
+                    <option value="Interno Taller">Interno Taller</option>
+                    <option value="Interno Repuestos">Interno Repuestos</option>
                     <option value="Operaciones Generales" disabled style="color:var(--text3)">— Operaciones Generales (solo admin)</option>
                   </select>
                 </div>
@@ -671,6 +677,9 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
           <option value="Cliente Taller">Cliente Taller</option>
           <option value="Garantía Normal">Garantía Normal</option>
           <option value="Garantía Más">Garantía Más</option>
+          <option value="Interno Ventas">Interno Ventas</option>
+          <option value="Interno Taller">Interno Taller</option>
+          <option value="Interno Repuestos">Interno Repuestos</option>
         </select>
         <div style="font-size:11px;color:var(--text3);margin-top:5px">Solo visible para administración. Permite reclasificar horas al cierre del mes.</div>
       </div>
@@ -865,7 +874,7 @@ function getOTNum(otId,db){
 }
 function getOT(otId,db){if(otId.startsWith('__'))return null;return db.orders.find(o=>o.id===otId)||null;}
 function tipoTagClass(tipo){return{Productiva:'tag-prod',Improductiva:'tag-improd',Capacitación:'tag-cap',Viaje:'tag-viaje',Refrigerio:'tag-refrig'}[tipo]||'';}
-function typeTagClass(type){return{'Cliente Campo':'tag-cli','Cliente Taller':'tag-int','Garantía Normal':'tag-gar','Garantía Más':'tag-gar','Operaciones Generales':'tag-improd','Cliente Final':'tag-cli','Garantía':'tag-gar','Interno Taller':'tag-int','Interno Ventas':'tag-int-v'}[type]||'';}
+function typeTagClass(type){return{'Cliente Campo':'tag-cli','Cliente Taller':'tag-int','Garantía Normal':'tag-gar','Garantía Más':'tag-gar','Interno Ventas':'tag-int-v','Interno Taller':'tag-int','Interno Repuestos':'tag-int','Operaciones Generales':'tag-improd','Cliente Final':'tag-cli','Garantía':'tag-gar'}[type]||'';}
 function getPreviousWorkday(){const d=new Date();d.setDate(d.getDate()-1);while(d.getDay()===0)d.setDate(d.getDate()-1);return d.toISOString().split('T')[0];}
 function getMissingTechs(dateStr){
   const db=getDB();
@@ -1084,9 +1093,9 @@ function loadTarifasUI(){
 function getTarifaForOT(type){
   const t=getTarifas();
   if(type==='Garantía Normal'||type==='Garantía Más') return t.garantia;
-  if(type==='Cliente Taller') return t.taller;
-  if(type==='Operaciones Generales') return 0; // no facturable
-  return t.campo; // Cliente Campo
+  if(type==='Cliente Taller'||type==='Interno Taller'||type==='Interno Repuestos') return t.taller;
+  if(type==='Operaciones Generales') return 0;
+  return t.campo; // Cliente Campo, Interno Ventas
 }
 
 // ── RESUMEN ──
