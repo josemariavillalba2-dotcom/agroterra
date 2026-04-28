@@ -555,10 +555,11 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
             <div class="filter-chip" id="fc-all"   onclick="setFactFilter('all',this)">Todas</div>
             <select class="filter-select" id="fc-type" onchange="renderFacturacion()">
               <option value="">Todos los tipos</option>
-              <option value="Cliente Final">Cliente Final</option>
-              <option value="Garantía">Garantía</option>
-              <option value="Interno Taller">Interno Taller</option>
-              <option value="Interno Ventas">Interno Ventas</option>
+              <option value="Cliente Campo">Cliente Campo</option>
+              <option value="Cliente Taller">Cliente Taller</option>
+              <option value="Garantía Normal">Garantía Normal</option>
+              <option value="Garantía Más">Garantía Más</option>
+              <option value="Operaciones Generales">Operaciones Generales</option>
             </select>
             <button class="btn-export" style="margin-left:auto" onclick="exportFactCSV()">⬇ Exportar CSV</button>
           </div>
@@ -583,10 +584,11 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
                 <div class="fi-field"><label>N° de OT *</label><input type="text" id="ot-inp-num" placeholder="OT-2460" /></div>
                 <div class="fi-field"><label>Tipo *</label>
                   <select id="ot-inp-type" onchange="toggleRateField()">
-                    <option value="Cliente Final">Cliente Final</option>
-                    <option value="Garantía">Garantía</option>
-                    <option value="Interno Taller">Interno Taller</option>
-                    <option value="Interno Ventas">Interno Ventas</option>
+                    <option value="Cliente Campo">Cliente Campo</option>
+                    <option value="Cliente Taller">Cliente Taller</option>
+                    <option value="Garantía Normal">Garantía Normal</option>
+                    <option value="Garantía Más">Garantía Más</option>
+                    <option value="Operaciones Generales" disabled style="color:var(--text3)">— Operaciones Generales (solo admin)</option>
                   </select>
                 </div>
               </div>
@@ -659,6 +661,18 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
           <option value="Viaje">Viaje</option>
           <option value="Refrigerio">Refrigerio</option>
         </select>
+      </div>
+      <div id="edit-reclass-field" style="display:none;margin-bottom:16px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">⚡ Reclasificar OT como</label>
+        <select id="edit-ot-type-override" style="width:100%;background:var(--bg2);border:1px solid rgba(255,176,32,0.3);border-radius:var(--r3);padding:11px 14px;color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;outline:none;-webkit-appearance:none">
+          <option value="">— Sin reclasificar —</option>
+          <option value="Operaciones Generales">Operaciones Generales</option>
+          <option value="Cliente Campo">Cliente Campo</option>
+          <option value="Cliente Taller">Cliente Taller</option>
+          <option value="Garantía Normal">Garantía Normal</option>
+          <option value="Garantía Más">Garantía Más</option>
+        </select>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px">Solo visible para administración. Permite reclasificar horas al cierre del mes.</div>
       </div>
       <div id="edit-motivo-field" style="display:none;margin-bottom:16px">
         <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Motivo improductividad</label>
@@ -851,7 +865,7 @@ function getOTNum(otId,db){
 }
 function getOT(otId,db){if(otId.startsWith('__'))return null;return db.orders.find(o=>o.id===otId)||null;}
 function tipoTagClass(tipo){return{Productiva:'tag-prod',Improductiva:'tag-improd',Capacitación:'tag-cap',Viaje:'tag-viaje',Refrigerio:'tag-refrig'}[tipo]||'';}
-function typeTagClass(type){return{'Cliente Final':'tag-cli','Garantía':'tag-gar','Interno Taller':'tag-int','Interno Ventas':'tag-int-v','Interno':'tag-int'}[type]||'';}
+function typeTagClass(type){return{'Cliente Campo':'tag-cli','Cliente Taller':'tag-int','Garantía Normal':'tag-gar','Garantía Más':'tag-gar','Operaciones Generales':'tag-improd','Cliente Final':'tag-cli','Garantía':'tag-gar','Interno Taller':'tag-int','Interno Ventas':'tag-int-v'}[type]||'';}
 function getPreviousWorkday(){const d=new Date();d.setDate(d.getDate()-1);while(d.getDay()===0)d.setDate(d.getDate()-1);return d.toISOString().split('T')[0];}
 function getMissingTechs(dateStr){
   const db=getDB();
@@ -1069,9 +1083,10 @@ function loadTarifasUI(){
 }
 function getTarifaForOT(type){
   const t=getTarifas();
-  if(type==='Garantía') return t.garantia;
-  if(type==='Interno Taller'||type==='Interno Ventas') return t.taller;
-  return t.campo; // Cliente Final
+  if(type==='Garantía Normal'||type==='Garantía Más') return t.garantia;
+  if(type==='Cliente Taller') return t.taller;
+  if(type==='Operaciones Generales') return 0; // no facturable
+  return t.campo; // Cliente Campo
 }
 
 // ── RESUMEN ──
@@ -1135,18 +1150,20 @@ function renderFacturacion(){
   const t=getTarifas();
   const typeFilter=document.getElementById('fc-type')?.value||'';
 
-  // Build OT map — ALL productive types, all OT types
+  // Build OT map — ALL productive types, all OT types, respecting admin overrides
   const otMap={};
   db.jornadas.filter(j=>j.status==='sent').forEach(j=>{
     j.items.filter(i=>i.tipo==='Productiva'&&!i.otId.startsWith('__')).forEach(item=>{
       const ot=db.orders.find(o=>o.id===item.otId);
       if(!ot||ot.status==='deleted') return;
-      if(!otMap[item.otId]) otMap[item.otId]={ot,horas:0,techMap:{}};
-      otMap[item.otId].horas+=item.horas;
+      const effectiveType=item.otTypeOverride||ot.type;
+      const otKey=item.otTypeOverride?`${item.otId}__${item.otTypeOverride}`:item.otId;
+      if(!otMap[otKey]) otMap[otKey]={ot:{...ot,type:effectiveType},horas:0,techMap:{},otId:item.otId};
+      otMap[otKey].horas+=item.horas;
       const tn=getTechName(j.techId);
-      if(!otMap[item.otId].techMap[tn]) otMap[item.otId].techMap[tn]={horas:0,dates:[]};
-      otMap[item.otId].techMap[tn].horas+=item.horas;
-      if(!otMap[item.otId].techMap[tn].dates.includes(j.date)) otMap[item.otId].techMap[tn].dates.push(j.date);
+      if(!otMap[otKey].techMap[tn]) otMap[otKey].techMap[tn]={horas:0,dates:[]};
+      otMap[otKey].techMap[tn].horas+=item.horas;
+      if(!otMap[otKey].techMap[tn].dates.includes(j.date)) otMap[otKey].techMap[tn].dates.push(j.date);
     });
   });
 
@@ -1300,10 +1317,9 @@ function togglePresupuesto(val){
   no.style.background=!val?'var(--cyan-dim2)':'transparent';no.style.borderColor=!val?'var(--border2)':'var(--border)';no.style.color=!val?'var(--cyan)':'var(--text2)';
 }
 function toggleRateField(){
-  // Tarifa siempre visible — todos los tipos tienen tarifa ahora
-  // Monto tope solo para Cliente Final (presupuesto cerrado)
   const type=document.getElementById('ot-inp-type').value;
-  document.getElementById('field-monto-tope').style.display=type==='Cliente Final'?'':'none';
+  // Monto tope solo para clientes (campo/taller) con presupuesto cerrado
+  document.getElementById('field-monto-tope').style.display=(type==='Cliente Campo'||type==='Cliente Taller')?'':'none';
 }
 
 async function addOT(){
@@ -1570,6 +1586,7 @@ function openEditItem(jornadaId, itemId){
   document.getElementById('edit-obs').value=item.obs||'';
   toggleEditMotivo();
   if(item.motivo) document.getElementById('edit-motivo').value=item.motivo;
+  if(item.otTypeOverride) document.getElementById('edit-ot-type-override').value=item.otTypeOverride;
 
   // Time selects
   const slots=buildTimeSlots();
@@ -1591,6 +1608,8 @@ function closeEditItem(){
 function toggleEditMotivo(){
   const tipo=document.getElementById('edit-tipo').value;
   document.getElementById('edit-motivo-field').style.display=tipo==='Improductiva'?'':'none';
+  document.getElementById('edit-reclass-field').style.display=tipo==='Productiva'?'':'none';
+  if(tipo!=='Productiva') document.getElementById('edit-ot-type-override').value='';
 }
 
 function recalcEditHours(){
@@ -1617,6 +1636,7 @@ async function saveEditItem(){
   const tipo=document.getElementById('edit-tipo').value;
   const motivo=document.getElementById('edit-motivo').value;
   const obs=document.getElementById('edit-obs').value.trim();
+  const otTypeOverride=document.getElementById('edit-ot-type-override')?.value||null;
   const totalMin=toMin(hasta)-toMin(desde);
   if(totalMin<=0){showToast('El horario de fin debe ser posterior al de inicio','error');return;}
   const horas=totalMin/60;
@@ -1633,7 +1653,7 @@ async function saveEditItem(){
     horasRegulares=regMin/60; horasExtra=(totalMin-regMin)/60;
   }
 
-  jornada.items[idx]={...jornada.items[idx], desde, hasta, horas, tipo, motivo, obs, horasRegulares, horasExtra, editedBy:currentAdminName, editedAt:new Date().toISOString()};
+  jornada.items[idx]={...jornada.items[idx], desde, hasta, horas, tipo, motivo, obs, horasRegulares, horasExtra, otTypeOverride:otTypeOverride||null, editedBy:currentAdminName, editedAt:new Date().toISOString()};
   saveDB(db);
 
   // Push to server
