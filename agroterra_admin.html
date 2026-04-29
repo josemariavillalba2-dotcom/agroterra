@@ -606,6 +606,9 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
                 <div class="fi-field" id="field-rate"><label>Tarifa (USD/hora)</label><input type="number" id="ot-inp-rate" placeholder="60" min="0" /></div>
+                <div class="fi-field"><label>Fecha apertura</label><input type="date" id="ot-inp-fecha" /></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px">
                 <div class="fi-field" id="field-monto-tope" style="display:none"><label>Monto tope USD (presupuesto cerrado)</label><input type="number" id="ot-inp-tope" placeholder="Ej: 300" min="0" /></div>
               </div>
               <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:16px">
@@ -1338,25 +1341,24 @@ function toggleRateField(){
 }
 
 async function addOT(){
-  const num=document.getElementById('ot-inp-num').value.trim();
-  const desc=document.getElementById('ot-inp-desc').value.trim();
-  const type=document.getElementById('ot-inp-type').value;
-  const client=document.getElementById('ot-inp-client').value.trim();
-  const unidad=document.getElementById('ot-inp-unidad').value.trim();
-  const chasis=document.getElementById('ot-inp-chasis').value.trim();
-  const rateInput=parseFloat(document.getElementById('ot-inp-rate').value)||0;
-  const rate=rateInput>0?rateInput:getTarifaForOT(type); // usa tarifa configurada si no se escribe
-  const fecha=document.getElementById('ot-inp-fecha').value||TODAY();
-  const obs=document.getElementById('ot-inp-obs').value.trim();
-  const hsPresup=hasPresupuesto?parseFloat(document.getElementById('ot-inp-hs-presup').value)||0:null;
-  const montoTope=parseFloat(document.getElementById('ot-inp-tope')?.value)||null;
+  const num     = (document.getElementById('ot-inp-num')?.value||'').trim();
+  const desc    = (document.getElementById('ot-inp-desc')?.value||'').trim();
+  const type    = document.getElementById('ot-inp-type')?.value||'Cliente Campo';
+  const client  = (document.getElementById('ot-inp-client')?.value||'').trim();
+  const unidad  = (document.getElementById('ot-inp-unidad')?.value||'').trim();
+  const chasis  = (document.getElementById('ot-inp-chasis')?.value||'').trim();
+  const rateInput = parseFloat(document.getElementById('ot-inp-rate')?.value)||0;
+  const rate    = rateInput>0?rateInput:getTarifaForOT(type);
+  const fecha   = document.getElementById('ot-inp-fecha')?.value||TODAY();
+  const obs     = (document.getElementById('ot-inp-obs')?.value||'').trim();
+  const hsPresup= hasPresupuesto?parseFloat(document.getElementById('ot-inp-hs-presup')?.value)||0:null;
+  const montoTope = parseFloat(document.getElementById('ot-inp-tope')?.value)||null;
   if(!num||!desc||!client||!unidad){showToast('Completá los campos obligatorios','error');return;}
   const db=getDB();
   const ot={id:'ot_'+Date.now(),num,desc,type,client,unidad,chasis,ratePerHour:rate,fechaApertura:fecha,obs,hsPresupuesto:hsPresup,montoTope,status:'active'};
   db.orders.push(ot);saveDB(db);
   await apiPost('saveOrder',{order:ot});
-  ['ot-inp-num','ot-inp-desc','ot-inp-client','ot-inp-unidad','ot-inp-chasis','ot-inp-rate','ot-inp-obs','ot-inp-tope'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('ot-inp-fecha').value='';
+  ['ot-inp-num','ot-inp-desc','ot-inp-client','ot-inp-unidad','ot-inp-chasis','ot-inp-rate','ot-inp-obs','ot-inp-tope','ot-inp-fecha'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   renderOrdenes();showToast('OT creada ✓','success');
 }
 
