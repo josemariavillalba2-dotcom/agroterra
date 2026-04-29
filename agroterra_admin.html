@@ -752,7 +752,10 @@ function defaultDB(){
 
 async function syncFromServer(){
   try {
-    const res=await fetch(API_URL+'?action=getAll');
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),6000);
+    const res=await fetch(API_URL+'?action=getAll',{signal:controller.signal});
+    clearTimeout(timeout);
     const json=await res.json();
     if(json.ok){
       const db=getDB();
@@ -768,7 +771,10 @@ async function syncFromServer(){
 
 async function apiPost(action,payload){
   try {
-    const res=await fetch(API_URL,{method:'POST',body:JSON.stringify({action,...payload})});
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),5000);
+    const res=await fetch(API_URL,{method:'POST',body:JSON.stringify({action,...payload}),signal:controller.signal});
+    clearTimeout(timeout);
     const json=await res.json();
     return json.ok?json.data:null;
   } catch(e){ console.warn('API error:',e); return null; }
