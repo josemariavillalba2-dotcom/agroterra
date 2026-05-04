@@ -519,7 +519,7 @@ function populateOTSelect(){
   activeOrders.forEach(o=>{
     const opt = document.createElement('option');
     opt.value = o.id;
-    opt.textContent = o.num + ' — ' + (o.desc||'').substring(0,30);
+    opt.textContent = o.num + (o.client ? ' · ' + o.client : '') + (o.desc ? ' — ' + o.desc.substring(0,25) : '');
     sel.appendChild(opt);
   });
   sel.appendChild(Object.assign(document.createElement('option'),{value:'__IMPRODUCTIVA__',textContent:'⏸ Improductiva / Sin OT'}));
