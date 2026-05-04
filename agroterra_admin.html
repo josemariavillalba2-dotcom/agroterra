@@ -122,6 +122,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .tag-cli{background:rgba(96,224,128,0.1);color:var(--lime);border:1px solid rgba(96,224,128,0.2)}
 .tag-gar{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,176,32,0.2)}
 .tag-int{background:rgba(96,200,255,0.1);color:var(--blue);border:1px solid rgba(96,200,255,0.2)}
+.tag-int-v{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(192,144,255,0.2)}
 .fi-field label{display:block;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
 .fi-field input,.fi-field select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:9px 11px;color:var(--text);font-family:'Barlow',sans-serif;font-size:13px;outline:none;-webkit-appearance:none;transition:border-color 0.2s}
 .fi-field input:focus,.fi-field select:focus{border-color:var(--cyan2)}
@@ -322,6 +323,8 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
                     <option value="Garantía Normal">Garantía Normal</option>
                     <option value="Garantía Más">Garantía Más</option>
                     <option value="Operaciones Generales">Operaciones Generales</option>
+                    <option value="Interno Ventas">Interno Ventas</option>
+                    <option value="Interno Taller">Interno Taller</option>
                   </select>
                 </div>
               </div>
@@ -615,7 +618,7 @@ function getOTDisplay(otId, db){
   return db.orders.find(o=>o.id===otId)?.num || otId;
 }
 function tipoTagClass(tipo){ return {Productiva:'tag-prod',Improductiva:'tag-improd',Capacitación:'tag-cap',Viaje:'tag-viaje',Refrigerio:'tag-refrig'}[tipo]||''; }
-function typeTagClass(type){ return {'Cliente Campo':'tag-cli','Cliente Taller':'tag-int','Garantía Normal':'tag-gar','Garantía Más':'tag-gar','Operaciones Generales':'tag-improd'}[type]||''; }
+function typeTagClass(type){ return {'Cliente Campo':'tag-cli','Cliente Taller':'tag-int','Garantía Normal':'tag-gar','Garantía Más':'tag-gar','Operaciones Generales':'tag-improd','Interno Ventas':'tag-int-v','Interno Taller':'tag-int'}[type]||''; }
 function getPrevWorkday(){
   const d = new Date(); d.setDate(d.getDate()-1);
   while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()-1);
