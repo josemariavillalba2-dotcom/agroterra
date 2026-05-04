@@ -821,6 +821,11 @@ function goTab(name){
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', ()=>{
   initLogin();
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw_tecnico.js')
+      .then(()=>console.log('SW registrado'))
+      .catch(e=>console.warn('SW error:', e));
+  }
 });
 </script>
 </body>
