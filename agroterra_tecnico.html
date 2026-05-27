@@ -508,15 +508,23 @@ function defaultDB() {
   };
 }
 
-// FIX 3: sesión persistente
+// SESIÓN: persiste todo el día — expira a medianoche
 function saveSession(techId) {
-  sessionStorage.setItem(SESSION_KEY, techId);
+  const expiry = new Date();
+  expiry.setHours(23, 59, 59, 999); // fin del día actual
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ techId, expiry: expiry.getTime() }));
 }
 function loadSession() {
-  return sessionStorage.getItem(SESSION_KEY);
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const { techId, expiry } = JSON.parse(raw);
+    if (Date.now() > expiry) { clearSession(); return null; }
+    return techId;
+  } catch(e) { return null; }
 }
 function clearSession() {
-  sessionStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(SESSION_KEY);
 }
 
 // ═══════════════════════════════════════════════════
