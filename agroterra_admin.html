@@ -247,9 +247,8 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
         <div class="nav-item active" id="nav-dashboard" onclick="goView('dashboard')"><span class="nav-icon">📊</span> Dashboard</div>
         <div class="nav-item" id="nav-ordenes" onclick="goView('ordenes')"><span class="nav-icon">📋</span> Órdenes de Trabajo</div>
         <div class="nav-item" id="nav-registros" onclick="goView('registros')"><span class="nav-icon">🗂</span> Registros</div>
-        <div class="nav-item" id="nav-alertas" onclick="goView('alertas')"><span class="nav-icon">🔔</span> Alertas<span class="nav-badge" id="alerta-badge" style="display:none">0</span></div>
         <div class="nav-item" id="nav-extras" onclick="goView('extras')"><span class="nav-icon">⚡</span> Horas Extra</div>
-        <div class="nav-item" id="nav-calendario" onclick="goView('calendario')"><span class="nav-icon">🗓</span> Calendario</div>
+        <div class="nav-item" id="nav-asistencia" onclick="goView('asistencia')"><span class="nav-icon">📆</span> Asistencia<span class="nav-badge" id="alerta-badge" style="display:none">0</span></div>
         <div class="nav-item" id="nav-facturacion" onclick="goView('facturacion')"><span class="nav-icon">💰</span> Facturación</div>
       </nav>
       <div class="sidebar-footer">
@@ -389,14 +388,40 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
           </div>
         </div>
 
-        <!-- ALERTAS -->
-        <div class="view" id="view-alertas">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:4px">🔔 Alertas</div>
-          <div style="font-size:13px;color:var(--text2);margin-bottom:24px">Técnicos que no cargaron jornada</div>
-          <div id="alertas-list"></div>
-        </div>
+        <!-- ASISTENCIA (unifica Alertas + Calendario) -->
+        <div class="view" id="view-asistencia">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:2px">📆 Asistencia</div>
+              <div style="font-size:13px;color:var(--text2)">Estado diario y seguimiento mensual por técnico</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <button onclick="asisPrev()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:8px 14px;color:var(--text);font-size:16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700">‹</button>
+              <div id="asis-month-label" style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;min-width:160px;text-align:center;color:var(--cyan)">—</div>
+              <button onclick="asisNext()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:8px 14px;color:var(--text);font-size:16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700">›</button>
+              <button onclick="asisToday()" style="background:var(--cyan-dim2);border:1px solid var(--border2);border-radius:var(--r3);padding:8px 14px;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Hoy</button>
+            </div>
+          </div>
 
-        <!-- HORAS EXTRA -->
+          <!-- Banner alertas del día -->
+          <div id="asis-alert-banner"></div>
+
+          <!-- Tabla por técnico -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">
+              <div class="card-title">👷 Estado por técnico</div>
+              <div style="display:flex;gap:12px">
+                <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:2px;background:rgba(255,204,0,0.20);border:1px solid rgba(255,204,0,0.35)"></div>Cargó</div>
+                <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:2px;background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.30)"></div>Falta</div>
+                <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:2px;background:rgba(192,144,255,0.08);border:1px solid rgba(192,144,255,0.15)"></div>Sábado</div>
+              </div>
+            </div>
+            <div id="asis-tech-table"></div>
+          </div>
+
+          <!-- Calendario compacto -->
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><div id="asis-cal-container"></div></div>
+        </div>
         <div class="view" id="view-extras">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:4px">⚡ Horas Extra</div>
           <div style="font-size:13px;color:var(--text2);margin-bottom:24px">Seguimiento de horas fuera del horario regular</div>
@@ -405,30 +430,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
             <div class="card"><div class="card-header"><div class="card-title">🏆 Ranking horas extra · mes</div></div><div id="extra-ranking"></div></div>
             <div class="card"><div class="card-header"><div class="card-title">📅 Extra por día · semana</div></div><div class="card-body"><div class="bar-chart-wrap" id="extra-week-chart"></div></div></div>
           </div>
-        </div>
-
-        <!-- CALENDARIO -->
-        <div class="view" id="view-calendario">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-            <div>
-              <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:2px">🗓 Calendario</div>
-              <div style="font-size:13px;color:var(--text2)">Jornadas por técnico · vista mensual</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <button onclick="calPrev()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:8px 14px;color:var(--text);font-size:16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700">‹</button>
-              <div id="cal-month-label" style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;min-width:160px;text-align:center;color:var(--cyan)">—</div>
-              <button onclick="calNext()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:8px 14px;color:var(--text);font-size:16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700">›</button>
-              <button onclick="calToday()" style="background:var(--cyan-dim2);border:1px solid var(--border2);border-radius:var(--r3);padding:8px 14px;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Hoy</button>
-            </div>
-          </div>
-          <!-- leyenda calendario -->
-          <div style="display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap">
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:14px;height:14px;border-radius:3px;background:rgba(255,204,0,0.20);border:1px solid rgba(255,204,0,0.35)"></div>Jornada cargada</div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:14px;height:14px;border-radius:3px;background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.30)"></div>Sin jornada</div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:14px;height:14px;border-radius:3px;background:rgba(192,144,255,0.08);border:1px solid rgba(192,144,255,0.15)"></div>Sábado (no laboral)</div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:14px;height:14px;border-radius:3px;background:transparent;border:1px solid var(--border)"></div>Futuro / sin datos</div>
-          </div>
-          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><div id="cal-container"></div></div>
         </div>
 
         <!-- FACTURACIÓN -->
@@ -505,9 +506,8 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
       <div class="mbn-item active" id="mbn-dashboard" onclick="goView('dashboard')"><div class="mbn-icon">📊</div><div class="mbn-label">Dashboard</div></div>
       <div class="mbn-item" id="mbn-ordenes" onclick="goView('ordenes')"><div class="mbn-icon">📋</div><div class="mbn-label">Órdenes</div></div>
       <div class="mbn-item" id="mbn-registros" onclick="goView('registros')"><div class="mbn-icon">🗂</div><div class="mbn-label">Registros</div></div>
-      <div class="mbn-item" id="mbn-alertas" onclick="goView('alertas')"><div class="mbn-icon">🔔</div><div class="mbn-label">Alertas</div><div class="mbn-badge" id="mbn-alerta-badge" style="display:none">0</div></div>
       <div class="mbn-item" id="mbn-extras" onclick="goView('extras')"><div class="mbn-icon">⚡</div><div class="mbn-label">Extras</div></div>
-      <div class="mbn-item" id="mbn-calendario" onclick="goView('calendario')"><div class="mbn-icon">🗓</div><div class="mbn-label">Calendario</div></div>
+      <div class="mbn-item" id="mbn-asistencia" onclick="goView('asistencia')"><div class="mbn-icon">📆</div><div class="mbn-label">Asistencia</div><div class="mbn-badge" id="mbn-alerta-badge" style="display:none">0</div></div>
       <div class="mbn-item" id="mbn-facturacion" onclick="goView('facturacion')"><div class="mbn-icon">💰</div><div class="mbn-label">Facturación</div></div>
     </div>
   </nav>
@@ -521,7 +521,6 @@ const DB_KEY = 'agroterra_admin_v2';
 const SESSION_KEY = 'agroterra_admin_session';
 let currentUser = '';
 let otFilter = 'active';
-let calYear, calMonth;
 
 function getDB(){
   try{ return JSON.parse(localStorage.getItem(DB_KEY)||'null') || defaultDB(); }
@@ -649,7 +648,6 @@ function doLogout(){
 
 function initApp(){
   const today = new Date();
-  calYear = today.getFullYear(); calMonth = today.getMonth();
   document.getElementById('top-date').textContent = today.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   document.getElementById('sync-label').textContent = currentUser;
   const sel = document.getElementById('filt-tech');
@@ -665,13 +663,12 @@ function renderAll(){
   renderDashboard();
   renderOrdenes();
   renderRegistros();
-  renderAlertas();
+  renderAsistencia();
   renderExtras();
-  renderCalendario();
   renderFacturacion();
 }
 
-const VIEW_TITLES = {dashboard:'Dashboard',ordenes:'📋 Órdenes de Trabajo',registros:'🗂 Registros',alertas:'🔔 Alertas',extras:'⚡ Horas Extra',calendario:'🗓 Calendario',facturacion:'💰 Facturación'};
+const VIEW_TITLES = {dashboard:'Dashboard',ordenes:'📋 Órdenes de Trabajo',registros:'🗂 Registros',extras:'⚡ Horas Extra',asistencia:'📆 Asistencia',facturacion:'💰 Facturación'};
 function goView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
@@ -1004,18 +1001,151 @@ function exportCSV(){
   a.download = 'registros_agroterra.csv'; a.click();
 }
 
-// ALERTAS
-function renderAlertas(){
-  const db = getDB(), today = TODAY(), prevWD = getPrevWorkday();
-  const el = document.getElementById('alertas-list');
-  const checks = [{label:'Hoy ('+today+')',date:today},{label:'Ayer / último día hábil ('+prevWD+')',date:prevWD}];
-  el.innerHTML = checks.map(c=>{
-    const missing = getMissingTechs(c.date);
-    return `<div class="card" style="margin-bottom:16px">
-      <div class="card-header"><div class="card-title">${c.label}</div><span style="font-size:12px;color:${missing.length?'var(--red)':'var(--lime)'}">${missing.length?missing.length+' sin jornada':'Todos registraron ✓'}</span></div>
-      <div class="card-body no-pad">${missing.length?missing.map(t=>`<div class="tech-perf-row alert-row"><div class="tech-avatar">${getInitials(t.name)}</div><div class="tech-perf-info"><div class="tech-perf-name">${t.name}</div><div style="font-size:11px;color:var(--red)">No registró jornada</div></div></div>`).join(''):'<div style="padding:20px;color:var(--lime);font-size:13px">✓ Todos los técnicos cargaron su jornada</div>'}</div>
+// ═══════════════════════════════════════════
+// ASISTENCIA (unifica Alertas + Calendario)
+// ═══════════════════════════════════════════
+let asisYear, asisMonth;
+
+function asisPrev(){ asisMonth--; if(asisMonth<0){asisMonth=11;asisYear--;} renderAsistencia(); }
+function asisNext(){ asisMonth++; if(asisMonth>11){asisMonth=0;asisYear++;} renderAsistencia(); }
+function asisToday(){ const t=new Date(); asisYear=t.getFullYear(); asisMonth=t.getMonth(); renderAsistencia(); }
+
+function renderAsistencia(){
+  const db = getDB();
+  if(!asisYear){ const t=new Date(); asisYear=t.getFullYear(); asisMonth=t.getMonth(); }
+
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('asis-month-label').textContent = monthNames[asisMonth] + ' ' + asisYear;
+
+  const today     = TODAY();
+  const prevWD    = getPrevWorkday();
+  const todayDate = new Date();
+  const isCurrMonth = asisYear === todayDate.getFullYear() && asisMonth === todayDate.getMonth();
+
+  // Calcular días hábiles del mes
+  const daysInMonth = new Date(asisYear, asisMonth+1, 0).getDate();
+  const workdays = [];
+  for(let d=1; d<=daysInMonth; d++){
+    const date = new Date(asisYear, asisMonth, d);
+    if(date.getDay() !== 0){
+      const dateStr = `${asisYear}-${String(asisMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      workdays.push({ day:d, date:dateStr, dow:date.getDay() });
+    }
+  }
+
+  // Mapa de jornadas enviadas del mes
+  const monthPrefix = `${asisYear}-${String(asisMonth+1).padStart(2,'0')}`;
+  const submittedMap = {};
+  db.jornadas.filter(j=>j.status==='sent'&&j.date.startsWith(monthPrefix)).forEach(j=>{
+    if(!submittedMap[j.techId]) submittedMap[j.techId] = new Set();
+    submittedMap[j.techId].add(j.date);
+  });
+
+  // ── Banner de alertas del día (solo mes actual)
+  const bannerEl = document.getElementById('asis-alert-banner');
+  if(isCurrMonth){
+    const missingToday = getMissingTechs(today);
+    const missingYest  = getMissingTechs(prevWD);
+    let bannerHtml = '';
+    if(missingToday.length > 0){
+      bannerHtml += `<div class="alert-banner" style="margin-bottom:16px">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-body">
+          <div class="alert-title">${missingToday.length} técnico${missingToday.length>1?'s':''} no cargaron jornada hoy</div>
+          <div class="alert-techs">${missingToday.map(t=>`<span class="alert-tech-chip">${t.name}</span>`).join('')}</div>
+        </div>
+      </div>`;
+    }
+    if(missingYest.length > 0 && prevWD !== today){
+      bannerHtml += `<div style="background:rgba(255,176,32,0.08);border:1px solid rgba(255,176,32,0.2);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+        <div style="font-size:18px">📅</div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--amber);margin-bottom:4px">Ayer (${prevWD}) — ${missingYest.length} sin jornada</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">${missingYest.map(t=>`<span style="background:rgba(255,176,32,0.12);border:1px solid rgba(255,176,32,0.25);border-radius:20px;padding:2px 8px;font-size:11px;color:var(--amber);font-weight:600">${t.name}</span>`).join('')}</div>
+        </div>
+      </div>`;
+    }
+    if(!missingToday.length && !missingYest.length){
+      bannerHtml = `<div style="background:var(--lime-dim);border:1px solid var(--border2);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--lime);font-weight:600">✅ Todos los técnicos cargaron jornada hoy y ayer</div>`;
+    }
+    bannerEl.innerHTML = bannerHtml;
+    // badges nav
+    const badge = document.getElementById('alerta-badge'), mbnBadge = document.getElementById('mbn-alerta-badge');
+    badge.textContent = missingToday.length; badge.style.display = missingToday.length>0?'flex':'none';
+    if(mbnBadge){ mbnBadge.textContent = missingToday.length; mbnBadge.style.display = missingToday.length>0?'flex':'none'; }
+  } else {
+    bannerEl.innerHTML = '';
+  }
+
+  // ── Tabla por técnico: estado hoy + barra del mes
+  const pastWorkdays = workdays.filter(w => w.date <= today);
+  const tableEl = document.getElementById('asis-tech-table');
+  tableEl.innerHTML = db.technicians.map(tech => {
+    const submitted = submittedMap[tech.id] || new Set();
+    const todayStatus = isCurrMonth
+      ? (submitted.has(today) ? 'ok' : new Date().getDay()===0 ? 'dom' : new Date().getDay()===6 ? 'sat' : 'missing')
+      : null;
+
+    // Contar días del mes
+    const totalPast  = pastWorkdays.filter(w=>w.dow!==6).length;
+    const totalSat   = pastWorkdays.filter(w=>w.dow===6).length;
+    const cargados   = pastWorkdays.filter(w=>submitted.has(w.date)).length;
+    const faltantes  = pastWorkdays.filter(w=>w.dow!==6&&!submitted.has(w.date)).length;
+    const pct        = totalPast > 0 ? Math.round(cargados/totalPast*100) : 0;
+
+    const statusBadge = todayStatus === 'ok'
+      ? `<span style="background:var(--lime-dim);border:1px solid var(--border2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--lime)">✅ Cargó hoy</span>`
+      : todayStatus === 'missing'
+      ? `<span style="background:var(--red-dim);border:1px solid rgba(255,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--red)">⚠️ Sin jornada</span>`
+      : todayStatus === 'sat'
+      ? `<span style="background:var(--purple-dim);border:1px solid rgba(192,144,255,0.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--purple)">📅 Sábado</span>`
+      : '';
+
+    return `<div class="tech-perf-row">
+      <div class="tech-avatar">${getInitials(tech.name)}</div>
+      <div class="tech-perf-info" style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <div class="tech-perf-name">${tech.name}</div>
+          ${statusBadge}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="flex:1;background:var(--bg2);border-radius:3px;height:5px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${pct>=80?'var(--lime)':pct>=50?'var(--amber)':'var(--red)'};border-radius:3px;transition:width 0.4s"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);white-space:nowrap">${cargados}/${totalPast} días (${pct}%)</div>
+        </div>
+        ${faltantes>0?`<div style="font-size:10px;color:var(--red);margin-top:2px">${faltantes} día${faltantes>1?'s':''} sin registrar</div>`:''}
+      </div>
     </div>`;
   }).join('');
+
+  // ── Calendario compacto del mes
+  let calHtml = `<table class="cal-table"><thead><tr><th class="cal-tech-col">Técnico</th>`;
+  workdays.forEach(w=>{
+    calHtml += `<th style="${w.dow===6?'color:var(--purple);opacity:0.6':w.date===today?'color:var(--cyan)':''}">${w.day}${w.dow===6?'<br><span style="font-size:8px">S</span>':''}</th>`;
+  });
+  calHtml += '</tr></thead><tbody>';
+
+  db.technicians.forEach(tech=>{
+    const submitted = submittedMap[tech.id] || new Set();
+    calHtml += `<tr><td class="cal-tech-name">${tech.name}</td>`;
+    workdays.forEach(w=>{
+      const isPast = w.date <= today;
+      const isSat  = w.dow === 6;
+      const hasJ   = submitted.has(w.date);
+      const isToday = w.date === today;
+      let cls = 'cal-cell';
+      if(!isPast)     cls += ' future';
+      else if(hasJ)   cls += ' has-jornada';
+      else if(isSat)  cls += ' saturday';
+      else            cls += ' missing';
+      if(isToday) cls += '" style="outline:2px solid var(--cyan);outline-offset:1px';
+      calHtml += `<td><div class="${cls}">${hasJ?'✓':(isPast&&!isSat?'—':'')}</div></td>`;
+    });
+    calHtml += '</tr>';
+  });
+  calHtml += '</tbody></table>';
+  document.getElementById('asis-cal-container').innerHTML = calHtml;
 }
 
 // HORAS EXTRA
@@ -1035,48 +1165,6 @@ function renderExtras(){
 }
 
 // CALENDARIO — FIX: sábados diferenciados
-function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendario(); }
-function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendario(); }
-function calToday(){ const t=new Date(); calYear=t.getFullYear(); calMonth=t.getMonth(); renderCalendario(); }
-function renderCalendario(){
-  const db = getDB();
-  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  document.getElementById('cal-month-label').textContent = monthNames[calMonth] + ' ' + calYear;
-  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-  const today = TODAY();
-  const workdays = [];
-  for(let d=1;d<=daysInMonth;d++){
-    const date = new Date(calYear,calMonth,d);
-    if(date.getDay()!==0) workdays.push({ day:d, date:`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`, dow:date.getDay() });
-  }
-  const submittedMap = {};
-  db.jornadas.filter(j=>j.status==='sent'&&j.date.startsWith(`${calYear}-${String(calMonth+1).padStart(2,'0')}`)).forEach(j=>{
-    if(!submittedMap[j.techId]) submittedMap[j.techId] = new Set();
-    submittedMap[j.techId].add(j.date);
-  });
-  let html = `<table class="cal-table"><thead><tr><th class="cal-tech-col">Técnico</th>`;
-  workdays.forEach(w=>{ html+=`<th style="${w.dow===6?'color:var(--purple);opacity:0.6':''}">${w.day}${w.dow===6?'<br><span style="font-size:8px">SAB</span>':''}</th>`; });
-  html += '</tr></thead><tbody>';
-  db.technicians.forEach(tech=>{
-    html += `<tr><td class="cal-tech-name">${tech.name}</td>`;
-    workdays.forEach(w=>{
-      const isPast    = w.date <= today;
-      const isSat     = w.dow === 6;
-      const hasJ      = submittedMap[tech.id]?.has(w.date);
-      let cls = 'cal-cell';
-      if(!isPast)      cls += ' future';
-      else if(hasJ)    cls += ' has-jornada';
-      else if(isSat)   cls += ' saturday';          // FIX: sábados no generan alerta roja
-      else             cls += ' missing';
-      const label = hasJ ? '✓' : (isPast && !isSat && !hasJ) ? '—' : '';
-      html += `<td><div class="${cls}">${label}</div></td>`;
-    });
-    html += '</tr>';
-  });
-  html += '</tbody></table>';
-  document.getElementById('cal-container').innerHTML = html;
-}
-
 // ═══════════════════════════════════════════
 // FACTURACIÓN
 // ═══════════════════════════════════════════
