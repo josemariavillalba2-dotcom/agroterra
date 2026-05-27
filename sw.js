@@ -1,58 +1,51 @@
 // ═══════════════════════════════════════════════════
-// Agroterra Service Worker — v1.0
-// Cachea los archivos para funcionamiento offline
+// AGROTERRA · Service Worker + Firebase Cloud Messaging
+// Archivo: sw.js  (debe estar en la raíz del repo)
 // ═══════════════════════════════════════════════════
 
-const CACHE_NAME = 'agroterra-v1';
-const ASSETS = [
-  './agroterra_admin.html',
-  './agroterra_tecnico.html',
-  'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap',
-  'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap',
-];
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-// Instalar — cachear archivos principales
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS).catch(err => {
-        console.warn('Cache install partial error:', err);
-      });
-    })
-  );
-  self.skipWaiting();
+firebase.initializeApp({
+  apiKey:            "AIzaSyD3S2mFpOd75uuWzilWymFVWruFXTzZaGI",
+  authDomain:        "agroterra-1e3c3.firebaseapp.com",
+  projectId:         "agroterra-1e3c3",
+  storageBucket:     "agroterra-1e3c3.firebasestorage.app",
+  messagingSenderId: "289898339048",
+  appId:             "1:289898339048:web:4a4582fe673cd5f3d4075d"
 });
 
-// Activar — limpiar caches viejos
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      )
-    )
-  );
-  self.clients.claim();
+const messaging = firebase.messaging();
+
+// Manejar notificaciones cuando la app está en background o cerrada
+messaging.onBackgroundMessage(payload => {
+  const { title, body, icon } = payload.notification || {};
+  self.registration.showNotification(title || 'Agroterra', {
+    body:  body  || 'Tenés una notificación pendiente.',
+    icon:  icon  || '/icon_tecnico.png',
+    badge: '/icon_tecnico.png',
+    tag:   'agroterra-reminder',
+    renotify: true,
+    data: payload.data || {},
+    actions: [
+      { action: 'open', title: 'Abrir app' }
+    ]
+  });
 });
 
-// Fetch — servir desde cache si no hay red
-self.addEventListener('fetch', event => {
-  // No interceptar llamadas a Google Apps Script (siempre necesitan red)
-  if (event.request.url.includes('script.google.com')) {
-    return;
-  }
-
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        // Cachear recursos estáticos nuevos
-        if (response && response.status === 200 && response.type === 'basic') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+// Al hacer clic en la notificación — abrir la app
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  if (event.action === 'open' || !event.action) {
+    event.waitUntil(
+      clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+        for (const client of list) {
+          if (client.url.includes('agroterra') && 'focus' in client) {
+            return client.focus();
+          }
         }
-        return response;
-      }).catch(() => cached); // Si falla la red, devolver cache aunque sea viejo
-    })
-  );
+        return clients.openWindow('https://josemariavillalba2-dotcom.github.io/agroterra/agroterra_tecnico.html');
+      })
+    );
+  }
 });
