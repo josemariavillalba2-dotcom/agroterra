@@ -477,10 +477,24 @@ function defaultDB(){
   };
 }
 
-// FIX 3: sesión admin persistente
-function saveAdminSession(user){ sessionStorage.setItem(SESSION_KEY, user); }
-function loadAdminSession(){ return sessionStorage.getItem(SESSION_KEY); }
-function clearAdminSession(){ sessionStorage.removeItem(SESSION_KEY); }
+// SESIÓN ADMIN: persiste todo el día — expira a medianoche
+function saveAdminSession(user) {
+  const expiry = new Date();
+  expiry.setHours(23, 59, 59, 999);
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ user, expiry: expiry.getTime() }));
+}
+function loadAdminSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const { user, expiry } = JSON.parse(raw);
+    if (Date.now() > expiry) { clearAdminSession(); return null; }
+    return user;
+  } catch(e) { return null; }
+}
+function clearAdminSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
 
 async function apiGet(action){
   const res = await fetch(API + '?action=' + action, {method:'GET'});
