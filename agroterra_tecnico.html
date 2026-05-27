@@ -364,10 +364,11 @@ html, body {
           </div>
           <div class="jornada-status status-draft" id="jornada-status-badge">✏️ Borrador</div>
         </div>
-        <div class="day-metrics">
+          <div class="day-metrics">
           <div class="day-metric"><div class="dm-val" id="dm-total">0.0</div><div class="dm-label">Hs. Total</div></div>
-          <div class="day-metric"><div class="dm-val" id="dm-prod">0.0</div><div class="dm-label">Hs. Prod.</div></div>
-          <div class="day-metric"><div class="dm-val" id="dm-extra" style="color:var(--amber)">0.0</div><div class="dm-label">Hs. Extra</div></div>
+          <div class="day-metric"><div class="dm-val" id="dm-reg">0.0</div><div class="dm-label">Regular</div></div>
+          <div class="day-metric"><div class="dm-val" id="dm-extra" style="color:var(--amber)">0.0</div><div class="dm-label">Extra</div></div>
+          <div class="day-metric"><div class="dm-val" id="dm-doble" style="color:var(--purple)">0.0</div><div class="dm-label">Doble</div></div>
         </div>
       </div>
 
@@ -376,6 +377,9 @@ html, body {
       <button class="btn-add-ot" id="btn-add-ot" onclick="openOTForm()">＋ Agregar OT</button>
       <button class="btn-enviar" id="btn-enviar" onclick="confirmEnviar()" disabled>✅ Enviar jornada</button>
       <div class="btn-enviar-hint" id="enviar-hint">Agregá al menos una OT para enviar</div>
+
+      <!-- Resumen del mes -->
+      <div id="month-summary" style="margin-top:20px"></div>
     </div>
 
     <!-- HISTORIAL -->
@@ -834,15 +838,17 @@ function renderToday() {
   const draftBanner = document.getElementById('draft-banner');
   draftBanner.style.display = (!isLocked && draftItems.length > 0) ? '' : 'none';
 
-  let totalH = 0, prodH = 0, extraH = 0;
+  let totalH = 0, regH = 0, extraH = 0, dobleH = 0;
   items.forEach(item => {
     totalH += item.horas;
-    if (item.tipo === 'Productiva') prodH += item.horas;
-    extraH += (parseFloat(item.horasExtra) || 0);
+    regH   += (parseFloat(item.horasRegulares)||0);
+    extraH += (parseFloat(item.horasExtra)||0);
+    dobleH += (parseFloat(item.horasDobles)||0);
   });
   document.getElementById('dm-total').textContent = totalH.toFixed(1);
-  document.getElementById('dm-prod').textContent  = prodH.toFixed(1);
+  document.getElementById('dm-reg').textContent   = regH.toFixed(1);
   document.getElementById('dm-extra').textContent = extraH.toFixed(1);
+  document.getElementById('dm-doble').textContent = dobleH.toFixed(1);
 
   const container = document.getElementById('ot-list-container');
   if (items.length === 0) {
@@ -856,6 +862,7 @@ function renderToday() {
       const otDesc   = ot ? ot.desc : (isRefrig ? 'Tiempo de descanso' : isImprod ? (item.motivo || '') : '');
       const otType   = ot ? ot.type : '';
       const ext      = parseFloat(item.horasExtra) || 0;
+      const dbl      = parseFloat(item.horasDobles) || 0;
       return `<div class="ot-card ${isLocked ? 'locked' : ''}">
         <div class="ot-card-left">
           <div class="ot-card-num">${otNum}</div>
@@ -865,6 +872,7 @@ function renderToday() {
             ${otType ? `<span class="tag ${typeTag(otType)}">${otType}</span>` : ''}
             ${item.desde && item.hasta ? `<span style="font-size:10px;color:var(--text3);padding:2px 4px">${item.desde}–${item.hasta}</span>` : ''}
             ${ext > 0 ? `<span class="tag" style="background:rgba(245,184,48,0.15);color:var(--amber);border:1px solid rgba(245,184,48,0.25)">+${ext.toFixed(2)}h extra</span>` : ''}
+            ${dbl > 0 ? `<span class="tag" style="background:rgba(192,144,255,0.15);color:var(--purple);border:1px solid rgba(192,144,255,0.25)">+${dbl.toFixed(2)}h doble</span>` : ''}
           </div>
         </div>
         <div class="ot-card-hours">${item.horas.toFixed(1)}<small>h</small></div>
@@ -883,15 +891,90 @@ function renderToday() {
     btnAdd.style.display = btnEnviar.style.display = hint.style.display = 'none';
   } else {
     btnAdd.style.display = btnEnviar.style.display = hint.style.display = '';
-    btnEnviar.disabled = items.length === 0;
-    hint.textContent = items.length === 0
-      ? 'Agregá al menos una OT para enviar'
-      : `${items.length} OT${items.length > 1 ? 's' : ''} listas — confirmá cuando termines tu jornada`;
+
+    if (items.length === 0) {
+      btnEnviar.disabled = true;
+      btnEnviar.style.background = 'var(--lime)';
+      hint.textContent = 'Agregá al menos una OT para enviar';
+      hint.style.color = 'var(--text3)';
+      return;
+    }
+
+    // Validación de horas mínimas por día
+    const check = checkMinimumHours(items);
+    if (check.blocked) {
+      btnEnviar.disabled = true;
+      btnEnviar.style.background = 'var(--lime)';
+      hint.innerHTML = `⛔ <strong style="color:var(--red)">${check.message}</strong>`;
+      hint.style.color = 'var(--red)';
+    } else if (check.warn) {
+      btnEnviar.disabled = false;
+      btnEnviar.style.background = 'var(--amber)';
+      hint.innerHTML = `⚠️ <strong style="color:var(--amber)">${check.message}</strong> — tocá para enviar igual`;
+      hint.style.color = 'var(--amber)';
+    } else {
+      btnEnviar.disabled = false;
+      btnEnviar.style.background = 'var(--lime)';
+      hint.textContent = `${items.length} OT${items.length > 1 ? 's' : ''} · ${check.totalHoras.toFixed(1)}h — ${check.message}`;
+      hint.style.color = 'var(--lime)';
+    }
   }
+  renderMonthSummary();
 }
 
 // ═══════════════════════════════════════════════════
-// OT FORM
+// RESUMEN MENSUAL DEL TÉCNICO
+// ═══════════════════════════════════════════════════
+function renderMonthSummary() {
+  const db       = getDB();
+  const today    = new Date();
+  const monthPfx = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+  const mine     = db.jornadas.filter(j => j.techId===currentTech.id && j.date.startsWith(monthPfx) && j.status==='sent');
+  if (!mine.length) { document.getElementById('month-summary').innerHTML = ''; return; }
+
+  let totalReg = 0, totalExtra = 0, totalDoble = 0, totalAll = 0;
+  mine.forEach(j => {
+    (j.items||[]).forEach(i => {
+      totalAll   += parseFloat(i.horas)||0;
+      totalReg   += parseFloat(i.horasRegulares)||0;
+      totalExtra += parseFloat(i.horasExtra)||0;
+      totalDoble += parseFloat(i.horasDobles)||0;
+    });
+  });
+
+  const equiv = totalExtra + (totalDoble * 2); // equivalente en horas simples
+
+  document.getElementById('month-summary').innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-top:4px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">
+        📊 Mi resumen · ${today.toLocaleDateString('es-AR',{month:'long'})}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:var(--bg2);border-radius:var(--r3);padding:10px;text-align:center">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--lime)">${totalReg.toFixed(1)}h</div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px">Regular</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:var(--r3);padding:10px;text-align:center">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--text2)">${totalAll.toFixed(1)}h</div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px">Total trabajadas</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:var(--r3);padding:10px;text-align:center">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--amber)">${totalExtra.toFixed(1)}h</div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px">Extra simple</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:var(--r3);padding:10px;text-align:center">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--purple)">${totalDoble.toFixed(1)}h</div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px">Extra doble</div>
+        </div>
+      </div>
+      ${(totalExtra > 0 || totalDoble > 0) ? `
+      <div style="margin-top:10px;background:rgba(168,224,64,0.08);border:1px solid var(--border2);border-radius:var(--r3);padding:10px;text-align:center">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:3px">Equivalente en horas simples a liquidar</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--lime)">${equiv.toFixed(1)}h</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">${totalExtra.toFixed(1)}h × 1 + ${totalDoble.toFixed(1)}h × 2</div>
+      </div>` : ''}
+    </div>`;
+}
 // ═══════════════════════════════════════════════════
 function openOTForm(itemId = null) {
   editingItemId = itemId;
@@ -976,21 +1059,58 @@ function getRegularSchedule(dateStr) {
   return { start: 8*60, end: 17*60 };
 }
 
+// Devuelve { total, regular, extra, doble }
+// Escala:
+//   Lun-Vie: regular 08-17/16:30 · extra simple fuera de esa franja
+//   Sáb guardia: regular 08-12 · extra doble después de 12
+//   Sáb libre: extra simple 08-12 · extra doble después de 12
+//   Domingo: todo extra doble
 function calcHoursBreakdown(desde, hasta, dateStr) {
   const startMin = toMinutes(desde);
   const endMin   = toMinutes(hasta);
   const total    = endMin - startMin;
-  if (total <= 0) return { total:0, regular:0, extra:0 };
+  if (total <= 0) return { total:0, regular:0, extra:0, doble:0 };
+
   const d   = new Date(dateStr + 'T12:00:00');
   const dow = d.getDay();
-  if (dow === 0 || (dow === 6 && sabadoGuardia === false)) return { total:total/60, regular:0, extra:total/60 };
+
+  // ── Domingo: todo doble
+  if (dow === 0) {
+    return { total:total/60, regular:0, extra:0, doble:total/60 };
+  }
+
+  const MIDDAY = 12 * 60; // 12:00 — punto de corte para doble en sábado
+
+  // ── Sábado
+  if (dow === 6) {
+    // Minutos antes y después de las 12
+    const beforeNoon = Math.max(0, Math.min(endMin, MIDDAY) - startMin);
+    const afterNoon  = Math.max(0, endMin - Math.max(startMin, MIDDAY));
+
+    if (sabadoGuardia === true) {
+      // Guardia: 08-12 regular, después de 12 doble
+      const regularMin = Math.max(0, Math.min(endMin, MIDDAY) - Math.max(startMin, 8*60));
+      const dobleMin   = afterNoon;
+      const extraMin   = Math.max(0, beforeNoon - regularMin); // antes de las 8
+      return { total:total/60, regular:regularMin/60, extra:extraMin/60, doble:dobleMin/60 };
+    } else {
+      // Libre: 08-12 extra simple, después de 12 doble
+      const simpleMin = Math.max(0, Math.min(endMin, MIDDAY) - Math.max(startMin, 8*60));
+      const dobleMin  = afterNoon;
+      const antesMin  = Math.max(0, Math.min(endMin, 8*60) - startMin); // antes de las 8 también doble
+      return { total:total/60, regular:0, extra:simpleMin/60, doble:(dobleMin+antesMin)/60 };
+    }
+  }
+
+  // ── Lunes a Viernes
   const sched = getRegularSchedule(dateStr);
-  if (!sched) return { total:total/60, regular:0, extra:total/60 };
-  const overlapStart = Math.max(startMin, sched.start);
-  const overlapEnd   = Math.min(endMin,   sched.end);
-  const regularMin   = Math.max(0, overlapEnd - overlapStart);
-  const extraMin     = total - regularMin;
-  return { total:total/60, regular:regularMin/60, extra:extraMin/60 };
+  if (!sched) return { total:total/60, regular:0, extra:total/60, doble:0 };
+
+  const overlapStart  = Math.max(startMin, sched.start);
+  const overlapEnd    = Math.min(endMin,   sched.end);
+  const regularMin    = Math.max(0, overlapEnd - overlapStart);
+  const extraMin      = total - regularMin; // todo lo que no es regular es extra simple (lun-vie no hay doble)
+  return { total:total/60, regular:regularMin/60, extra:extraMin/60, doble:0 };
 }
 
 function setSabadoGuardia(val) {
@@ -1056,7 +1176,19 @@ function recalcHours() {
     return;
   }
   const breakdown = calcHoursBreakdown(desde, hasta, TODAY());
-  if (breakdown.extra > 0) {
+  if (breakdown.doble > 0 && breakdown.extra > 0) {
+    document.getElementById('time-result-val').textContent = breakdown.total.toFixed(2) + ' h';
+    document.getElementById('time-result-range').textContent = ` · ${breakdown.regular.toFixed(2)}h reg + ${breakdown.extra.toFixed(2)}h extra + ${breakdown.doble.toFixed(2)}h doble`;
+    resultEl.style.background  = 'rgba(192,144,255,0.10)';
+    resultEl.style.borderColor = 'rgba(192,144,255,0.35)';
+    resultEl.style.color = 'var(--purple)';
+  } else if (breakdown.doble > 0) {
+    document.getElementById('time-result-val').textContent = breakdown.total.toFixed(2) + ' h';
+    document.getElementById('time-result-range').textContent = ` · ${breakdown.regular.toFixed(2)}h reg + ${breakdown.doble.toFixed(2)}h doble`;
+    resultEl.style.background  = 'rgba(192,144,255,0.10)';
+    resultEl.style.borderColor = 'rgba(192,144,255,0.35)';
+    resultEl.style.color = 'var(--purple)';
+  } else if (breakdown.extra > 0) {
     document.getElementById('time-result-val').textContent = breakdown.total.toFixed(2) + ' h';
     document.getElementById('time-result-range').textContent = ` · ${breakdown.regular.toFixed(2)}h reg + ${breakdown.extra.toFixed(2)}h extra`;
     resultEl.style.background  = 'rgba(245,184,48,0.08)';
@@ -1099,9 +1231,11 @@ function saveOTEntry() {
   const breakdown = calcHoursBreakdown(desde, hasta, TODAY());
   if (editingItemId) {
     const idx = draftItems.findIndex(i => i.id === editingItemId);
-    if (idx >= 0) draftItems[idx] = { ...draftItems[idx], otId, tipo:formTipo, horas:formHours, desde, hasta, obs, motivo, horasRegulares:breakdown.regular, horasExtra:breakdown.extra };
+    if (idx >= 0) draftItems[idx] = { ...draftItems[idx], otId, tipo:formTipo, horas:formHours, desde, hasta, obs, motivo,
+      horasRegulares:breakdown.regular, horasExtra:breakdown.extra, horasDobles:breakdown.doble };
   } else {
-    draftItems.push({ id:'item_'+Date.now(), otId, tipo:formTipo, horas:formHours, desde, hasta, obs, motivo, horasRegulares:breakdown.regular, horasExtra:breakdown.extra });
+    draftItems.push({ id:'item_'+Date.now(), otId, tipo:formTipo, horas:formHours, desde, hasta, obs, motivo,
+      horasRegulares:breakdown.regular, horasExtra:breakdown.extra, horasDobles:breakdown.doble });
   }
   saveDraft();
   closeSheet('sheet-form-overlay');
@@ -1122,10 +1256,91 @@ function saveDraft() {
 // ═══════════════════════════════════════════════════
 // SEND JORNADA
 // ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// VALIDACIÓN DE HORAS MÍNIMAS
+// ═══════════════════════════════════════════════════
+function checkMinimumHours(items) {
+  const today    = new Date();
+  const dow      = today.getDay(); // 0=Dom,1=Lun,...,6=Sáb
+  const todayStr = TODAY();
+
+  // Total de horas cargadas (todas cuentan)
+  const totalHoras = items.reduce((s,i) => s+(parseFloat(i.horas)||0), 0);
+
+  // Horas dentro del horario regular (08:00 a 17:00 / 16:30)
+  // Se calculan sumando los breakdowns de cada ítem
+  let horasRegulares = 0;
+  items.forEach(item => {
+    const bd = calcHoursBreakdown(item.desde||'08:00', item.hasta||item.desde||'08:00', todayStr);
+    horasRegulares += bd.regular;
+  });
+
+  // Domingo — no hay mínimo
+  if (dow === 0) {
+    return { blocked:false, warn:false, totalHoras, message:'Jornada lista para enviar ✓' };
+  }
+
+  // Sábado — advertencia si menos de 4h
+  if (dow === 6) {
+    if (sabadoGuardia === false) {
+      return { blocked:false, warn:false, totalHoras, message:'Sábado libre · jornada lista ✓' };
+    }
+    if (totalHoras < 4) {
+      return { blocked:false, warn:true, totalHoras,
+        message:`Sábado de guardia — cargaste ${totalHoras.toFixed(1)}h de 4h esperadas` };
+    }
+    return { blocked:false, warn:false, totalHoras, message:`Sábado de guardia · ${totalHoras.toFixed(1)}h ✓` };
+  }
+
+  // Lunes a jueves — mínimo 9h regulares (08:00-17:00)
+  // Viernes — mínimo 8.5h regulares (08:00-16:30)
+  const minRegular = dow === 5 ? 8.5 : 9;
+  const minLabel   = dow === 5 ? '8.5h (08:00-16:30)' : '9h (08:00-17:00)';
+  const dayName    = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][dow];
+
+  if (horasRegulares < minRegular) {
+    const faltanHoras = minRegular - horasRegulares;
+    const faltanMin   = Math.round(faltanHoras * 60);
+    const faltanStr   = faltanHoras >= 1
+      ? `${Math.floor(faltanHoras)}h ${faltanMin % 60 > 0 ? (faltanMin%60)+'min' : ''}`.trim()
+      : `${faltanMin}min`;
+    return {
+      blocked: true,
+      warn: false,
+      totalHoras,
+      message: `Faltan ${faltanStr} del horario regular (${minLabel}) — completá la jornada para poder enviar`
+    };
+  }
+
+  return { blocked:false, warn:false, totalHoras,
+    message:`${totalHoras.toFixed(1)}h · horario completo ✓` };
+}
+
 function confirmEnviar() {
-  const total = draftItems.reduce((s,i) => s+i.horas, 0);
+  const check = checkMinimumHours(draftItems);
+
+  // Bloqueo estricto — no debería llegar acá pero por las dudas
+  if (check.blocked) {
+    showToast('Completá el horario regular antes de enviar', 'error');
+    return;
+  }
+
+  const total    = draftItems.reduce((s,i) => s+i.horas, 0);
+  const extraH   = draftItems.reduce((s,i) => s+(parseFloat(i.horasExtra)||0), 0);
+  const detalle  = extraH > 0
+    ? `${total.toFixed(1)}h totales (incl. ${extraH.toFixed(1)}h extra)`
+    : `${total.toFixed(1)}h totales`;
+
+  // Sábado con advertencia — confirmación con mensaje especial
+  if (check.warn) {
+    showConfirm('⚠️', '¿Enviás la jornada?',
+      `${check.message}\n\n¿Confirmás que es correcto?`,
+      doEnviar);
+    return;
+  }
+
   showConfirm('✅', '¿Confirmás la jornada?',
-    `${draftItems.length} OT${draftItems.length>1?'s':''} · ${total.toFixed(1)} horas en total.\n\nUna vez enviada no podrás modificarla.`,
+    `${draftItems.length} OT${draftItems.length>1?'s':''} · ${detalle}.\n\nUna vez enviada no podrás modificarla.`,
     doEnviar);
 }
 
