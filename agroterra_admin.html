@@ -207,7 +207,35 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .ot-card-client{font-size:11px;color:var(--text3)}
 .ot-empty{padding:40px 20px;text-align:center;color:var(--text3);font-size:13px}
 
-/* FIX: totals row in registros */
+/* ── EDITOR DE JORNADAS (admin) ── */
+.editor-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.editor-overlay.open{display:flex}
+.editor-panel{background:var(--surface);border-radius:20px 20px 0 0;border-top:1px solid var(--border);width:100%;max-width:860px;max-height:90vh;display:flex;flex-direction:column;animation:sheetUp 0.3s cubic-bezier(0.34,1.2,0.64,1)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.editor-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:14px auto 0;flex-shrink:0}
+.editor-header{padding:16px 24px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.editor-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800}
+.editor-body{overflow-y:auto;flex:1;padding:16px 24px 24px}
+.editor-close{background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:var(--text2)}
+.jornada-item-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px;margin-bottom:8px}
+.jornada-item-row.editing{border-color:var(--border3);background:var(--surface2)}
+.jir-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.jir-field{flex:1;display:flex;flex-direction:column;gap:4px}
+.jir-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.jir-select,.jir-input{background:var(--bg);border:1px solid var(--border);border-radius:var(--r3);padding:7px 10px;color:var(--text);font-family:'Barlow',sans-serif;font-size:13px;outline:none;-webkit-appearance:none;width:100%}
+.jir-select:focus,.jir-input:focus{border-color:var(--cyan2)}
+.jir-select option{background:#002060}
+.btn-jir-save{background:var(--cyan);color:var(--bg);border:none;border-radius:var(--r3);padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+.btn-jir-save:hover{background:var(--cyan2)}
+.btn-jir-del{background:none;border:1px solid var(--border);border-radius:var(--r3);padding:8px 10px;color:var(--text3);cursor:pointer;font-size:13px;transition:all 0.15s;white-space:nowrap}
+.btn-jir-del:hover{border-color:rgba(255,68,68,0.4);color:var(--red);background:var(--red-dim)}
+.jornada-block{border:1px solid var(--border);border-radius:var(--r2);margin-bottom:16px;overflow:hidden}
+.jornada-block-header{padding:12px 16px;background:var(--surface2);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background 0.15s}
+.jornada-block-header:hover{background:var(--surface3)}
+.jornada-block-items{padding:12px 16px;display:none}
+.jornada-block-items.open{display:block}
+.btn-del-jornada{background:none;border:1px solid rgba(255,68,68,0.3);border-radius:var(--r3);padding:5px 10px;color:var(--red);font-size:11px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;transition:all 0.15s}
+.btn-del-jornada:hover{background:var(--red-dim)}
 .reg-totals-row td{background:var(--surface2);font-weight:700;border-top:2px solid var(--border2);font-family:'Barlow Condensed',sans-serif;font-size:14px}
 </style>
 </head>
@@ -511,6 +539,23 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
       <div class="mbn-item" id="mbn-facturacion" onclick="goView('facturacion')"><div class="mbn-icon">💰</div><div class="mbn-label">Facturación</div></div>
     </div>
   </nav>
+</div>
+
+<!-- EDITOR DE JORNADAS (admin) -->
+<div class="editor-overlay" id="editor-overlay" onclick="closeEditor()">
+  <div class="editor-panel" onclick="event.stopPropagation()">
+    <div class="editor-handle"></div>
+    <div class="editor-header">
+      <div>
+        <div class="editor-title" id="editor-tech-name">—</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px" id="editor-month-label">—</div>
+      </div>
+      <button class="editor-close" onclick="closeEditor()">✕</button>
+    </div>
+    <div class="editor-body" id="editor-body">
+      <div style="color:var(--text3);text-align:center;padding:24px">Cargando...</div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1086,9 +1131,7 @@ function renderAsistencia(){
       ? (submitted.has(today) ? 'ok' : new Date().getDay()===0 ? 'dom' : new Date().getDay()===6 ? 'sat' : 'missing')
       : null;
 
-    // Contar días del mes
     const totalPast  = pastWorkdays.filter(w=>w.dow!==6).length;
-    const totalSat   = pastWorkdays.filter(w=>w.dow===6).length;
     const cargados   = pastWorkdays.filter(w=>submitted.has(w.date)).length;
     const faltantes  = pastWorkdays.filter(w=>w.dow!==6&&!submitted.has(w.date)).length;
     const pct        = totalPast > 0 ? Math.round(cargados/totalPast*100) : 0;
@@ -1101,7 +1144,7 @@ function renderAsistencia(){
       ? `<span style="background:var(--purple-dim);border:1px solid rgba(192,144,255,0.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--purple)">📅 Sábado</span>`
       : '';
 
-    return `<div class="tech-perf-row">
+    return `<div class="tech-perf-row" style="cursor:pointer" onclick="openEditor('${tech.id}')">
       <div class="tech-avatar">${getInitials(tech.name)}</div>
       <div class="tech-perf-info" style="flex:1">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
@@ -1116,6 +1159,7 @@ function renderAsistencia(){
         </div>
         ${faltantes>0?`<div style="font-size:10px;color:var(--red);margin-top:2px">${faltantes} día${faltantes>1?'s':''} sin registrar</div>`:''}
       </div>
+      <div style="font-size:12px;color:var(--text3);flex-shrink:0">✏️ editar</div>
     </div>`;
   }).join('');
 
@@ -1305,6 +1349,209 @@ function exportFacturacionCSV(){
   a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download = 'facturacion_agroterra.csv';
   a.click();
+}
+
+// ═══════════════════════════════════════════
+// EDITOR DE JORNADAS (admin)
+// ═══════════════════════════════════════════
+let editorTechId = null;
+
+function openEditor(techId) {
+  editorTechId = techId;
+  const db   = getDB();
+  const tech = db.technicians.find(t => t.id === techId);
+  if (!tech) return;
+
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('editor-tech-name').textContent = tech.name;
+  document.getElementById('editor-month-label').textContent =
+    monthNames[asisMonth] + ' ' + asisYear + ' · Hacé clic en una jornada para editarla';
+
+  renderEditorBody(techId);
+  document.getElementById('editor-overlay').classList.add('open');
+}
+
+function closeEditor() {
+  document.getElementById('editor-overlay').classList.remove('open');
+  editorTechId = null;
+}
+
+function renderEditorBody(techId) {
+  const db        = getDB();
+  const monthPfx  = `${asisYear}-${String(asisMonth+1).padStart(2,'0')}`;
+  const jornadas  = db.jornadas
+    .filter(j => j.techId === techId && j.date.startsWith(monthPfx) && j.status === 'sent')
+    .sort((a,b) => b.date.localeCompare(a.date));
+
+  const bodyEl = document.getElementById('editor-body');
+  if (!jornadas.length) {
+    bodyEl.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text3)">Sin jornadas enviadas este mes</div>`;
+    return;
+  }
+
+  bodyEl.innerHTML = jornadas.map(j => {
+    const d     = new Date(j.date + 'T12:00:00');
+    const label = d.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
+    const total = j.items.reduce((s,i) => s+(parseFloat(i.horas)||0), 0);
+    return `<div class="jornada-block" id="jblock-${j.id}">
+      <div class="jornada-block-header" onclick="toggleJornadaBlock('${j.id}')">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;text-transform:capitalize">${label}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">${j.items.length} OT${j.items.length>1?'s':''} · ${total.toFixed(1)}h total</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn-del-jornada" onclick="event.stopPropagation();deleteJornada('${j.id}','${j.date}')">🗑 Eliminar jornada</button>
+          <span style="color:var(--text3);font-size:14px" id="jblock-arrow-${j.id}">▼</span>
+        </div>
+      </div>
+      <div class="jornada-block-items" id="jblock-items-${j.id}">
+        ${j.items.map(item => renderItemEditor(item, j.id, db)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleJornadaBlock(jornadaId) {
+  const el    = document.getElementById('jblock-items-' + jornadaId);
+  const arrow = document.getElementById('jblock-arrow-' + jornadaId);
+  const open  = el.classList.toggle('open');
+  arrow.textContent = open ? '▲' : '▼';
+}
+
+function renderItemEditor(item, jornadaId, db) {
+  const ot       = (item.otId==='__REFRIGERIO__'||item.otId==='__IMPRODUCTIVA__') ? null : db.orders.find(o=>o.id===item.otId);
+  const otLabel  = ot ? `${ot.num} — ${ot.desc}` : item.otId==='__REFRIGERIO__' ? '☕ Refrigerio' : '⏸ Improductiva';
+  const otOptions = db.orders.filter(o=>o.status==='active').map(o =>
+    `<option value="${o.id}" ${item.otId===o.id?'selected':''}>${o.num} · ${o.type}</option>`
+  ).join('');
+  const tipos = ['Productiva','Improductiva','Capacitación','Viaje','Refrigerio'];
+  const timeSlots = buildAdminTimeSlots();
+
+  return `<div class="jornada-item-row" id="jir-${item.id}">
+    <div class="jir-top">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text2);min-width:80px">${otLabel}</div>
+      <span class="tag ${tipoTagClass(item.tipo)}">${item.tipo}</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--cyan);margin-left:auto">${(parseFloat(item.horas)||0).toFixed(1)}h</span>
+      <button class="btn-jir-del" onclick="deleteItem('${item.id}','${jornadaId}')">🗑</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div class="jir-field">
+        <div class="jir-label">OT</div>
+        <select class="jir-select" id="edit-ot-${item.id}">
+          <option value="__REFRIGERIO__" ${item.otId==='__REFRIGERIO__'?'selected':''}>☕ Refrigerio</option>
+          <option value="__IMPRODUCTIVA__" ${item.otId==='__IMPRODUCTIVA__'?'selected':''}>⏸ Improductiva</option>
+          ${otOptions}
+        </select>
+      </div>
+      <div class="jir-field">
+        <div class="jir-label">Tipo</div>
+        <select class="jir-select" id="edit-tipo-${item.id}">
+          ${tipos.map(t=>`<option value="${t}" ${item.tipo===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+      <div class="jir-field">
+        <div class="jir-label">Desde</div>
+        <select class="jir-select" id="edit-desde-${item.id}">
+          ${timeSlots.map(s=>`<option value="${s}" ${item.desde===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="jir-field">
+        <div class="jir-label">Hasta</div>
+        <select class="jir-select" id="edit-hasta-${item.id}">
+          ${timeSlots.map(s=>`<option value="${s}" ${item.hasta===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="jir-field">
+        <div class="jir-label">Observaciones</div>
+        <input type="text" class="jir-input" id="edit-obs-${item.id}" value="${item.obs||''}" placeholder="Opcional"/>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end">
+      <button class="btn-jir-save" onclick="saveItemEdit('${item.id}','${jornadaId}')">✓ Guardar cambios</button>
+    </div>
+  </div>`;
+}
+
+function buildAdminTimeSlots() {
+  const slots = [];
+  for (let h = 6; h <= 22; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      if (h === 22 && m > 0) break;
+      slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
+    }
+  }
+  return slots;
+}
+
+function toMinutesAdmin(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
+
+async function saveItemEdit(itemId, jornadaId) {
+  const db        = getDB();
+  const jornadaIdx = db.jornadas.findIndex(j => j.id === jornadaId);
+  if (jornadaIdx < 0) return;
+  const itemIdx = db.jornadas[jornadaIdx].items.findIndex(i => i.id === itemId);
+  if (itemIdx < 0) return;
+
+  const otId  = document.getElementById('edit-ot-'   + itemId).value;
+  const tipo  = document.getElementById('edit-tipo-'  + itemId).value;
+  const desde = document.getElementById('edit-desde-' + itemId).value;
+  const hasta = document.getElementById('edit-hasta-' + itemId).value;
+  const obs   = document.getElementById('edit-obs-'   + itemId).value.trim();
+
+  const totalMin = toMinutesAdmin(hasta) - toMinutesAdmin(desde);
+  if (totalMin <= 0) { showToast('El horario de fin debe ser posterior al de inicio', 'error'); return; }
+  const horas = totalMin / 60;
+
+  db.jornadas[jornadaIdx].items[itemIdx] = {
+    ...db.jornadas[jornadaIdx].items[itemIdx],
+    otId, tipo, desde, hasta, obs, horas,
+    horasRegulares: horas, horasExtra: 0
+  };
+  saveDB(db);
+
+  // Resaltar fila guardada
+  const row = document.getElementById('jir-' + itemId);
+  if (row) { row.style.borderColor = 'var(--cyan)'; setTimeout(()=>{ row.style.borderColor=''; }, 1500); }
+
+  showToast('Cambios guardados localmente', 'success');
+
+  try {
+    await apiPost('saveJornada', { jornada: db.jornadas[jornadaIdx] });
+    showToast('Sincronizado con el servidor ✓', 'success');
+  } catch(e) {
+    showToast('Guardado local. Sin conexión para sincronizar.', 'error');
+  }
+  renderAll();
+}
+
+async function deleteItem(itemId, jornadaId) {
+  if (!confirm('¿Eliminar este ítem de la jornada?')) return;
+  const db        = getDB();
+  const jornadaIdx = db.jornadas.findIndex(j => j.id === jornadaId);
+  if (jornadaIdx < 0) return;
+  db.jornadas[jornadaIdx].items = db.jornadas[jornadaIdx].items.filter(i => i.id !== itemId);
+  saveDB(db);
+  showToast('Ítem eliminado', '');
+  try {
+    await apiPost('saveJornada', { jornada: db.jornadas[jornadaIdx] });
+  } catch(e) {}
+  renderEditorBody(editorTechId);
+  renderAll();
+}
+
+async function deleteJornada(jornadaId, date) {
+  if (!confirm(`¿Eliminar toda la jornada del ${date}? El técnico podrá volver a cargarla.`)) return;
+  const db = getDB();
+  db.jornadas = db.jornadas.filter(j => j.id !== jornadaId);
+  saveDB(db);
+  showToast('Jornada eliminada', '');
+  try {
+    await apiPost('deleteJornada', { jornadaId });
+  } catch(e) {}
+  renderEditorBody(editorTechId);
+  renderAll();
 }
 
 // INIT
