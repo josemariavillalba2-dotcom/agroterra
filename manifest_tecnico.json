@@ -1,24 +1,39 @@
 {
   "name": "Agroterra Horas",
   "short_name": "AT Horas",
-  "description": "Registro de horas técnicas - Agroterra",
-  "start_url": "./agroterra_tecnico.html",
+  "description": "Registro de horas técnicas - Agroterra S.A.",
+  "start_url": "https://josemariavillalba2-dotcom.github.io/agroterra/agroterra_tecnico.html",
+  "scope": "https://josemariavillalba2-dotcom.github.io/agroterra/",
   "display": "standalone",
   "background_color": "#0d1410",
   "theme_color": "#0d1410",
   "orientation": "portrait-primary",
+  "lang": "es",
+  "categories": ["productivity", "utilities"],
   "icons": [
     {
       "src": "icon_tecnico.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon_tecnico.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "icon_tecnico.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon_tecnico.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
