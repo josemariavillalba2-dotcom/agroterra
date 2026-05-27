@@ -519,10 +519,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 const API = 'https://script.google.com/macros/s/AKfycbwGiT4ZMPpumGbMmWz0tynvjYeE4R77Fz1VjNQmff7JS4UidL3BQ5fRbrBMoiCvfRo4/exec';
 const DB_KEY = 'agroterra_admin_v2';
 const SESSION_KEY = 'agroterra_admin_session';
-const ADMIN_USERS = [
-  {user:'gerencia',    pass:'Alfon22',  name:'Gerencia'},
-  {user:'admposventa', pass:'112233',   name:'Adm. Posventa'},
-];
 let currentUser = '';
 let otFilter = 'active';
 let calYear, calMonth;
@@ -607,19 +603,38 @@ async function refreshAll(){
 }
 
 async function doLogin(){
-  const user  = document.getElementById('inp-user').value.trim().toLowerCase();
-  const pass  = document.getElementById('inp-pass').value;
-  const match = ADMIN_USERS.find(u => u.user===user && u.pass===pass);
-  if(!match){ document.getElementById('login-err').textContent = 'Usuario o contraseña incorrectos.'; return; }
-  currentUser = match.name;
+  const user = document.getElementById('inp-user').value.trim().toLowerCase();
+  const pass = document.getElementById('inp-pass').value;
+  if(!user){ document.getElementById('login-err').textContent = 'Seleccioná tu usuario.'; return; }
+  if(!pass){ document.getElementById('login-err').textContent = 'Ingresá tu contraseña.'; return; }
+
   const btn = document.querySelector('.btn-login');
-  btn.textContent = 'Conectando...'; btn.disabled = true;
-  try { await syncFromServer(); } catch(e){ console.warn('Sync on login failed:', e); }
-  saveAdminSession(user);
-  document.getElementById('s-login').style.display = 'none';
-  document.getElementById('s-app').style.display = 'block';
-  initApp();
-  btn.textContent = 'Ingresar →'; btn.disabled = false;
+  btn.textContent = 'Verificando...'; btn.disabled = true;
+  document.getElementById('login-err').textContent = '';
+
+  try {
+    // Validar en el servidor — credenciales nunca hardcodeadas en el HTML
+    const res  = await fetch(API, { method:'POST', body: JSON.stringify({ action:'validateAdmin', user, pass }) });
+    const json = await res.json();
+
+    if(!json.ok || !json.data.valid){
+      document.getElementById('login-err').textContent = json.data?.error || 'Usuario o contraseña incorrectos.';
+      btn.textContent = 'Ingresar →'; btn.disabled = false;
+      return;
+    }
+
+    currentUser = json.data.name;
+    try { await syncFromServer(); } catch(e){ console.warn('Sync on login failed:', e); }
+    saveAdminSession(user);
+    document.getElementById('s-login').style.display = 'none';
+    document.getElementById('s-app').style.display = 'block';
+    initApp();
+
+  } catch(e) {
+    document.getElementById('login-err').textContent = 'Sin conexión con el servidor. Verificá tu internet.';
+  } finally {
+    btn.textContent = 'Ingresar →'; btn.disabled = false;
+  }
 }
 
 function doLogout(){
