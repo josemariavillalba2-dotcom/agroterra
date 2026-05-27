@@ -112,6 +112,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .log-table td{padding:12px 20px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
 .log-table tr:last-child td{border-bottom:none}
 .log-table tr:hover td{background:var(--surface2);cursor:pointer}
+.log-table tfoot td{background:var(--surface2);font-weight:700;border-top:2px solid var(--border2)}
 .tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px}
 .tag-prod{background:var(--lime-dim);color:var(--lime);border:1px solid rgba(96,224,128,0.2)}
 .tag-improd{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,176,32,0.2)}
@@ -123,6 +124,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .tag-gar{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,176,32,0.2)}
 .tag-int{background:rgba(96,200,255,0.1);color:var(--blue);border:1px solid rgba(96,200,255,0.2)}
 .tag-int-v{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(192,144,255,0.2)}
+.tag-ops{background:rgba(120,120,120,0.15);color:#aaa;border:1px solid rgba(120,120,120,0.2)}
 .fi-field label{display:block;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
 .fi-field input,.fi-field select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:9px 11px;color:var(--text);font-family:'Barlow',sans-serif;font-size:13px;outline:none;-webkit-appearance:none;transition:border-color 0.2s}
 .fi-field input:focus,.fi-field select:focus{border-color:var(--cyan2)}
@@ -131,11 +133,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .btn-add-ot:hover{background:var(--cyan2)}
 .btn-add-ot:active{transform:scale(0.98)}
 .btn-add-ot:disabled{background:var(--text3);cursor:not-allowed;transform:none}
-.ot-row{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border);transition:background 0.15s}
-.ot-row:last-child{border-bottom:none}
-.ot-row:hover{background:var(--surface2)}
-.ot-num{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;min-width:90px}
-.ot-desc{flex:1;font-size:13px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ot-status-toggle{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;transition:all 0.15s}
 .ot-status-toggle.active{background:var(--lime-dim);border-color:rgba(96,224,128,0.3);color:var(--lime)}
 .ot-status-toggle.closed{background:var(--red-dim);border-color:rgba(255,68,68,0.3);color:var(--red)}
@@ -157,6 +154,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .cal-cell.missing{background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.30);color:var(--red)}
 .cal-cell.nonworking{background:transparent;color:var(--text3);opacity:0.4}
 .cal-cell.future{background:transparent;color:var(--text3);opacity:0.25}
+.cal-cell.saturday{background:rgba(192,144,255,0.08);border:1px solid rgba(192,144,255,0.15);color:var(--text3);opacity:0.5}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:11px 22px;border-radius:30px;font-size:13px;font-weight:600;opacity:0;transition:all 0.25s;z-index:999;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.success{background:var(--cyan-dim2);border-color:var(--border3);color:var(--cyan)}
@@ -197,10 +195,8 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
   .mobile-bottom-nav{display:block}
   .log-table th:nth-child(4),.log-table td:nth-child(4),.log-table th:nth-child(5),.log-table td:nth-child(5){display:none}
 }
-/* Loading spinner */
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,24,64,0.3);border-top-color:#001840;border-radius:50%;animation:spin 0.7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* OT card in list */
 .ot-card-item{padding:16px 20px;border-bottom:1px solid var(--border);transition:background 0.15s}
 .ot-card-item:last-child{border-bottom:none}
 .ot-card-item:hover{background:var(--surface2)}
@@ -210,6 +206,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .ot-card-desc{font-size:12px;color:var(--text2);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ot-card-client{font-size:11px;color:var(--text3)}
 .ot-empty{padding:40px 20px;text-align:center;color:var(--text3);font-size:13px}
+
+/* FIX: totals row in registros */
+.reg-totals-row td{background:var(--surface2);font-weight:700;border-top:2px solid var(--border2);font-family:'Barlow Condensed',sans-serif;font-size:14px}
 </style>
 </head>
 <body>
@@ -310,7 +309,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
         <div class="view" id="view-ordenes">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:4px">📋 Órdenes de Trabajo</div>
           <div style="font-size:13px;color:var(--text2);margin-bottom:20px">Creá y administrá las OTs — los técnicos las ven al instante</div>
-
           <div class="card" style="margin-bottom:20px">
             <div class="card-header"><div class="card-title">➕ Nueva Orden de Trabajo</div></div>
             <div class="card-body">
@@ -325,7 +323,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
                     <option value="Operaciones Generales">Operaciones Generales</option>
                     <option value="Interno Taller">Interno Taller</option>
                     <option value="Interno Ventas">Interno Ventas</option>
-                    
                   </select>
                 </div>
               </div>
@@ -348,7 +345,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
               <div id="ot-form-error" style="margin-top:10px;color:var(--red);font-size:13px;text-align:center;min-height:18px"></div>
             </div>
           </div>
-
           <div class="card">
             <div class="card-header">
               <div class="card-title">Órdenes activas</div>
@@ -386,6 +382,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
               <table class="log-table">
                 <thead><tr><th>Técnico</th><th>Fecha</th><th>OT</th><th>Tipo</th><th>Horario</th><th>Regular</th><th>Extra</th><th>Total</th></tr></thead>
                 <tbody id="reg-tbody"></tbody>
+                <tfoot id="reg-tfoot"></tfoot>
               </table>
             </div>
           </div>
@@ -423,14 +420,20 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
               <button onclick="calToday()" style="background:var(--cyan-dim2);border:1px solid var(--border2);border-radius:var(--r3);padding:8px 14px;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Hoy</button>
             </div>
           </div>
+          <!-- leyenda calendario -->
+          <div style="display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:14px;height:14px;border-radius:3px;background:rgba(255,204,0,0.20);border:1px solid rgba(255,204,0,0.35)"></div>Jornada cargada</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:14px;height:14px;border-radius:3px;background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.30)"></div>Sin jornada</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:14px;height:14px;border-radius:3px;background:rgba(192,144,255,0.08);border:1px solid rgba(192,144,255,0.15)"></div>Sábado (no laboral)</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:14px;height:14px;border-radius:3px;background:transparent;border:1px solid var(--border)"></div>Futuro / sin datos</div>
+          </div>
           <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><div id="cal-container"></div></div>
         </div>
 
-      </div><!-- /page-content -->
+      </div>
     </main>
   </div>
 
-  <!-- Mobile nav -->
   <nav class="mobile-bottom-nav">
     <div class="mbn-scroll">
       <div class="mbn-item active" id="mbn-dashboard" onclick="goView('dashboard')"><div class="mbn-icon">📊</div><div class="mbn-label">Dashboard</div></div>
@@ -446,11 +449,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════
 const API = 'https://script.google.com/macros/s/AKfycbwGiT4ZMPpumGbMmWz0tynvjYeE4R77Fz1VjNQmff7JS4UidL3BQ5fRbrBMoiCvfRo4/exec';
 const DB_KEY = 'agroterra_admin_v2';
+const SESSION_KEY = 'agroterra_admin_session';
 const ADMIN_USERS = [
   {user:'gerencia',    pass:'Alfon22',  name:'Gerencia'},
   {user:'admposventa', pass:'112233',   name:'Adm. Posventa'},
@@ -459,9 +460,6 @@ let currentUser = '';
 let otFilter = 'active';
 let calYear, calMonth;
 
-// ═══════════════════════════════════════════
-// DB LOCAL
-// ═══════════════════════════════════════════
 function getDB(){
   try{ return JSON.parse(localStorage.getItem(DB_KEY)||'null') || defaultDB(); }
   catch(e){ return defaultDB(); }
@@ -479,9 +477,11 @@ function defaultDB(){
   };
 }
 
-// ═══════════════════════════════════════════
-// API CALLS
-// ═══════════════════════════════════════════
+// FIX 3: sesión admin persistente
+function saveAdminSession(user){ sessionStorage.setItem(SESSION_KEY, user); }
+function loadAdminSession(){ return sessionStorage.getItem(SESSION_KEY); }
+function clearAdminSession(){ sessionStorage.removeItem(SESSION_KEY); }
+
 async function apiGet(action){
   const res = await fetch(API + '?action=' + action, {method:'GET'});
   if(!res.ok) throw new Error('HTTP ' + res.status);
@@ -489,34 +489,27 @@ async function apiGet(action){
   if(!json.ok) throw new Error(json.error || 'Error del servidor');
   return json.data;
 }
-
 async function apiPost(action, payload){
-  const res = await fetch(API, {
-    method:'POST',
-    body: JSON.stringify({action, ...payload})
-  });
+  const res = await fetch(API, { method:'POST', body: JSON.stringify({action, ...payload}) });
   if(!res.ok) throw new Error('HTTP ' + res.status);
   const json = await res.json();
   if(!json.ok) throw new Error(json.error || 'Error del servidor');
   return json.data;
 }
-
 async function syncFromServer(){
   const data = await apiGet('getAll');
   const db = getDB();
-  db.technicians = data.technicians || db.technicians;
-  db.orders      = data.orders      || [];
-  db.jornadas    = data.jornadas    || [];
-  db.billingStatus = data.billingStatus || {};
+  db.technicians   = data.technicians  || db.technicians;
+  db.orders        = data.orders       || [];
+  db.jornadas      = data.jornadas     || [];
+  db.billingStatus = data.billingStatus|| {};
   saveDB(db);
   return db;
 }
-
 async function refreshAll(){
   const btn = document.getElementById('btn-refresh');
   const lbl = document.getElementById('sync-label');
-  btn.disabled = true;
-  btn.textContent = '⏳';
+  btn.disabled = true; btn.textContent = '⏳';
   lbl.textContent = 'Sincronizando...';
   try {
     await syncFromServer();
@@ -527,28 +520,21 @@ async function refreshAll(){
     lbl.textContent = 'Sin conexión';
     showToast('No se pudo conectar: ' + e.message, 'error');
   } finally {
-    btn.disabled = false;
-    btn.textContent = '🔄 Actualizar';
+    btn.disabled = false; btn.textContent = '🔄 Actualizar';
     setTimeout(()=>{ lbl.textContent = 'En línea'; }, 3000);
   }
 }
 
-// ═══════════════════════════════════════════
-// LOGIN
-// ═══════════════════════════════════════════
 async function doLogin(){
-  const user = document.getElementById('inp-user').value.trim().toLowerCase();
-  const pass = document.getElementById('inp-pass').value;
-  const match = ADMIN_USERS.find(u => u.user === user && u.pass === pass);
+  const user  = document.getElementById('inp-user').value.trim().toLowerCase();
+  const pass  = document.getElementById('inp-pass').value;
+  const match = ADMIN_USERS.find(u => u.user===user && u.pass===pass);
   if(!match){ document.getElementById('login-err').textContent = 'Usuario o contraseña incorrectos.'; return; }
   currentUser = match.name;
   const btn = document.querySelector('.btn-login');
   btn.textContent = 'Conectando...'; btn.disabled = true;
-  try {
-    await syncFromServer();
-  } catch(e){
-    console.warn('Sync on login failed:', e);
-  }
+  try { await syncFromServer(); } catch(e){ console.warn('Sync on login failed:', e); }
+  saveAdminSession(user);
   document.getElementById('s-login').style.display = 'none';
   document.getElementById('s-app').style.display = 'block';
   initApp();
@@ -557,6 +543,7 @@ async function doLogin(){
 
 function doLogout(){
   currentUser = '';
+  clearAdminSession();
   document.getElementById('s-app').style.display = 'none';
   document.getElementById('s-login').style.display = 'flex';
   document.getElementById('inp-user').value = '';
@@ -564,22 +551,16 @@ function doLogout(){
   document.getElementById('login-err').textContent = '';
 }
 
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
 function initApp(){
   const today = new Date();
   calYear = today.getFullYear(); calMonth = today.getMonth();
   document.getElementById('top-date').textContent = today.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   document.getElementById('sync-label').textContent = currentUser;
-
-  // Populate tech filter
   const sel = document.getElementById('filt-tech');
   sel.innerHTML = '<option value="">Todos los técnicos</option>';
   getDB().technicians.forEach(t => {
     const o = document.createElement('option'); o.value = t.id; o.textContent = t.name; sel.appendChild(o);
   });
-
   renderAll();
   goView('dashboard');
 }
@@ -593,9 +574,6 @@ function renderAll(){
   renderCalendario();
 }
 
-// ═══════════════════════════════════════════
-// NAV
-// ═══════════════════════════════════════════
 const VIEW_TITLES = {dashboard:'Dashboard',ordenes:'📋 Órdenes de Trabajo',registros:'🗂 Registros',alertas:'🔔 Alertas',extras:'⚡ Horas Extra',calendario:'🗓 Calendario'};
 function goView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -607,9 +585,6 @@ function goView(name){
   document.getElementById('top-title').textContent = VIEW_TITLES[name]||name;
 }
 
-// ═══════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════
 function TODAY(){ return new Date().toISOString().split('T')[0]; }
 function getTechName(id){ return getDB().technicians.find(t=>t.id===id)?.name || id; }
 function getInitials(name){ return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
@@ -619,7 +594,25 @@ function getOTDisplay(otId, db){
   return db.orders.find(o=>o.id===otId)?.num || otId;
 }
 function tipoTagClass(tipo){ return {Productiva:'tag-prod',Improductiva:'tag-improd',Capacitación:'tag-cap',Viaje:'tag-viaje',Refrigerio:'tag-refrig'}[tipo]||''; }
-function typeTagClass(type){ return {'Cliente Campo':'tag-cli','Cliente Taller':'tag-int','Garantía Normal':'tag-gar','Garantía Más':'tag-gar','Operaciones Generales':'tag-improd','Interno Ventas':'tag-int-v','Interno Taller':'tag-int'}[type]||''; }
+
+// FIX 2: typeTagClass completo — cubre todos los tipos de OT
+function typeTagClass(type){
+  const map = {
+    'Cliente Campo':         'tag-cli',
+    'Cliente Taller':        'tag-int',
+    'Garantía Normal':       'tag-gar',
+    'Garantía Más':          'tag-gar',
+    'Operaciones Generales': 'tag-ops',
+    'Interno Taller':        'tag-int',
+    'Interno Ventas':        'tag-int-v',
+    // legacy
+    'Cliente Final':         'tag-cli',
+    'Garantía':              'tag-gar',
+    'Interno':               'tag-int',
+  };
+  return map[type] || '';
+}
+
 function getPrevWorkday(){
   const d = new Date(); d.setDate(d.getDate()-1);
   while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()-1);
@@ -646,23 +639,18 @@ function getMonthDates(){
   for(let d=new Date(start);d<=today;d.setDate(d.getDate()+1)) if(d.getDay()!==0) dates.push(d.toISOString().split('T')[0]);
   return dates;
 }
-
 function showToast(msg, type=''){
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast show' + (type?' '+type:'');
   setTimeout(()=>{ t.className='toast'; }, 3000);
 }
 
-// ═══════════════════════════════════════════
-// ÓRDENES — CREAR (FIXED)
-// ═══════════════════════════════════════════
+// ÓRDENES
 async function addOT(){
-  const errEl = document.getElementById('ot-form-error');
-  const btnEl = document.getElementById('btn-crear-ot');
+  const errEl  = document.getElementById('ot-form-error');
+  const btnEl  = document.getElementById('btn-crear-ot');
   const btnTxt = document.getElementById('btn-crear-ot-txt');
   errEl.textContent = '';
-
-  // Leer campos
   const num    = document.getElementById('ot-num').value.trim();
   const type   = document.getElementById('ot-type').value;
   const desc   = document.getElementById('ot-desc').value.trim();
@@ -672,49 +660,25 @@ async function addOT(){
   const rate   = parseFloat(document.getElementById('ot-rate').value) || 0;
   const hs     = parseFloat(document.getElementById('ot-hs').value) || null;
   const obs    = document.getElementById('ot-obs').value.trim();
-
-  // Validar campos obligatorios
   if(!num)    { errEl.textContent = 'El número de OT es obligatorio.'; return; }
   if(!desc)   { errEl.textContent = 'La descripción es obligatoria.'; return; }
   if(!client) { errEl.textContent = 'El cliente es obligatorio.'; return; }
-
-  // Verificar que no exista ya ese número
   const db = getDB();
   if(db.orders.find(o=>o.num===num)){ errEl.textContent = 'Ya existe una OT con ese número.'; return; }
-
-  const order = {
-    id: 'ot_' + Date.now(),
-    num, type, desc, client, unidad, chasis, obs,
-    ratePerHour: rate,
-    hsPresupuestadas: hs,
-    status: 'active',
-    fechaApertura: TODAY(),
-    fechaCierre: '',
-  };
-
-  // Deshabilitar botón y mostrar spinner
+  const order = { id:'ot_'+Date.now(), num, type, desc, client, unidad, chasis, obs, ratePerHour:rate, hsPresupuestadas:hs, status:'active', fechaApertura:TODAY(), fechaCierre:'' };
   btnEl.disabled = true;
   btnTxt.innerHTML = '<span class="spinner"></span> Guardando...';
-
   try {
-    // Guardar en servidor
     await apiPost('saveOrder', { order });
-
-    // Guardar en local también (cache optimista)
     db.orders.push(order);
     saveDB(db);
-
-    // Limpiar formulario
     ['ot-num','ot-desc','ot-client','ot-unidad','ot-chasis','ot-rate','ot-hs','ot-obs'].forEach(id => {
-      const el = document.getElementById(id);
-      if(el) el.value = '';
+      const el = document.getElementById(id); if(el) el.value = '';
     });
-
     showToast('OT ' + num + ' creada ✓', 'success');
     renderOrdenes();
-
   } catch(e){
-    errEl.textContent = 'Error al guardar: ' + e.message + '. Verificá la conexión e intentá de nuevo.';
+    errEl.textContent = 'Error al guardar: ' + e.message;
     showToast('Error al crear OT', 'error');
   } finally {
     btnEl.disabled = false;
@@ -735,24 +699,17 @@ function renderOrdenes(){
   if(otFilter==='active') orders = orders.filter(o=>o.status==='active');
   else if(otFilter==='closed') orders = orders.filter(o=>o.status==='closed');
   orders = [...orders].reverse();
-
   document.getElementById('ot-count-label').textContent = orders.length + ' órdenes';
   const el = document.getElementById('ot-list');
-
   if(!orders.length){
     el.innerHTML = '<div class="ot-empty">No hay órdenes' + (otFilter==='active'?' activas':'') + '. Creá la primera arriba ↑</div>';
     return;
   }
-
   el.innerHTML = orders.map(o => {
     const typeClass = typeTagClass(o.type);
-    const isActive = o.status === 'active';
-    // Calcular horas ejecutadas
-    const hsEjec = db.jornadas.flatMap(j=>j.items||[])
-      .filter(i=>i.otId===o.id&&i.tipo==='Productiva')
-      .reduce((s,i)=>s+(parseFloat(i.horas)||0),0);
-    const pct = o.hsPresupuestadas ? Math.min(100,hsEjec/o.hsPresupuestadas*100) : null;
-
+    const isActive  = o.status === 'active';
+    const hsEjec    = db.jornadas.flatMap(j=>j.items||[]).filter(i=>i.otId===o.id&&i.tipo==='Productiva').reduce((s,i)=>s+(parseFloat(i.horas)||0),0);
+    const pct       = o.hsPresupuestadas ? Math.min(100, hsEjec/o.hsPresupuestadas*100) : null;
     return `<div class="ot-card-item">
       <div class="ot-card-top">
         <div class="ot-card-info">
@@ -775,27 +732,28 @@ function renderOrdenes(){
             <div style="height:100%;width:${pct}%;background:${pct>=100?'var(--red)':pct>=80?'var(--amber)':'var(--cyan)'};border-radius:3px;transition:width 0.4s"></div>
           </div>
         </div>` : `<div style="font-size:11px;color:var(--text3);margin-top:4px">${hsEjec>0?hsEjec.toFixed(1)+'h registradas':'Sin horas registradas aún'}</div>`}
-      ${o.rate ? `<div style="font-size:11px;color:var(--lime);margin-top:3px">USD ${o.ratePerHour}/h</div>` : ''}
+      ${o.ratePerHour > 0 ? `<div style="font-size:11px;color:var(--lime);margin-top:3px">USD ${o.ratePerHour}/h${hsEjec>0?' · Ejecutado: USD '+(o.ratePerHour*hsEjec).toFixed(0):''}</div>` : ''}
     </div>`;
   }).join('');
 }
 
 async function toggleOTStatus(id){
   const db = getDB();
-  const o = db.orders.find(o=>o.id===id);
+  const o  = db.orders.find(o=>o.id===id);
   if(!o) return;
   o.status = o.status==='active' ? 'closed' : 'active';
   o.fechaCierre = o.status==='closed' ? TODAY() : '';
   saveDB(db);
   renderOrdenes();
   try {
-    await apiPost('updateOrder', { order: o });
+    await apiPost('updateOrder', { order:o });
     showToast('OT ' + o.num + ' ' + (o.status==='closed'?'cerrada':'reactivada') + ' ✓', 'success');
   } catch(e){
-    showToast('Cambio guardado localmente. Sin conexión para sincronizar.', 'error');
+    showToast('Cambio guardado. Sin conexión para sincronizar.', 'error');
   }
 }
 
+// FIX 1: deleteOT ahora sincroniza con el servidor
 async function deleteOT(id, num){
   if(!confirm('¿Eliminar la OT ' + num + '? Esta acción no se puede deshacer.')) return;
   const db = getDB();
@@ -803,31 +761,30 @@ async function deleteOT(id, num){
   saveDB(db);
   renderOrdenes();
   showToast('OT ' + num + ' eliminada', '');
+  try {
+    await apiPost('deleteOrder', { orderId: id });
+  } catch(e){
+    showToast('Eliminada localmente. Sincronizá para confirmar en el servidor.', 'error');
+  }
 }
 
-// ═══════════════════════════════════════════
 // DASHBOARD
-// ═══════════════════════════════════════════
 function renderDashboard(){
   const db = getDB(), weekDates = getWeekDates(), monthDates = getMonthDates();
-  const weekJ = db.jornadas.filter(j=>weekDates.includes(j.date)&&j.status==='sent');
+  const weekJ  = db.jornadas.filter(j=>weekDates.includes(j.date)&&j.status==='sent');
   const monthJ = db.jornadas.filter(j=>monthDates.includes(j.date)&&j.status==='sent');
-  const allWeekItems = weekJ.flatMap(j=>j.items||[]);
+  const allWeekItems  = weekJ.flatMap(j=>j.items||[]);
   const allMonthItems = monthJ.flatMap(j=>j.items||[]);
-
   const totalWeek = allWeekItems.reduce((s,i)=>s+(parseFloat(i.horas)||0),0);
   const prodWeek  = allWeekItems.filter(i=>i.tipo==='Productiva').reduce((s,i)=>s+(parseFloat(i.horas)||0),0);
   const extraWeek = allWeekItems.reduce((s,i)=>s+(parseFloat(i.horasExtra)||0),0);
   const efic = totalWeek>0 ? Math.round(prodWeek/totalWeek*100) : 0;
-
   const missingYest = getMissingTechs(getPrevWorkday());
   const strip = document.getElementById('dash-alerts');
   strip.innerHTML = missingYest.length>0 ? `<div class="alert-banner"><div class="alert-icon">⚠️</div><div class="alert-body"><div class="alert-title">${missingYest.length} técnico${missingYest.length>1?'s':''} no cargaron jornada ayer</div><div class="alert-techs">${missingYest.map(t=>`<span class="alert-tech-chip">${t.name}</span>`).join('')}</div></div></div>` : '';
-
   const badge = document.getElementById('alerta-badge'), mbnBadge = document.getElementById('mbn-alerta-badge');
   badge.textContent = missingYest.length; badge.style.display = missingYest.length>0?'flex':'none';
   if(mbnBadge){ mbnBadge.textContent = missingYest.length; mbnBadge.style.display = missingYest.length>0?'flex':'none'; }
-
   const kpiData = [
     {label:'Hs. semana',val:totalWeek.toFixed(0)+'h',sub:weekDates.length+' días laborales',color:'var(--cyan)',pct:Math.min(100,totalWeek/300*100)},
     {label:'Eficiencia',val:efic+'%',sub:'Hs. productivas / total',color:'var(--lime)',pct:efic},
@@ -835,10 +792,8 @@ function renderDashboard(){
     {label:'OTs activas',val:db.orders.filter(o=>o.status==='active').length,sub:'Órdenes de trabajo abiertas',color:'var(--purple)',pct:100},
   ];
   document.getElementById('kpi-grid').innerHTML = kpiData.map(k=>`<div class="stat-card" style="--accent:${k.color}"><div class="sc-label">${k.label}</div><div class="sc-val" style="color:${k.color}">${k.val}</div><div class="sc-sub">${k.sub}</div><div class="progress-bar"><div class="progress-fill" style="width:${k.pct}%;background:${k.color}"></div></div></div>`).join('');
-
-  // Bar chart semanal
   const dayTotals = weekDates.map(d=>{
-    const js = db.jornadas.filter(j=>j.date===d&&j.status==='sent');
+    const js  = db.jornadas.filter(j=>j.date===d&&j.status==='sent');
     const reg = js.flatMap(j=>j.items||[]).reduce((s,i)=>s+(parseFloat(i.horasRegulares)||parseFloat(i.horas)||0),0);
     const ext = js.flatMap(j=>j.items||[]).reduce((s,i)=>s+(parseFloat(i.horasExtra)||0),0);
     return {reg,ext,total:reg+ext,day:new Date(d+'T12:00:00').toLocaleDateString('es-AR',{weekday:'short'})};
@@ -853,40 +808,35 @@ function renderDashboard(){
       </div>
       <div class="bar-x-label">${d.day}</div>
     </div>`).join('');
-
-  // Donut
   const tipos = ['Productiva','Improductiva','Capacitación','Viaje'];
-  const cols = ['#60E080','#FFB020','#60C8FF','#C090FF'];
-  const ids = ['dn-prod','dn-improd','dn-cap','dn-viaje'];
+  const cols  = ['#60E080','#FFB020','#60C8FF','#C090FF'];
+  const ids   = ['dn-prod','dn-improd','dn-cap','dn-viaje'];
   const totals = tipos.map(t=>allMonthItems.filter(i=>i.tipo===t).reduce((s,i)=>s+(parseFloat(i.horas)||0),0));
   const totalAll = totals.reduce((a,b)=>a+b,0)||1;
   const circ = 2*Math.PI*32;
   let offset = 0;
   ids.forEach((id,i)=>{
     const frac = totals[i]/totalAll;
-    const el = document.getElementById(id);
+    const el   = document.getElementById(id);
     if(el){ el.setAttribute('stroke-dasharray',`${frac*circ} ${circ*(1-frac)}`); el.setAttribute('stroke-dashoffset',-(offset*circ-50)); }
     offset += frac;
   });
   document.getElementById('donut-legend').innerHTML = tipos.map((t,i)=>`<div class="dl-item"><div class="dl-left"><div class="dl-dot" style="background:${cols[i]}"></div>${t}</div><div class="dl-val">${totals[i].toFixed(1)}h</div></div>`).join('');
-
-  // Tech perf
   document.getElementById('tech-perf-table').innerHTML = db.technicians.map(tech=>{
-    const tj = weekJ.filter(j=>j.techId===tech.id);
+    const tj    = weekJ.filter(j=>j.techId===tech.id);
     const items = tj.flatMap(j=>j.items||[]);
-    const reg = items.reduce((s,i)=>s+(parseFloat(i.horasRegulares)||parseFloat(i.horas)||0),0);
-    const ext = items.reduce((s,i)=>s+(parseFloat(i.horasExtra)||0),0);
+    const reg   = items.reduce((s,i)=>s+(parseFloat(i.horasRegulares)||parseFloat(i.horas)||0),0);
+    const ext   = items.reduce((s,i)=>s+(parseFloat(i.horasExtra)||0),0);
     const total = reg+ext;
     const expected = weekDates.length * 8;
-    const pct = Math.min(100,total/expected*100);
-    const isAlert = total===0;
+    const isAlert  = total===0;
     return `<div class="tech-perf-row ${isAlert?'alert-row':''}">
       <div class="tech-avatar">${getInitials(tech.name)}</div>
       <div class="tech-perf-info">
         <div class="tech-perf-name">${tech.name}</div>
         <div class="mini-bar">
           <div class="mini-fill-regular" style="width:${Math.min(100,reg/expected*100)}%"></div>
-          <div class="mini-fill-extra" style="width:${Math.min(100,ext/expected*100)}%"></div>
+          <div class="mini-fill-extra"   style="width:${Math.min(100,ext/expected*100)}%"></div>
         </div>
       </div>
       <div class="tech-perf-nums">
@@ -897,16 +847,13 @@ function renderDashboard(){
   }).join('');
 }
 
-// ═══════════════════════════════════════════
-// REGISTROS
-// ═══════════════════════════════════════════
+// REGISTROS con totales al pie
 function renderRegistros(){
-  const db = getDB();
+  const db     = getDB();
   const techF  = document.getElementById('filt-tech')?.value || '';
   const tipoF  = document.getElementById('filt-tipo')?.value || '';
   const desdeF = document.getElementById('filt-desde')?.value || '';
   const hastaF = document.getElementById('filt-hasta')?.value || '';
-
   let rows = [];
   db.jornadas.filter(j=>j.status==='sent').forEach(j=>{
     if(techF && j.techId!==techF) return;
@@ -918,9 +865,13 @@ function renderRegistros(){
     });
   });
   rows.sort((a,b)=>b.date.localeCompare(a.date));
-
   const tbody = document.getElementById('reg-tbody');
-  if(!rows.length){ tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">Sin registros</td></tr>'; return; }
+  const tfoot = document.getElementById('reg-tfoot');
+  if(!rows.length){
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">Sin registros</td></tr>';
+    tfoot.innerHTML = '';
+    return;
+  }
   tbody.innerHTML = rows.map(r=>`<tr>
     <td>${getTechName(r.techId)}</td>
     <td>${r.date}</td>
@@ -931,6 +882,17 @@ function renderRegistros(){
     <td style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--amber)">${(parseFloat(r.horasExtra)||0).toFixed(1)}h</td>
     <td style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700">${(parseFloat(r.horas)||0).toFixed(1)}h</td>
   </tr>`).join('');
+
+  // FIX: fila de totales al pie
+  const sumReg   = rows.reduce((s,r)=>s+(parseFloat(r.horasRegulares)||parseFloat(r.horas)||0),0);
+  const sumExtra = rows.reduce((s,r)=>s+(parseFloat(r.horasExtra)||0),0);
+  const sumTotal = rows.reduce((s,r)=>s+(parseFloat(r.horas)||0),0);
+  tfoot.innerHTML = `<tr class="reg-totals-row">
+    <td colspan="5" style="padding:10px 20px;color:var(--text2);font-size:12px">${rows.length} registros</td>
+    <td style="padding:10px 20px;color:var(--cyan)">${sumReg.toFixed(1)}h</td>
+    <td style="padding:10px 20px;color:var(--amber)">${sumExtra.toFixed(1)}h</td>
+    <td style="padding:10px 20px">${sumTotal.toFixed(1)}h</td>
+  </tr>`;
 }
 
 function exportCSV(){
@@ -945,16 +907,11 @@ function exportCSV(){
   a.download = 'registros_agroterra.csv'; a.click();
 }
 
-// ═══════════════════════════════════════════
 // ALERTAS
-// ═══════════════════════════════════════════
 function renderAlertas(){
   const db = getDB(), today = TODAY(), prevWD = getPrevWorkday();
   const el = document.getElementById('alertas-list');
-  const checks = [
-    { label: 'Hoy (' + today + ')', date: today },
-    { label: 'Ayer / último día hábil (' + prevWD + ')', date: prevWD },
-  ];
+  const checks = [{label:'Hoy ('+today+')',date:today},{label:'Ayer / último día hábil ('+prevWD+')',date:prevWD}];
   el.innerHTML = checks.map(c=>{
     const missing = getMissingTechs(c.date);
     return `<div class="card" style="margin-bottom:16px">
@@ -964,39 +921,30 @@ function renderAlertas(){
   }).join('');
 }
 
-// ═══════════════════════════════════════════
 // HORAS EXTRA
-// ═══════════════════════════════════════════
 function renderExtras(){
   const db = getDB(), monthDates = getMonthDates(), weekDates = getWeekDates();
   const allExtras = db.jornadas.filter(j=>monthDates.includes(j.date)&&j.status==='sent').flatMap(j=>(j.items||[]).filter(i=>(parseFloat(i.horasExtra)||0)>0).map(i=>({...i,techId:j.techId,date:j.date})));
-
   const totalExtra = allExtras.reduce((s,i)=>s+(parseFloat(i.horasExtra)||0),0);
   document.getElementById('extra-kpis').innerHTML = `
     <div class="stat-card" style="--accent:var(--amber)"><div class="sc-label">Hs. extra · mes</div><div class="sc-val" style="color:var(--amber)">${totalExtra.toFixed(1)}h</div><div class="sc-sub">${allExtras.length} registros</div></div>
     <div class="stat-card" style="--accent:var(--amber)"><div class="sc-label">Técnicos con extra</div><div class="sc-val" style="color:var(--amber)">${new Set(allExtras.map(i=>i.techId)).size}</div><div class="sc-sub">de ${db.technicians.length} técnicos</div></div>`;
-
-  const byTech = db.technicians.map(t=>({ name:t.name, total:allExtras.filter(i=>i.techId===t.id).reduce((s,i)=>s+(parseFloat(i.horasExtra)||0),0) })).filter(t=>t.total>0).sort((a,b)=>b.total-a.total);
+  const byTech = db.technicians.map(t=>({name:t.name,total:allExtras.filter(i=>i.techId===t.id).reduce((s,i)=>s+(parseFloat(i.horasExtra)||0),0)})).filter(t=>t.total>0).sort((a,b)=>b.total-a.total);
   const maxE = byTech[0]?.total||1;
   document.getElementById('extra-ranking').innerHTML = byTech.length ? byTech.map((t,i)=>`<div class="extra-rank-row"><div class="extra-rank-num">${i+1}</div><div class="extra-rank-info"><div class="extra-rank-name">${t.name}</div><div class="extra-bar-wrap"><div class="extra-bar-fill" style="width:${t.total/maxE*100}%"></div></div></div><div class="extra-rank-val">${t.total.toFixed(1)}h</div></div>`).join('') : '<div style="padding:20px;color:var(--text3);font-size:13px;text-align:center">Sin horas extra este mes</div>';
-
   const wkExtras = weekDates.map(d=>{ const v=db.jornadas.filter(j=>j.date===d&&j.status==='sent').flatMap(j=>j.items||[]).reduce((s,i)=>s+(parseFloat(i.horasExtra)||0),0); return{v,day:new Date(d+'T12:00:00').toLocaleDateString('es-AR',{weekday:'short'})}; });
   const maxW = Math.max(...wkExtras.map(d=>d.v),1);
   document.getElementById('extra-week-chart').innerHTML = wkExtras.map(d=>`<div class="bar-col-wrap"><div class="bar-val-label">${d.v>0?d.v.toFixed(0):''}</div><div class="bar-stacked" style="height:${Math.max(d.v/maxW*80,d.v>0?4:0)}px"><div class="bar-seg-extra" style="height:100%"></div></div><div class="bar-x-label">${d.day}</div></div>`).join('');
 }
 
-// ═══════════════════════════════════════════
-// CALENDARIO
-// ═══════════════════════════════════════════
+// CALENDARIO — FIX: sábados diferenciados
 function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendario(); }
 function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendario(); }
 function calToday(){ const t=new Date(); calYear=t.getFullYear(); calMonth=t.getMonth(); renderCalendario(); }
-
 function renderCalendario(){
   const db = getDB();
   const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   document.getElementById('cal-month-label').textContent = monthNames[calMonth] + ' ' + calYear;
-
   const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
   const today = TODAY();
   const workdays = [];
@@ -1004,29 +952,27 @@ function renderCalendario(){
     const date = new Date(calYear,calMonth,d);
     if(date.getDay()!==0) workdays.push({ day:d, date:`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`, dow:date.getDay() });
   }
-
   const submittedMap = {};
   db.jornadas.filter(j=>j.status==='sent'&&j.date.startsWith(`${calYear}-${String(calMonth+1).padStart(2,'0')}`)).forEach(j=>{
     if(!submittedMap[j.techId]) submittedMap[j.techId] = new Set();
     submittedMap[j.techId].add(j.date);
   });
-
   let html = `<table class="cal-table"><thead><tr><th class="cal-tech-col">Técnico</th>`;
-  workdays.forEach(w=>{ html+=`<th><div class="${w.date===today?'cal-day-header is-today':'cal-day-header'}">${w.day}</div></th>`; });
+  workdays.forEach(w=>{ html+=`<th style="${w.dow===6?'color:var(--purple);opacity:0.6':''}">${w.day}${w.dow===6?'<br><span style="font-size:8px">SAB</span>':''}</th>`; });
   html += '</tr></thead><tbody>';
-
   db.technicians.forEach(tech=>{
     html += `<tr><td class="cal-tech-name">${tech.name}</td>`;
     workdays.forEach(w=>{
-      const isPast = w.date <= today;
-      const isWorkday = w.dow !== 0 && w.dow !== 6;
-      const hasJ = submittedMap[tech.id]?.has(w.date);
+      const isPast    = w.date <= today;
+      const isSat     = w.dow === 6;
+      const hasJ      = submittedMap[tech.id]?.has(w.date);
       let cls = 'cal-cell';
-      if(!isPast) cls += ' future';
-      else if(hasJ) cls += ' has-jornada';
-      else if(isWorkday) cls += ' missing';
-      else cls += ' nonworking';
-      html += `<td><div class="${cls}">${hasJ?'✓':isPast&&isWorkday&&!hasJ?'—':''}</div></td>`;
+      if(!isPast)      cls += ' future';
+      else if(hasJ)    cls += ' has-jornada';
+      else if(isSat)   cls += ' saturday';          // FIX: sábados no generan alerta roja
+      else             cls += ' missing';
+      const label = hasJ ? '✓' : (isPast && !isSat && !hasJ) ? '—' : '';
+      html += `<td><div class="${cls}">${label}</div></td>`;
     });
     html += '</tr>';
   });
@@ -1034,9 +980,23 @@ function renderCalendario(){
   document.getElementById('cal-container').innerHTML = html;
 }
 
-// Init login listener
+// INIT
 document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('inp-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+  // FIX 3: restaurar sesión admin
+  const savedUser = loadAdminSession();
+  if(savedUser){
+    const match = ADMIN_USERS.find(u=>u.user===savedUser);
+    if(match){
+      currentUser = match.name;
+      document.getElementById('s-login').style.display = 'none';
+      document.getElementById('s-app').style.display = 'block';
+      initApp();
+      // silently refresh data
+      syncFromServer().then(()=>renderAll()).catch(()=>{});
+    }
+  }
 });
 </script>
 </body>
