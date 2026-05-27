@@ -667,24 +667,55 @@ function updatePinDisplay() {
 function doLogin() {
   const techId = document.getElementById('sel-tech').value;
   if (!techId) return;
-  const db   = getDB();
-  const tech = db.technicians.find(t => t.id === techId);
-  if (!tech) return;
+  const errEl = document.getElementById('login-error-pin');
+  errEl.textContent = 'Verificando...';
 
-  if (currentPin !== tech.pin) {
-    document.getElementById('login-error-pin').textContent = 'PIN incorrecto. Intentá de nuevo.';
-    // shake animation
-    const display = document.getElementById('pin-display');
-    display.classList.add('pin-shake');
-    setTimeout(() => display.classList.remove('pin-shake'), 400);
-    currentPin = '';
-    updatePinDisplay();
-    return;
-  }
-
-  currentTech = tech;
-  saveSession(tech.id);
-  launchApp();
+  // Validar PIN en el servidor — el PIN nunca queda expuesto en el HTML
+  fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'validatePin', techId, pin: currentPin })
+  })
+  .then(r => r.json())
+  .then(json => {
+    if (!json.ok || !json.data.valid) {
+      errEl.textContent = json.data?.error || 'PIN incorrecto. Intentá de nuevo.';
+      const display = document.getElementById('pin-display');
+      display.classList.add('pin-shake');
+      setTimeout(() => display.classList.remove('pin-shake'), 400);
+      currentPin = '';
+      updatePinDisplay();
+      return;
+    }
+    // PIN correcto — el servidor devuelve el nombre confirmado
+    const db   = getDB();
+    const tech = db.technicians.find(t => t.id === techId);
+    currentTech = tech || { id: techId, name: json.data.name };
+    saveSession(techId);
+    launchApp();
+  })
+  .catch(() => {
+    // Sin conexión: validar contra cache local como fallback
+    errEl.textContent = '';
+    const db   = getDB();
+    const tech = db.technicians.find(t => t.id === techId);
+    if (tech && tech.pin && currentPin === tech.pin) {
+      currentTech = tech;
+      saveSession(techId);
+      launchApp();
+    } else if (tech && !tech.pin) {
+      // Pin no en cache (buena señal — el server no lo envía), no se puede validar offline
+      errEl.textContent = 'Sin conexión. Conectate a internet para ingresar.';
+      currentPin = '';
+      updatePinDisplay();
+    } else {
+      errEl.textContent = 'PIN incorrecto.';
+      const display = document.getElementById('pin-display');
+      display.classList.add('pin-shake');
+      setTimeout(() => display.classList.remove('pin-shake'), 400);
+      currentPin = '';
+      updatePinDisplay();
+    }
+  });
 }
 
 // ═══════════════════════════════════════════════════
