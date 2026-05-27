@@ -13,6 +13,9 @@
 <link rel="apple-touch-icon" href="icon_tecnico.png">
 <title>Agroterra · Técnico</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <style>
 :root {
   --bg:       #0d1410;
@@ -611,6 +614,7 @@ function initLogin() {
     const tech = db.technicians.find(t => t.id === savedId);
     if (tech) {
       currentTech = tech;
+      setupFCMForeground();
       launchApp();
       return;
     }
@@ -691,6 +695,9 @@ function doLogin() {
     const tech = db.technicians.find(t => t.id === techId);
     currentTech = tech || { id: techId, name: json.data.name };
     saveSession(techId);
+    // Pedir permiso de notificaciones push (solo la primera vez)
+    requestPushPermission(techId);
+    setupFCMForeground();
     launchApp();
   })
   .catch(() => {
@@ -1313,8 +1320,63 @@ function typeTag(type) {
 }
 
 // ═══════════════════════════════════════════════════
-// INIT
+// FIREBASE CLOUD MESSAGING — notificaciones push
 // ═══════════════════════════════════════════════════
+const FCM_VAPID = 'BH-placeholder-will-be-set-below';
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyD3S2mFpOd75uuWzilWymFVWruFXTzZaGI",
+  authDomain:        "agroterra-1e3c3.firebaseapp.com",
+  projectId:         "agroterra-1e3c3",
+  storageBucket:     "agroterra-1e3c3.firebasestorage.app",
+  messagingSenderId: "289898339048",
+  appId:             "1:289898339048:web:4a4582fe673cd5f3d4075d"
+};
+
+let fcmMessaging = null;
+
+async function initFCM() {
+  try {
+    if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
+    fcmMessaging = firebase.messaging();
+  } catch(e) { console.warn('FCM init error:', e); }
+}
+
+async function requestPushPermission(techId) {
+  if (!fcmMessaging) return;
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return;
+
+    // Obtener VAPID key desde el servidor
+    const vapidRes = await fetch(API_URL + '?action=getVapidKey');
+    const vapidJson = await vapidRes.json();
+    if (!vapidJson.ok || !vapidJson.data.vapidKey) return;
+
+    const token = await fcmMessaging.getToken({ vapidKey: vapidJson.data.vapidKey });
+    if (!token) return;
+
+    // Guardar token en el servidor vinculado al técnico
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveFcmToken', techId, token })
+    });
+    console.log('FCM token registrado ✓');
+  } catch(e) { console.warn('FCM token error:', e); }
+}
+
+// Manejar mensajes cuando la app está en primer plano
+function setupFCMForeground() {
+  if (!fcmMessaging) return;
+  fcmMessaging.onMessage(payload => {
+    const { title, body } = payload.notification || {};
+    showToast((title || '') + (body ? ' · ' + body : ''), 'default');
+  });
+}
+
+// INIT
+initFCM();
 initLogin();
 </script>
 <script>
